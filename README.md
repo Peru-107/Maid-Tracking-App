@@ -21,8 +21,11 @@ directly if a native shell is added later.
 
 - **Next.js 16** (App Router, TypeScript) — server components for data
   fetching, API routes for mutations.
-- **Prisma 6 + SQLite** — swap the `DATABASE_URL` for Postgres/MySQL in
-  production; the schema doesn't use SQLite-specific features.
+- **Prisma 6 + PostgreSQL** — works with any Postgres (local, [Neon](https://neon.tech),
+  [Supabase](https://supabase.com), Railway, RDS, …), which is what makes this
+  deployable to serverless hosts like Vercel that don't offer persistent
+  local disk (a prior SQLite-based version of this schema doesn't survive
+  there).
 - **Tailwind CSS 4** for styling.
 - **jose** for JWT session cookies, **zod** for API input validation.
 - **Vitest** for unit tests (the salary engine).
@@ -30,12 +33,16 @@ directly if a native shell is added later.
 ## Getting started
 
 ```bash
-cp .env.example .env
+cp .env.example .env     # then set DATABASE_URL to a Postgres connection string
 npm install
-npx prisma migrate dev   # creates dev.db and applies migrations
+npx prisma migrate dev   # applies migrations
 npm run db:seed          # optional: seeds one employer + one helper
 npm run dev              # http://localhost:3000
 ```
+
+You need a Postgres database to run this — either `docker run -e
+POSTGRES_PASSWORD=postgres -p 5432:5432 postgres:16` locally, or a free
+hosted one from [Neon](https://neon.tech) or [Supabase](https://supabase.com).
 
 Login is phone number + OTP. No SMS gateway is wired up (see
 [Auth / OTP](#auth--otp) below), so in development the code is shown on
@@ -47,6 +54,24 @@ Seeded demo accounts (after `npm run db:seed`):
 | -------- | ------------ |
 | Employer | 98765 43210  |
 | Helper   | 87654 32109  |
+
+## Deploying to Vercel
+
+1. Create a free Postgres database at [neon.tech](https://neon.tech) or
+   [supabase.com](https://supabase.com) and copy its connection string.
+2. On [vercel.com](https://vercel.com), **Add New Project** → import this
+   repo → select the `claude/helper-salary-management-app-qkviyf` branch.
+3. Under **Environment Variables**, set:
+   - `DATABASE_URL` — the Postgres connection string from step 1
+   - `JWT_SECRET` — any long random string
+4. Deploy. Vercel runs `next build`, which does **not** run migrations —
+   the first deploy needs the schema applied once, either by running
+   `npx prisma migrate deploy` locally against the same `DATABASE_URL`
+   before deploying, or by adding it as a one-off Vercel build step
+   (`"buildCommand": "prisma migrate deploy && next build"` in
+   `vercel.json`).
+5. Optionally run `npm run db:seed` locally (pointed at the same
+   `DATABASE_URL`) to get the demo employer/helper accounts on the live site.
 
 ## Architecture
 
