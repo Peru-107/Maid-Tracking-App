@@ -1,0 +1,194 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  EMPLOYER
+  HELPER
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  HALF_DAY
+  PAID_LEAVE
+}
+
+// Phone + OTP login. In production, codeHash would be sent via an SMS
+// gateway (e.g. MSG91/Twilio); here it is generated and surfaced in dev
+// mode only (see src/lib/otp.ts).
+model OtpCode {
+  id        String   @id @default(cuid())
+  phone     String
+  codeHash  String
+  expiresAt DateTime
+  consumed  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([phone])
+}
+
+model User {
+  id           String   @id @default(cuid())
+  phone        String   @unique
+  name         String?
+  role         Role
+  languagePref String   @default("en")
+  createdAt    DateTime @default(now())
+
+  // Present when role == EMPLOYER: the helpers this employer manages.
+  managedHelpers HelperProfile[] @relation("EmployerHelpers")
+
+  // Present when role == HELPER, once the helper has logged in and linked
+  // their account to the profile the employer created for them.
+  helperProfile HelperProfile? @relation("HelperUser")
+}
+
+model HelperProfile {
+  id                String    @id @default(cuid())
+  employerId        String
+  employer          User      @relation("EmployerHelpers", fields: [employerId], references: [id], onDelete: Cascade)
+  userId            String?   @unique
+  user              User?     @relation("HelperUser", fields: [userId], references: [id])
+  name              String
+  phone             String
+  baseMonthlySalary Float
+  active            Boolean   @default(true)
+  gaonMode          Boolean   @default(false)
+  gaonSince         DateTime?
+  joinedAt          DateTime  @default(now())
+  createdAt         DateTime  @default(now())
+
+  attendanceLogs AttendanceLog[]
+  loans          LoanEntry[]
+  kharchas       KharchaEntry[]
+  settlements    MonthlySettlement[]
+  gaonPeriods    GaonPeriod[]
+
+  @@index([employerId])
+}
+
+// A "Gaon" (village) leave stretch. Recorded as its own span, rather than a
+// day-by-day attendance status, so a trip can be toggled on today and closed
+// out whenever the helper actually returns -- even across a month boundary --
+// while still letting settlement look back and count exactly which days of
+// a given month fell inside it.
+model GaonPeriod {
+  id        String        @id @default(cuid())
+  helperId  String
+  helper    HelperProfile @relation(fields: [helperId], references: [id], onDelete: Cascade)
+  startDate DateTime
+  endDate   DateTime?
+  createdAt DateTime      @default(now())
+
+  @@index([helperId])
+}
+
+model AttendanceLog {
+  id                 String            @id @default(cuid())
+  helperId           String
+  helper             HelperProfile     @relation(fields: [helperId], references: [id], onDelete: Cascade)
+  date               DateTime
+  status             AttendanceStatus
+  badli              Boolean           @default(false)
+  markedByHelper     Boolean           @default(false)
+  approvedByEmployer Boolean           @default(false)
+  note               String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  @@unique([helperId, date])
+  @@index([helperId, date])
+}
+
+model LoanEntry {
+  id                 String    @id @default(cuid())
+  helperId           String
+  helper             HelperProfile @relation(fields: [helperId], references: [id], onDelete: Cascade)
+  amount             Float
+  reason             String?
+  monthlyEmi         Float
+  remainingPrincipal Float
+  date               DateTime  @default(now())
+  closed             Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+
+  emiEvents LoanEmiEvent[]
+
+  @@index([helperId])
+}
+
+// One row per month a loan was considered for settlement: records whether
+// the EMI was deducted or skipped that month, so history is auditable.
+model LoanEmiEvent {
+  id           String    @id @default(cuid())
+  loanId       String
+  loan         LoanEntry @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  month        Int
+  year         Int
+  amountDue    Float
+  skipped      Boolean   @default(false)
+  amountPaid   Float
+  createdAt    DateTime  @default(now())
+
+  @@unique([loanId, month, year])
+}
+
+model KharchaEntry {
+  id           String              @id @default(cuid())
+  helperId     String
+  helper       HelperProfile       @relation(fields: [helperId], references: [id], onDelete: Cascade)
+  amount       Float
+  reason       String?
+  date         DateTime            @default(now())
+  settled      Boolean             @default(false)
+  settlementId String?
+  settlement   MonthlySettlement?  @relation(fields: [settlementId], references: [id])
+  createdAt    DateTime            @default(now())
+
+  @@index([helperId])
+}
+
+model MonthlySettlement {
+  id               String    @id @default(cuid())
+  helperId         String
+  helper           HelperProfile @relation(fields: [helperId], references: [id], onDelete: Cascade)
+  month            Int
+  year             Int
+
+  baseSalary       Float
+  totalDaysInMonth Int
+  presentDays      Float
+  absentDays       Float
+  halfDays         Float
+  paidLeaveDays    Float
+  perDayWage       Float
+  lossOfPay        Float
+
+  loanEmiDue       Float     @default(0)
+  loanEmiSkipped   Boolean   @default(false)
+  loanEmiDeducted  Float     @default(0)
+
+  kharchaDeducted  Float     @default(0)
+  overtimeBonus    Float     @default(0)
+  festivalBonus    Float     @default(0)
+
+  gaonModeActive   Boolean   @default(false)
+  gaonDays         Float     @default(0)
+  gaonFreezeDeduction Float  @default(0)
+  finalPayout      Float
+
+  paid             Boolean   @default(false)
+  paidAt           DateTime?
+  createdAt        DateTime  @default(now())
+
+  kharchas KharchaEntry[]
+
+  @@unique([helperId, month, year])
+  @@index([helperId])
+}
