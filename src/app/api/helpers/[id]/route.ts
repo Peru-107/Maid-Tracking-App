@@ -46,3 +46,23 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return handleApiError(error);
   }
 }
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const session = await requireEmployerSession();
+    const { id } = await params;
+    await requireOwnedHelper(id, session.userId);
+
+    // Cascades to their attendance, loans, kharcha, and settlements
+    // (onDelete: Cascade in schema.prisma) -- their login, if any, is kept
+    // but no longer linked to a profile.
+    await prisma.helperProfile.delete({ where: { id } });
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    return handleApiError(error);
+  }
+}

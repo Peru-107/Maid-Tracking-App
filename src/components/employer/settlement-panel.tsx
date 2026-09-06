@@ -40,22 +40,25 @@ export function SettlementPanel({
   const [overtimeBonus, setOvertimeBonus] = useState("0");
   const [festivalBonus, setFestivalBonus] = useState("0");
 
+  async function refetch() {
+    const res = await fetch(`/api/helpers/${helperId}/settlement?year=${year}&month=${month}`);
+    const data: { existing: MonthlySettlement | null; draft: { input: SettlementInput } } =
+      await res.json();
+    setBaseInput(data.draft.input);
+    setExisting(data.existing);
+    setLoanAmount(String(data.draft.input.loanEmiAmount));
+    setOvertimeBonus(String(data.draft.input.overtimeBonus));
+    setFestivalBonus(String(data.draft.input.festivalBonus));
+  }
+
   useEffect(() => {
     // Resetting local UI state for a new month is intentional here, not an
     // effect that could be replaced by derived state.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     setError(null);
-    fetch(`/api/helpers/${helperId}/settlement?year=${year}&month=${month}`)
-      .then((res) => res.json())
-      .then((data: { existing: MonthlySettlement | null; draft: { input: SettlementInput } }) => {
-        setBaseInput(data.draft.input);
-        setExisting(data.existing);
-        setLoanAmount(String(data.draft.input.loanEmiAmount));
-        setOvertimeBonus(String(data.draft.input.overtimeBonus));
-        setFestivalBonus(String(data.draft.input.festivalBonus));
-      })
-      .finally(() => setLoading(false));
+    refetch().finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [helperId, year, month]);
 
   const liveResult = useMemo(() => {
@@ -115,10 +118,38 @@ export function SettlementPanel({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Could not mark as paid");
-      setExisting(data.settlement);
+      await refetch();
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not mark as paid");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function undoMarkPaid() {
+    if (!existing) return;
+    if (
+      !window.confirm(
+        "Undo Mark as Paid? This restores the loan balance and un-settles any Kharcha swept into this slip. Only do this if it was tapped by mistake.",
+      )
+    ) {
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/helpers/${helperId}/settlement`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ settlementId: existing.id, paid: false }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Could not undo");
+      await refetch();
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not undo");
     } finally {
       setSaving(false);
     }
@@ -141,7 +172,16 @@ export function SettlementPanel({
       </div>
 
       {existing?.paid && (
-        <Badge tone="green" className="w-fit">Paid on {new Date(existing.paidAt!).toLocaleDateString("en-IN")}</Badge>
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge tone="green">Paid on {new Date(existing.paidAt!).toLocaleDateString("en-IN")}</Badge>
+          <button
+            onClick={undoMarkPaid}
+            disabled={saving}
+            className="text-xs font-semibold text-neutral-500 underline hover:text-red-600 disabled:opacity-50"
+          >
+            Undo (marked by mistake?)
+          </button>
+        </div>
       )}
 
       {loading || !liveResult ? (

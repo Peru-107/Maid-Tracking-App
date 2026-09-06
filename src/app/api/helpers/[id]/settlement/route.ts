@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireEmployerSession, requireOwnedHelper, handleApiError, HttpError } from "@/lib/guards";
-import { buildSettlementDraft, markSettlementPaid, saveSettlementDraft } from "@/lib/settlement";
+import {
+  buildSettlementDraft,
+  markSettlementPaid,
+  saveSettlementDraft,
+  unmarkSettlementPaid,
+} from "@/lib/settlement";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -82,7 +87,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
 }
 
-const patchSchema = z.object({ settlementId: z.string() });
+const patchSchema = z.object({ settlementId: z.string(), paid: z.boolean().optional() });
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -102,8 +107,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       throw new HttpError(404, "Settlement not found");
     }
 
-    const paidSettlement = await markSettlementPaid(settlement.id);
-    return NextResponse.json({ settlement: paidSettlement });
+    const updated =
+      parsed.data.paid === false
+        ? await unmarkSettlementPaid(settlement.id)
+        : await markSettlementPaid(settlement.id);
+    return NextResponse.json({ settlement: updated });
   } catch (error) {
     return handleApiError(error);
   }

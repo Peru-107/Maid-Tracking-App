@@ -4,6 +4,7 @@ import {
   applyLoanPaymentWaterfall,
   AttendanceCounts,
   calculateMonthlySettlement,
+  round2,
   SettlementInput,
 } from "@/lib/salary";
 
@@ -211,6 +212,53 @@ export async function markSettlementPaid(settlementId: string) {
     await tx.monthlySettlement.update({
       where: { id: settlement.id },
       data: { paid: true, paidAt: new Date() },
+    });
+  });
+
+  return prisma.monthlySettlement.findUniqueOrThrow({ where: { id: settlement.id } });
+}
+
+/**
+ * Reverses markSettlementPaid: restores whatever each loan actually had
+ * applied that month (from the LoanEmiEvent it wrote), reopens the loan if
+ * it had been closed by that payment, un-settles the swept-up Kharcha
+ * entries, and flips the row back to unpaid. For fixing an accidental tap.
+ */
+export async function unmarkSettlementPaid(settlementId: string) {
+  const settlement = await prisma.monthlySettlement.findUniqueOrThrow({
+    where: { id: settlementId },
+    include: { kharchas: true },
+  });
+  if (!settlement.paid) return settlement;
+
+  const loans = await prisma.loanEntry.findMany({ where: { helperId: settlement.helperId } });
+
+  await prisma.$transaction(async (tx) => {
+    for (const loan of loans) {
+      const event = await tx.loanEmiEvent.findUnique({
+        where: {
+          loanId_month_year: { loanId: loan.id, month: settlement.month, year: settlement.year },
+        },
+      });
+      if (!event) continue;
+
+      if (event.amountPaid > 0) {
+        await tx.loanEntry.update({
+          where: { id: loan.id },
+          data: { remainingPrincipal: round2(loan.remainingPrincipal + event.amountPaid), closed: false },
+        });
+      }
+      await tx.loanEmiEvent.delete({ where: { id: event.id } });
+    }
+
+    await tx.kharchaEntry.updateMany({
+      where: { id: { in: settlement.kharchas.map((k) => k.id) } },
+      data: { settled: false, settlementId: null },
+    });
+
+    await tx.monthlySettlement.update({
+      where: { id: settlement.id },
+      data: { paid: false, paidAt: null },
     });
   });
 
