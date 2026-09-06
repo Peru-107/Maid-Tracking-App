@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Card, Badge } from "@/components/ui";
+import type { TranslationKey } from "@/lib/i18n";
 
 type Loan = {
   id: string;
@@ -15,10 +16,12 @@ type Loan = {
 };
 
 export function LoanSection({
+  t,
   helperId,
   loans,
   onChange,
 }: {
+  t: Record<TranslationKey, string>;
   helperId: string;
   loans: Loan[];
   onChange?: () => void;
@@ -63,20 +66,20 @@ export function LoanSection({
   return (
     <Card className="flex flex-col gap-3 p-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold">Loans &amp; Advances</h3>
+        <h3 className="font-semibold">{t.loans_and_advances}</h3>
         <Button variant="secondary" onClick={() => setOpen((v) => !v)}>
-          {open ? "Cancel" : "+ New Loan"}
+          {open ? t.cancel : t.new_loan}
         </Button>
       </div>
 
       {loans.length > 0 && (
         <div className="flex gap-6 text-sm">
           <div>
-            <div className="text-neutral-500">Total Taken</div>
+            <div className="text-neutral-500">{t.total_taken}</div>
             <div className="font-semibold">₹{totalTaken.toLocaleString("en-IN")}</div>
           </div>
           <div>
-            <div className="text-neutral-500">Outstanding</div>
+            <div className="text-neutral-500">{t.outstanding}</div>
             <div className="font-semibold">₹{totalOutstanding.toLocaleString("en-IN")}</div>
           </div>
         </div>
@@ -88,7 +91,7 @@ export function LoanSection({
             required
             type="number"
             min="1"
-            placeholder="Loan amount (₹)"
+            placeholder={t.loan_amount_placeholder}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             className="rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-transparent"
@@ -97,20 +100,20 @@ export function LoanSection({
             required
             type="number"
             min="1"
-            placeholder="Monthly deduction / EMI (₹)"
+            placeholder={t.monthly_emi_placeholder}
             value={emi}
             onChange={(e) => setEmi(e.target.value)}
             className="rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-transparent"
           />
           <input
-            placeholder="Reason (e.g. medical, wedding)"
+            placeholder={t.reason_placeholder}
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             className="rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-transparent"
           />
           {error && <p className="text-sm text-red-600">{error}</p>}
           <Button type="submit" disabled={loading}>
-            {loading ? "Saving…" : "Add Loan"}
+            {loading ? t.saving : t.add_loan}
           </Button>
         </form>
       )}
@@ -129,11 +132,11 @@ export function LoanSection({
             </div>
             <div className="text-right">
               <div className="font-semibold">₹{loan.remainingPrincipal.toLocaleString("en-IN")}</div>
-              <Badge tone={loan.closed ? "green" : "yellow"}>{loan.closed ? "Cleared" : "Active"}</Badge>
+              <Badge tone={loan.closed ? "green" : "yellow"}>{loan.closed ? t.cleared : t.active}</Badge>
             </div>
           </div>
         ))}
-        {loans.length === 0 && <p className="text-sm text-neutral-400">No loans recorded.</p>}
+        {loans.length === 0 && <p className="text-sm text-neutral-400">{t.no_loans_recorded}</p>}
       </div>
     </Card>
   );

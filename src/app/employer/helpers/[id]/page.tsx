@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getSession } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getDictionary, type Locale } from "@/lib/i18n";
 import { HelperWorkspace } from "@/components/employer/helper-workspace";
 import { DeleteHelperButton } from "@/components/employer/delete-helper-button";
 
 export default async function HelperDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const session = await getSession();
+  const user = await getCurrentUser();
+  const t = getDictionary(user!.languagePref as Locale);
 
   const helper = await prisma.helperProfile.findUnique({
     where: { id },
@@ -17,21 +19,23 @@ export default async function HelperDetailPage({ params }: { params: Promise<{ i
     },
   });
 
-  if (!helper || helper.employerId !== session!.userId) notFound();
+  if (!helper || helper.employerId !== user!.id) notFound();
 
   return (
     <div className="flex flex-col gap-5">
       <div>
         <Link href="/employer" className="text-sm text-teal-700 hover:underline dark:text-teal-400">
-          ← All Helpers
+          ← {t.all_helpers}
         </Link>
         <h1 className="mt-1 text-xl font-bold">{helper.name}</h1>
         <p className="text-sm text-neutral-500">
-          +91 {helper.phone.replace("+91", "")} · Base Salary ₹{helper.baseMonthlySalary.toLocaleString("en-IN")}/mo
+          +91 {helper.phone.replace("+91", "")} · {t.base_salary} ₹
+          {helper.baseMonthlySalary.toLocaleString("en-IN")}/mo
         </p>
       </div>
 
       <HelperWorkspace
+        t={t}
         helperId={helper.id}
         helperName={helper.name}
         helperPhone={helper.phone}
@@ -40,7 +44,7 @@ export default async function HelperDetailPage({ params }: { params: Promise<{ i
       />
 
       <div className="mt-2 border-t border-neutral-200 pt-4 dark:border-neutral-800">
-        <DeleteHelperButton helperId={helper.id} helperName={helper.name} />
+        <DeleteHelperButton t={t} helperId={helper.id} helperName={helper.name} />
       </div>
     </div>
   );

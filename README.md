@@ -85,7 +85,7 @@ src/
                      SettlementInput, and persists draft/paid settlements
     auth.ts, otp.ts, phone.ts   Session + phone/OTP login
     whatsapp.ts      Builds the "Hisaab" WhatsApp share message + wa.me link
-    i18n/            Dictionaries for 7 languages
+    i18n/            Dictionaries for 13 languages
   app/
     login/           Phone + OTP screens
     employer/        Employer dashboard + per-helper workspace
@@ -179,11 +179,13 @@ entries are marked settled, and the row is locked as paid.
 
 ### Vernacular + accessibility
 
-The helper dashboard supports 13 languages — English, Hindi, Marathi,
-Telugu, Tamil, Kannada, Bengali, Gujarati, Punjabi, Malayalam, Odia, Urdu,
-and Assamese (`src/lib/i18n`) — switchable from a dropdown that persists
-to the helper's profile. Urdu renders right-to-left (`dir="rtl"` on the
-helper layout when that locale is active); everything else is left-to-right.
+Both the helper dashboard and the employer dashboard support 13 languages —
+English, Hindi, Marathi, Telugu, Tamil, Kannada, Bengali, Gujarati, Punjabi,
+Malayalam, Odia, Urdu, and Assamese (`src/lib/i18n`) — switchable from a
+dropdown in the header that persists to that user's own profile (`languagePref`
+on `User`), independent of the other party's choice. Urdu renders
+right-to-left (`dir="rtl"` on the root layout when that locale is active) on
+both dashboards; everything else is left-to-right.
 The helper view favors large tap targets (a full-width "Mark Present"
 button), emoji/icon-first labels (₹ for salary, 🤝 for loans), and a
 simple color-coded calendar (green/red/yellow/blue) that needs no reading
