@@ -12,9 +12,13 @@ export default async function HelperLayout({ children }: { children: ReactNode }
 
   const locale = user.languagePref as Locale;
   const t = getDictionary(locale);
+  const dir = locale === "ur" ? "rtl" : "ltr";
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-teal-50 to-white dark:from-neutral-950 dark:to-neutral-900">
+    <div
+      dir={dir}
+      className="min-h-screen bg-gradient-to-b from-teal-50 to-white dark:from-neutral-950 dark:to-neutral-900"
+    >
       <header className="sticky top-0 z-10 border-b border-black/5 bg-white/90 backdrop-blur dark:border-white/10 dark:bg-neutral-900/90">
         <div className="mx-auto flex max-w-lg items-center justify-between px-4 py-3">
           <span className="flex items-center gap-2 text-lg font-bold text-teal-700 dark:text-teal-400">

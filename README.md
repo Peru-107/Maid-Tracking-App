@@ -165,18 +165,32 @@ entries are marked settled, and the row is locked as paid.
   `wa.me` with an itemized, pre-filled message (attendance, loss of pay,
   loan/kharcha deductions, bonuses, final payout) addressed to the
   helper's registered number.
+- **Undo Mark as Paid**: a paid settlement shows an "Undo" link that
+  reverses exactly what marking it paid did — restores each loan's
+  principal by whatever was actually applied that month (from its
+  `LoanEmiEvent` row, then deletes it), reopens a loan that payment had
+  closed, and un-settles the Kharcha entries it swept up. For fixing an
+  accidental tap, not a general edit tool -- it's still scoped to one
+  month's settlement.
+- **Delete a helper**: removes their profile and cascades to their entire
+  attendance/loan/Kharcha/settlement history (`onDelete: Cascade` in the
+  schema). Irreversible, so the employer UI requires an explicit
+  confirmation step before it fires.
 
 ### Vernacular + accessibility
 
-The helper dashboard supports English, Hindi, Marathi, Telugu, Tamil,
-Kannada, and Bengali (`src/lib/i18n`), switchable from a dropdown that
-persists to the helper's profile. The helper view favors large tap
-targets (a full-width "Mark Present" button), emoji/icon-first labels (₹
-for salary, 🤝 for loans), and a simple color-coded calendar
-(green/red/yellow/blue) that needs no reading to interpret. Both the
-salary slip (employer) and salary card (helper) put attendance and
-deduction line items behind expandable "breakdown" sections, so the
-headline number stays uncluttered but the detail is one tap away.
+The helper dashboard supports 13 languages — English, Hindi, Marathi,
+Telugu, Tamil, Kannada, Bengali, Gujarati, Punjabi, Malayalam, Odia, Urdu,
+and Assamese (`src/lib/i18n`) — switchable from a dropdown that persists
+to the helper's profile. Urdu renders right-to-left (`dir="rtl"` on the
+helper layout when that locale is active); everything else is left-to-right.
+The helper view favors large tap targets (a full-width "Mark Present"
+button), emoji/icon-first labels (₹ for salary, 🤝 for loans), and a
+simple color-coded calendar (green/red/yellow/blue) that needs no reading
+to interpret. Both the salary slip (employer) and salary card (helper)
+put attendance and deduction line items behind expandable "breakdown"
+sections, so the headline number stays uncluttered but the detail is one
+tap away.
 
 ## Database schema
 

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { HelperWorkspace } from "@/components/employer/helper-workspace";
+import { DeleteHelperButton } from "@/components/employer/delete-helper-button";
 
 export default async function HelperDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -37,6 +38,10 @@ export default async function HelperDetailPage({ params }: { params: Promise<{ i
         loans={helper.loans}
         kharchas={helper.kharchas}
       />
+
+      <div className="mt-2 border-t border-neutral-200 pt-4 dark:border-neutral-800">
+        <DeleteHelperButton helperId={helper.id} helperName={helper.name} />
+      </div>
     </div>
   );
 }
