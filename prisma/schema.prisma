@@ -59,8 +59,6 @@ model HelperProfile {
   phone             String
   baseMonthlySalary Float
   active            Boolean   @default(true)
-  gaonMode          Boolean   @default(false)
-  gaonSince         DateTime?
   joinedAt          DateTime  @default(now())
   createdAt         DateTime  @default(now())
 
@@ -68,25 +66,8 @@ model HelperProfile {
   loans          LoanEntry[]
   kharchas       KharchaEntry[]
   settlements    MonthlySettlement[]
-  gaonPeriods    GaonPeriod[]
 
   @@index([employerId])
-}
-
-// A "Gaon" (village) leave stretch. Recorded as its own span, rather than a
-// day-by-day attendance status, so a trip can be toggled on today and closed
-// out whenever the helper actually returns -- even across a month boundary --
-// while still letting settlement look back and count exactly which days of
-// a given month fell inside it.
-model GaonPeriod {
-  id        String        @id @default(cuid())
-  helperId  String
-  helper    HelperProfile @relation(fields: [helperId], references: [id], onDelete: Cascade)
-  startDate DateTime
-  endDate   DateTime?
-  createdAt DateTime      @default(now())
-
-  @@index([helperId])
 }
 
 model AttendanceLog {
@@ -171,16 +152,12 @@ model MonthlySettlement {
   lossOfPay        Float
 
   loanEmiDue       Float     @default(0)
-  loanEmiSkipped   Boolean   @default(false)
   loanEmiDeducted  Float     @default(0)
 
   kharchaDeducted  Float     @default(0)
   overtimeBonus    Float     @default(0)
   festivalBonus    Float     @default(0)
 
-  gaonModeActive   Boolean   @default(false)
-  gaonDays         Float     @default(0)
-  gaonFreezeDeduction Float  @default(0)
   finalPayout      Float
 
   paid             Boolean   @default(false)

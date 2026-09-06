@@ -6,18 +6,22 @@ export type AttendanceCounts = {
   halfDays: number;
   absentDays: number;
   paidLeaveDays: number;
-  /** Days frozen because the helper was in "Gaon" (village) mode this month. */
-  gaonDays: number;
 };
 
 export type SettlementInput = {
   baseSalary: number;
   totalDaysInMonth: number;
   attendance: AttendanceCounts;
-  /** Sum of monthly EMI amounts due across all open loans this month. */
+  /** Sum of monthly EMI amounts scheduled across all open loans -- the suggested default. */
   loanEmiDue: number;
-  /** Employer pressed "Skip Loan Deduction this Month". */
-  loanEmiSkipRequested: boolean;
+  /** Sum of remaining principal across all open loans -- the hard cap on this month's deduction. */
+  loanOutstandingTotal: number;
+  /**
+   * What the employer actually wants deducted this month. Repayments vary in
+   * practice (a bit more, a bit less, or skipped by setting this to 0), so
+   * this is editable and independent of loanEmiDue.
+   */
+  loanEmiAmount: number;
   /** Sum of unsettled mid-month Kharcha (petty cash) advances. */
   kharchaTotal: number;
   overtimeBonus: number;
@@ -27,12 +31,8 @@ export type SettlementInput = {
 export type SettlementResult = {
   perDayWage: number;
   lossOfPay: number;
-  gaonFreezeDeduction: number;
   loanEmiDue: number;
   loanEmiDeducted: number;
-  /** True if the EMI was skipped, whether by manual request or Gaon mode. */
-  loanEmiSkipped: boolean;
-  gaonModeActive: boolean;
   kharchaDeducted: number;
   overtimeBonus: number;
   festivalBonus: number;
@@ -56,32 +56,20 @@ export function calculateMonthlySettlement(input: SettlementInput): SettlementRe
   const perDayWage = calculatePerDayWage(baseSalary, totalDaysInMonth);
 
   const lossOfPay = perDayWage * attendance.absentDays + perDayWage * 0.5 * attendance.halfDays;
-  const gaonFreezeDeduction = perDayWage * attendance.gaonDays;
-  const gaonModeActive = attendance.gaonDays > 0;
 
-  // Gaon mode automatically suspends EMI deduction on top of any manual skip.
-  const loanEmiSkipped = input.loanEmiSkipRequested || gaonModeActive;
-  const loanEmiDeducted = loanEmiSkipped ? 0 : input.loanEmiDue;
+  // Clamp to [0, outstanding] so a loan can never be over-deducted or driven negative.
+  const loanEmiDeducted = Math.min(Math.max(input.loanEmiAmount, 0), input.loanOutstandingTotal);
 
   const kharchaDeducted = input.kharchaTotal;
 
   const finalPayout =
-    baseSalary -
-    lossOfPay -
-    gaonFreezeDeduction -
-    loanEmiDeducted -
-    kharchaDeducted +
-    input.overtimeBonus +
-    input.festivalBonus;
+    baseSalary - lossOfPay - loanEmiDeducted - kharchaDeducted + input.overtimeBonus + input.festivalBonus;
 
   return {
     perDayWage: round2(perDayWage),
     lossOfPay: round2(lossOfPay),
-    gaonFreezeDeduction: round2(gaonFreezeDeduction),
     loanEmiDue: round2(input.loanEmiDue),
     loanEmiDeducted: round2(loanEmiDeducted),
-    loanEmiSkipped,
-    gaonModeActive,
     kharchaDeducted: round2(kharchaDeducted),
     overtimeBonus: round2(input.overtimeBonus),
     festivalBonus: round2(input.festivalBonus),
@@ -97,4 +85,26 @@ export function applyEmiToLoan(remainingPrincipal: number, monthlyEmi: number) {
   const amountPaid = Math.min(remainingPrincipal, monthlyEmi);
   const newRemaining = round2(remainingPrincipal - amountPaid);
   return { amountPaid: round2(amountPaid), newRemaining, closed: newRemaining <= 0 };
+}
+
+export type LoanForWaterfall = { id: string; remainingPrincipal: number };
+export type LoanPaymentResult = { loanId: string; amountPaid: number; newRemaining: number; closed: boolean };
+
+/**
+ * Distributes a single total repayment amount across multiple open loans,
+ * oldest first, so a helper with more than one loan still gets one editable
+ * "how much this month" figure instead of one per loan.
+ */
+export function applyLoanPaymentWaterfall(
+  loans: LoanForWaterfall[],
+  totalAmount: number,
+): LoanPaymentResult[] {
+  let remaining = round2(Math.max(totalAmount, 0));
+
+  return loans.map((loan) => {
+    const amountPaid = round2(Math.min(remaining, loan.remainingPrincipal));
+    const newRemaining = round2(loan.remainingPrincipal - amountPaid);
+    remaining = round2(remaining - amountPaid);
+    return { loanId: loan.id, amountPaid, newRemaining, closed: newRemaining <= 0 };
+  });
 }

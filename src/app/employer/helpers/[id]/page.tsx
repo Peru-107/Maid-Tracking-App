@@ -34,7 +34,6 @@ export default async function HelperDetailPage({ params }: { params: Promise<{ i
         helperId={helper.id}
         helperName={helper.name}
         helperPhone={helper.phone}
-        initialGaonMode={helper.gaonMode}
         loans={helper.loans}
         kharchas={helper.kharchas}
       />

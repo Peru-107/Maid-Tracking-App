@@ -34,12 +34,9 @@ export default async function EmployerDashboard() {
             return (
               <Link key={helper.id} href={`/employer/helpers/${helper.id}`}>
                 <Card className="flex h-full flex-col gap-2 p-4 transition hover:shadow-md">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h2 className="text-lg font-semibold">{helper.name}</h2>
-                      <p className="text-sm text-neutral-500">+91 {helper.phone.replace("+91", "")}</p>
-                    </div>
-                    {helper.gaonMode && <Badge tone="blue">On Village Leave</Badge>}
+                  <div>
+                    <h2 className="text-lg font-semibold">{helper.name}</h2>
+                    <p className="text-sm text-neutral-500">+91 {helper.phone.replace("+91", "")}</p>
                   </div>
                   <div className="mt-2 flex flex-wrap gap-4 text-sm">
                     <div>
