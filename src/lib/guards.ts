@@ -31,5 +31,10 @@ export function handleApiError(error: unknown) {
     return NextResponse.json({ error: error.message }, { status: error.status });
   }
   console.error(error);
-  return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+  // TEMP DEBUG: surfacing error.message to diagnose a production 500 with no
+  // log access. Revert to the generic message once root-caused.
+  return NextResponse.json(
+    { error: "Something went wrong", debug: error instanceof Error ? error.message : String(error) },
+    { status: 500 },
+  );
 }
