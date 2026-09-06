@@ -36,7 +36,7 @@ export function SettlementPanel({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [skipEmi, setSkipEmi] = useState(false);
+  const [loanAmount, setLoanAmount] = useState("0");
   const [overtimeBonus, setOvertimeBonus] = useState("0");
   const [festivalBonus, setFestivalBonus] = useState("0");
 
@@ -51,7 +51,7 @@ export function SettlementPanel({
       .then((data: { existing: MonthlySettlement | null; draft: { input: SettlementInput } }) => {
         setBaseInput(data.draft.input);
         setExisting(data.existing);
-        setSkipEmi(data.draft.input.loanEmiSkipRequested);
+        setLoanAmount(String(data.draft.input.loanEmiAmount));
         setOvertimeBonus(String(data.draft.input.overtimeBonus));
         setFestivalBonus(String(data.draft.input.festivalBonus));
       })
@@ -62,11 +62,11 @@ export function SettlementPanel({
     if (!baseInput) return null;
     return calculateMonthlySettlement({
       ...baseInput,
-      loanEmiSkipRequested: skipEmi,
+      loanEmiAmount: Number(loanAmount) || 0,
       overtimeBonus: Number(overtimeBonus) || 0,
       festivalBonus: Number(festivalBonus) || 0,
     });
-  }, [baseInput, skipEmi, overtimeBonus, festivalBonus]);
+  }, [baseInput, loanAmount, overtimeBonus, festivalBonus]);
 
   function changeMonth(delta: number) {
     let m = month + delta;
@@ -87,7 +87,7 @@ export function SettlementPanel({
         body: JSON.stringify({
           year,
           month,
-          loanEmiSkipRequested: skipEmi,
+          loanEmiAmount: Number(loanAmount) || 0,
           overtimeBonus: Number(overtimeBonus) || 0,
           festivalBonus: Number(festivalBonus) || 0,
         }),
@@ -151,56 +151,81 @@ export function SettlementPanel({
           <dl className="grid grid-cols-2 gap-y-1.5 text-sm">
             <dt className="text-neutral-500">Base Salary</dt>
             <dd className="text-right">{rupees(baseInput!.baseSalary)}</dd>
-
-            <dt className="text-neutral-500">
-              Attendance ({baseInput!.attendance.presentDays}P / {baseInput!.attendance.absentDays}A / {baseInput!.attendance.halfDays}H / {baseInput!.attendance.paidLeaveDays}PL)
-            </dt>
-            <dd className="text-right">Per-day {rupees(liveResult.perDayWage)}</dd>
-
-            {liveResult.lossOfPay > 0 && (
-              <>
-                <dt className="text-neutral-500">Loss of Pay</dt>
-                <dd className="text-right text-red-600">-{rupees(liveResult.lossOfPay)}</dd>
-              </>
-            )}
-
-            {liveResult.gaonModeActive && (
-              <>
-                <dt className="text-neutral-500">Village Leave ({baseInput!.attendance.gaonDays}d, unpaid)</dt>
-                <dd className="text-right text-red-600">-{rupees(liveResult.gaonFreezeDeduction)}</dd>
-              </>
-            )}
-
-            {liveResult.loanEmiDue > 0 && (
-              <>
-                <dt className="text-neutral-500">Loan EMI {liveResult.loanEmiSkipped && "(Skipped)"}</dt>
-                <dd className={`text-right ${liveResult.loanEmiSkipped ? "text-neutral-400" : "text-red-600"}`}>
-                  {liveResult.loanEmiSkipped ? "₹0" : `-${rupees(liveResult.loanEmiDeducted)}`}
-                </dd>
-              </>
-            )}
-
-            {liveResult.kharchaDeducted > 0 && (
-              <>
-                <dt className="text-neutral-500">Kharcha (Advance)</dt>
-                <dd className="text-right text-red-600">-{rupees(liveResult.kharchaDeducted)}</dd>
-              </>
-            )}
-
-            {liveResult.overtimeBonus > 0 && (
-              <>
-                <dt className="text-neutral-500">Overtime / Guest Bonus</dt>
-                <dd className="text-right text-green-600">+{rupees(liveResult.overtimeBonus)}</dd>
-              </>
-            )}
-
-            {liveResult.festivalBonus > 0 && (
-              <>
-                <dt className="text-neutral-500">Festival Bonus</dt>
-                <dd className="text-right text-green-600">+{rupees(liveResult.festivalBonus)}</dd>
-              </>
-            )}
           </dl>
+
+          <details className="rounded-xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
+            <summary className="cursor-pointer font-semibold text-neutral-700 dark:text-neutral-200">
+              Attendance Breakdown
+            </summary>
+            <dl className="mt-2 grid grid-cols-2 gap-y-1.5">
+              <dt className="text-neutral-500">Present</dt>
+              <dd className="text-right">{baseInput!.attendance.presentDays}</dd>
+              <dt className="text-neutral-500">Absent</dt>
+              <dd className="text-right">{baseInput!.attendance.absentDays}</dd>
+              <dt className="text-neutral-500">Half-day</dt>
+              <dd className="text-right">{baseInput!.attendance.halfDays}</dd>
+              <dt className="text-neutral-500">Paid Leave</dt>
+              <dd className="text-right">{baseInput!.attendance.paidLeaveDays}</dd>
+              <dt className="text-neutral-500">Per-day wage</dt>
+              <dd className="text-right">{rupees(liveResult.perDayWage)}</dd>
+            </dl>
+          </details>
+
+          <details className="rounded-xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800" open>
+            <summary className="cursor-pointer font-semibold text-neutral-700 dark:text-neutral-200">
+              Deductions &amp; Bonuses
+            </summary>
+            <dl className="mt-2 grid grid-cols-2 gap-y-1.5">
+              {liveResult.lossOfPay > 0 && (
+                <>
+                  <dt className="text-neutral-500">Loss of Pay</dt>
+                  <dd className="text-right text-red-600">-{rupees(liveResult.lossOfPay)}</dd>
+                </>
+              )}
+
+              {liveResult.loanEmiDue > 0 && (
+                <>
+                  <dt className="text-neutral-500">
+                    Loan Repayment {liveResult.loanEmiDeducted === 0 && "(Skipped)"}
+                  </dt>
+                  <dd
+                    className={`text-right ${liveResult.loanEmiDeducted === 0 ? "text-neutral-400" : "text-red-600"}`}
+                  >
+                    -{rupees(liveResult.loanEmiDeducted)}
+                  </dd>
+                </>
+              )}
+
+              {liveResult.kharchaDeducted > 0 && (
+                <>
+                  <dt className="text-neutral-500">Kharcha (Advance)</dt>
+                  <dd className="text-right text-red-600">-{rupees(liveResult.kharchaDeducted)}</dd>
+                </>
+              )}
+
+              {liveResult.overtimeBonus > 0 && (
+                <>
+                  <dt className="text-neutral-500">Overtime / Guest Bonus</dt>
+                  <dd className="text-right text-green-600">+{rupees(liveResult.overtimeBonus)}</dd>
+                </>
+              )}
+
+              {liveResult.festivalBonus > 0 && (
+                <>
+                  <dt className="text-neutral-500">Festival Bonus</dt>
+                  <dd className="text-right text-green-600">+{rupees(liveResult.festivalBonus)}</dd>
+                </>
+              )}
+
+              {liveResult.lossOfPay === 0 &&
+                liveResult.loanEmiDue === 0 &&
+                liveResult.kharchaDeducted === 0 &&
+                liveResult.overtimeBonus === 0 &&
+                liveResult.festivalBonus === 0 && (
+                  <dd className="col-span-2 text-neutral-400">Nothing to deduct or add this month.</dd>
+                )}
+            </dl>
+          </details>
 
           <div className="flex items-center justify-between border-t border-neutral-200 pt-3 dark:border-neutral-700">
             <span className="text-lg font-bold">Final Payout</span>
@@ -209,10 +234,21 @@ export function SettlementPanel({
 
           {!existing?.paid && (
             <div className="flex flex-col gap-3 rounded-xl bg-neutral-50 p-3 dark:bg-neutral-800">
-              {baseInput!.loanEmiDue > 0 && (
-                <label className="flex items-center gap-2 text-sm">
-                  <input type="checkbox" checked={skipEmi} onChange={(e) => setSkipEmi(e.target.checked)} />
-                  Skip Loan Deduction this Month (adds EMI back, extends loan by 1 month)
+              {baseInput!.loanOutstandingTotal > 0 && (
+                <label className="text-sm">
+                  Loan Repayment This Month (₹)
+                  <input
+                    type="number"
+                    min="0"
+                    max={baseInput!.loanOutstandingTotal}
+                    value={loanAmount}
+                    onChange={(e) => setLoanAmount(e.target.value)}
+                    className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-transparent"
+                  />
+                  <span className="mt-1 block text-xs text-neutral-500">
+                    Scheduled EMI: {rupees(baseInput!.loanEmiDue)} · Outstanding: {rupees(baseInput!.loanOutstandingTotal)}.
+                    Pay more to clear it faster, less to ease this month, or 0 to skip -- whatever actually changed hands.
+                  </span>
                 </label>
               )}
               <div className="flex gap-3">

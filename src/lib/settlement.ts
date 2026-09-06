@@ -1,7 +1,7 @@
-import { differenceInCalendarDays, endOfMonth, getDaysInMonth, startOfMonth } from "date-fns";
+import { endOfMonth, getDaysInMonth, startOfMonth } from "date-fns";
 import { prisma } from "@/lib/prisma";
 import {
-  applyEmiToLoan,
+  applyLoanPaymentWaterfall,
   AttendanceCounts,
   calculateMonthlySettlement,
   SettlementInput,
@@ -29,7 +29,6 @@ export async function getAttendanceCounts(
     halfDays: 0,
     absentDays: 0,
     paidLeaveDays: 0,
-    gaonDays: 0,
   };
 
   for (const log of logs) {
@@ -38,26 +37,6 @@ export async function getAttendanceCounts(
     else if (log.status === "ABSENT") counts.absentDays += 1;
     else if (log.status === "PAID_LEAVE") counts.paidLeaveDays += 1;
   }
-
-  const gaonPeriods = await prisma.gaonPeriod.findMany({
-    where: {
-      helperId,
-      startDate: { lte: end },
-      OR: [{ endDate: null }, { endDate: { gte: start } }],
-    },
-  });
-
-  const now = new Date();
-  let gaonDays = 0;
-  for (const period of gaonPeriods) {
-    const periodStart = period.startDate > start ? period.startDate : start;
-    const periodEndRaw = period.endDate ?? now;
-    const periodEnd = periodEndRaw < end ? periodEndRaw : end;
-    if (periodEnd >= periodStart) {
-      gaonDays += differenceInCalendarDays(periodEnd, periodStart) + 1;
-    }
-  }
-  counts.gaonDays = Math.min(gaonDays, getDaysInMonth(start));
 
   return counts;
 }
@@ -69,17 +48,23 @@ export function getOpenLoans(helperId: string) {
   });
 }
 
-export async function getUnsettledKharcha(helperId: string, year: number, month: number) {
-  const { start, end } = monthRange(year, month);
+/**
+ * Every unsettled Kharcha advance, regardless of when it was logged. It gets
+ * swept into whichever settlement is generated *next* -- not tied to a
+ * calendar month -- so a Kharcha taken today lands in this cycle's payout as
+ * soon as you settle, rather than waiting on a date match.
+ */
+export async function getUnsettledKharcha(helperId: string) {
   const entries = await prisma.kharchaEntry.findMany({
-    where: { helperId, settled: false, date: { gte: start, lte: end } },
+    where: { helperId, settled: false },
     orderBy: { date: "asc" },
   });
   return { total: entries.reduce((sum, e) => sum + e.amount, 0), entries };
 }
 
 export type SettlementOverrides = {
-  loanEmiSkipRequested?: boolean;
+  /** Amount to actually deduct for loan repayment this month; defaults to the sum of scheduled EMIs. */
+  loanEmiAmount?: number;
   overtimeBonus?: number;
   festivalBonus?: number;
 };
@@ -97,11 +82,8 @@ export async function buildSettlementDraft(
     (sum, loan) => sum + Math.min(loan.monthlyEmi, loan.remainingPrincipal),
     0,
   );
-  const { total: kharchaTotal, entries: kharchaEntries } = await getUnsettledKharcha(
-    helperId,
-    year,
-    month,
-  );
+  const loanOutstandingTotal = loans.reduce((sum, loan) => sum + loan.remainingPrincipal, 0);
+  const { total: kharchaTotal, entries: kharchaEntries } = await getUnsettledKharcha(helperId);
   const totalDaysInMonth = getDaysInMonth(new Date(year, month - 1, 1));
 
   const input: SettlementInput = {
@@ -109,7 +91,8 @@ export async function buildSettlementDraft(
     totalDaysInMonth,
     attendance,
     loanEmiDue,
-    loanEmiSkipRequested: overrides.loanEmiSkipRequested ?? false,
+    loanOutstandingTotal,
+    loanEmiAmount: overrides.loanEmiAmount ?? loanEmiDue,
     kharchaTotal,
     overtimeBonus: overrides.overtimeBonus ?? 0,
     festivalBonus: overrides.festivalBonus ?? 0,
@@ -148,14 +131,10 @@ export async function saveSettlementDraft(
       perDayWage: result.perDayWage,
       lossOfPay: result.lossOfPay,
       loanEmiDue: result.loanEmiDue,
-      loanEmiSkipped: result.loanEmiSkipped,
       loanEmiDeducted: result.loanEmiDeducted,
       kharchaDeducted: result.kharchaDeducted,
       overtimeBonus: result.overtimeBonus,
       festivalBonus: result.festivalBonus,
-      gaonModeActive: result.gaonModeActive,
-      gaonDays: input.attendance.gaonDays,
-      gaonFreezeDeduction: result.gaonFreezeDeduction,
       finalPayout: result.finalPayout,
       kharchas: { connect: kharchaEntries.map((k) => ({ id: k.id })) },
     },
@@ -169,14 +148,10 @@ export async function saveSettlementDraft(
       perDayWage: result.perDayWage,
       lossOfPay: result.lossOfPay,
       loanEmiDue: result.loanEmiDue,
-      loanEmiSkipped: result.loanEmiSkipped,
       loanEmiDeducted: result.loanEmiDeducted,
       kharchaDeducted: result.kharchaDeducted,
       overtimeBonus: result.overtimeBonus,
       festivalBonus: result.festivalBonus,
-      gaonModeActive: result.gaonModeActive,
-      gaonDays: input.attendance.gaonDays,
-      gaonFreezeDeduction: result.gaonFreezeDeduction,
       finalPayout: result.finalPayout,
       kharchas: { connect: kharchaEntries.map((k) => ({ id: k.id })) },
     },
@@ -184,9 +159,10 @@ export async function saveSettlementDraft(
 }
 
 /**
- * Locks in a draft settlement: applies (or skips) the loan EMI against each
- * open loan's principal, marks the swept-up Kharcha entries as settled, and
- * flips the row to paid. This is the point of no return for the month.
+ * Locks in a draft settlement: distributes the chosen loan repayment amount
+ * across open loans (oldest first), marks the swept-up Kharcha entries as
+ * settled, and flips the row to paid. This is the point of no return for
+ * the month.
  */
 export async function markSettlementPaid(settlementId: string) {
   const settlement = await prisma.monthlySettlement.findUniqueOrThrow({
@@ -196,49 +172,35 @@ export async function markSettlementPaid(settlementId: string) {
   if (settlement.paid) return settlement;
 
   const loans = await getOpenLoans(settlement.helperId);
+  const payments = applyLoanPaymentWaterfall(loans, settlement.loanEmiDeducted);
 
   await prisma.$transaction(async (tx) => {
     for (const loan of loans) {
+      const payment = payments.find((p) => p.loanId === loan.id)!;
       const amountDue = Math.min(loan.monthlyEmi, loan.remainingPrincipal);
-      if (settlement.loanEmiSkipped) {
-        await tx.loanEmiEvent.upsert({
-          where: {
-            loanId_month_year: { loanId: loan.id, month: settlement.month, year: settlement.year },
-          },
-          create: {
-            loanId: loan.id,
-            month: settlement.month,
-            year: settlement.year,
-            amountDue,
-            skipped: true,
-            amountPaid: 0,
-          },
-          update: { amountDue, skipped: true, amountPaid: 0 },
-        });
-      } else {
-        const { amountPaid, newRemaining, closed } = applyEmiToLoan(
-          loan.remainingPrincipal,
-          loan.monthlyEmi,
-        );
-        await tx.loanEntry.update({
-          where: { id: loan.id },
-          data: { remainingPrincipal: newRemaining, closed },
-        });
-        await tx.loanEmiEvent.upsert({
-          where: {
-            loanId_month_year: { loanId: loan.id, month: settlement.month, year: settlement.year },
-          },
-          create: {
-            loanId: loan.id,
-            month: settlement.month,
-            year: settlement.year,
-            amountDue,
-            skipped: false,
-            amountPaid,
-          },
-          update: { amountDue, skipped: false, amountPaid },
-        });
-      }
+
+      await tx.loanEntry.update({
+        where: { id: loan.id },
+        data: { remainingPrincipal: payment.newRemaining, closed: payment.closed },
+      });
+      await tx.loanEmiEvent.upsert({
+        where: {
+          loanId_month_year: { loanId: loan.id, month: settlement.month, year: settlement.year },
+        },
+        create: {
+          loanId: loan.id,
+          month: settlement.month,
+          year: settlement.year,
+          amountDue,
+          skipped: payment.amountPaid === 0,
+          amountPaid: payment.amountPaid,
+        },
+        update: {
+          amountDue,
+          skipped: payment.amountPaid === 0,
+          amountPaid: payment.amountPaid,
+        },
+      });
     }
 
     await tx.kharchaEntry.updateMany({

@@ -25,6 +25,7 @@ export function KharchaSection({
   const [reason, setReason] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -49,13 +50,32 @@ export function KharchaSection({
     }
   }
 
+  async function handleDelete(kharchaId: string) {
+    setError(null);
+    setDeletingId(kharchaId);
+    try {
+      const res = await fetch(`/api/helpers/${helperId}/kharcha/${kharchaId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Could not delete entry");
+      router.refresh();
+      onChange?.();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not delete entry");
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   const total = kharchas.reduce((s, k) => s + k.amount, 0);
 
   return (
     <Card className="flex flex-col gap-3 p-4">
       <h3 className="font-semibold">Kharcha (Mid-month Advance)</h3>
       <p className="text-sm text-neutral-500">
-        Small cash advances get deducted in full from this month&apos;s salary — separate from long-term loans.
+        Small cash advances get deducted in full the next time you generate a salary slip for this
+        helper — separate from long-term loans, and not tied to a calendar month.
       </p>
 
       <form onSubmit={handleSubmit} className="flex flex-wrap gap-2">
@@ -90,9 +110,16 @@ export function KharchaSection({
               </div>
               <div className="text-neutral-500">{new Date(k.date).toLocaleDateString("en-IN")}</div>
             </div>
+            <button
+              onClick={() => handleDelete(k.id)}
+              disabled={deletingId === k.id}
+              className="rounded-lg px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50 dark:hover:bg-red-900/20"
+            >
+              {deletingId === k.id ? "Removing…" : "Remove"}
+            </button>
           </div>
         ))}
-        {kharchas.length === 0 && <p className="text-sm text-neutral-400">No pending advances this month.</p>}
+        {kharchas.length === 0 && <p className="text-sm text-neutral-400">No pending advances.</p>}
       </div>
 
       {kharchas.length > 0 && (

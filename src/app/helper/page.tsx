@@ -37,7 +37,6 @@ export default async function HelperDashboard() {
             absentDays: paidSettlement.absentDays,
             halfDays: paidSettlement.halfDays,
             paidLeaveDays: paidSettlement.paidLeaveDays,
-            gaonDays: paidSettlement.gaonDays,
           },
         },
         result: { finalPayout: paidSettlement.finalPayout },
@@ -64,8 +63,6 @@ export default async function HelperDashboard() {
         <h1 className="text-2xl font-bold">{profile.name}</h1>
       </div>
 
-      {profile.gaonMode && <Badge tone="blue">{t.gaon_mode_on}</Badge>}
-
       <MarkPresentButton
         t={t}
         alreadyMarked={Boolean(todayLog)}
@@ -85,17 +82,25 @@ export default async function HelperDashboard() {
         <p className="mt-2 text-4xl font-extrabold text-teal-700 dark:text-teal-400">
           {rupees(result.finalPayout)}
         </p>
-        <div className="mt-3 grid grid-cols-2 gap-2 text-sm text-neutral-600 dark:text-neutral-300">
-          <div>
-            {t.base_salary}: <span className="font-semibold">{rupees(profile.baseMonthlySalary)}</span>
+        <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-300">
+          {t.base_salary}: <span className="font-semibold">{rupees(profile.baseMonthlySalary)}</span>
+        </p>
+
+        <details className="mt-3 rounded-xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
+          <summary className="cursor-pointer font-semibold text-neutral-700 dark:text-neutral-200">
+            {t.calendar} {t.attendance}
+          </summary>
+          <div className="mt-2 grid grid-cols-2 gap-y-1.5 text-neutral-600 dark:text-neutral-300">
+            <span>{t.present}</span>
+            <span className="text-right font-semibold">{input.attendance.presentDays}</span>
+            <span>{t.absent}</span>
+            <span className="text-right font-semibold">{input.attendance.absentDays}</span>
+            <span>{t.half_day}</span>
+            <span className="text-right font-semibold">{input.attendance.halfDays}</span>
+            <span>{t.paid_leave}</span>
+            <span className="text-right font-semibold">{input.attendance.paidLeaveDays}</span>
           </div>
-          <div>
-            {t.days_present}: <span className="font-semibold">{input.attendance.presentDays}</span>
-          </div>
-          <div>
-            {t.days_absent}: <span className="font-semibold">{input.attendance.absentDays}</span>
-          </div>
-        </div>
+        </details>
       </Card>
 
       {totalTaken > 0 && (

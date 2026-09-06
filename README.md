@@ -64,12 +64,9 @@ Seeded demo accounts (after `npm run db:seed`):
 3. Under **Environment Variables**, set:
    - `DATABASE_URL` — the Postgres connection string from step 1
    - `JWT_SECRET` — any long random string
-4. Deploy. Vercel runs `next build`, which does **not** run migrations —
-   the first deploy needs the schema applied once, either by running
-   `npx prisma migrate deploy` locally against the same `DATABASE_URL`
-   before deploying, or by adding it as a one-off Vercel build step
-   (`"buildCommand": "prisma migrate deploy && next build"` in
-   `vercel.json`).
+4. Deploy. The `build` script runs `prisma migrate deploy && next build`,
+   so the schema is applied automatically on every deploy — nothing extra
+   to run by hand.
 5. Optionally run `npm run db:seed` locally (pointed at the same
    `DATABASE_URL`) to get the demo employer/helper accounts on the live site.
 
@@ -99,9 +96,11 @@ src/
 Employers and helpers both log in with **phone number + OTP**
 (`src/lib/otp.ts`). No SMS gateway is configured — there's no
 Twilio/MSG91 account to wire up in this environment — so the generated
-code is returned to the client and shown in a banner in development
-(`NODE_ENV !== "production"`). Swap `sendSms()` in `otp.ts` for a real
-gateway call to go live; nothing else about the flow needs to change.
+code is returned to the client and shown in a "Dev Mode OTP" banner in
+every environment (`SMS_GATEWAY_CONFIGURED` in `otp.ts`; it's not gated on
+`NODE_ENV`, since there's nowhere real SMS is actually being sent yet).
+Swap `sendSms()` for a real gateway call and flip that flag to go live;
+nothing else about the flow needs to change.
 
 The **first user to log in from a phone number employers haven't already
 added as a helper becomes an Employer**; a phone number an employer *has*
@@ -119,38 +118,44 @@ numbers out — so it's covered by focused unit tests
 ```
 Final Payout = Base Salary
              − Loss of Pay (absences × per-day wage, half-days × half)
-             − Village (Gaon) freeze (days away × per-day wage, unpaid)
-             − Loan EMI (unless skipped or Gaon mode is active)
-             − Kharcha (mid-month advances, deducted in full)
+             − Loan Repayment (whatever amount the employer enters this month)
+             − Kharcha (unsettled mid-month advances, deducted in full)
              + Overtime / Guest Bonus
              + Festival Bonus
 ```
 
 `src/lib/settlement.ts` wires this engine to the database: it tallies the
-month's attendance, sums EMIs due across any open loans, sums unsettled
-Kharcha, and can persist a **draft** settlement (recomputed on demand as
-the employer edits bonus fields or the skip-EMI checkbox) or **finalize**
-it — at which point loan principals are actually reduced, Kharcha entries
-are marked settled, and the row is locked as paid.
+month's attendance, sums the scheduled EMI and outstanding principal across
+any open loans (as a suggested default, not a fixed requirement), sums
+unsettled Kharcha, and can persist a **draft** settlement (recomputed on
+demand as the employer edits the loan amount or bonus fields) or
+**finalize** it — at which point the chosen loan repayment is distributed
+across open loans (oldest first, see `applyLoanPaymentWaterfall`), Kharcha
+entries are marked settled, and the row is locked as paid.
 
 ### Indian-context edge cases
 
 - **Badli (substitute)**: marking a day present has a "Substitute came
   today" checkbox, so approved attendance is preserved for payroll while
   the record still shows a substitute worked, for dispute resolution.
-- **Gaon (village) mode**: a toggle on the helper's profile opens a
-  `GaonPeriod` span. Days inside that span for a given month are excluded
-  from earnings (frozen, not treated as unpaid absence) and the loan EMI
-  is automatically skipped for as long as the toggle is on — independent
-  of the manual "skip EMI" button.
 - **Loan vs. Kharcha**: a `LoanEntry` (e.g. ₹10,000 for a medical bill) is
-  repaid via a fixed monthly EMI over time and can be skipped for a month
-  without penalty (the term just extends). A `KharchaEntry` (e.g. ₹500 for
-  ration) is a same-month advance deducted in full at settlement — the two
-  ledgers are independent, matching how these advances actually get repaid.
-- **Skip EMI**: one click on the settlement screen adds that month's EMI
-  back into the payout and leaves the loan's `remainingPrincipal`
-  untouched, so the next month's draft asks for it again.
+  repaid via an editable monthly amount over time. A `KharchaEntry` (e.g.
+  ₹500 for ration) is a smaller advance deducted in full the next time a
+  slip is generated — the two ledgers are independent, matching how these
+  advances actually get repaid.
+- **Flexible loan repayment**: real repayments vary month to month — the
+  "Loan Repayment This Month" field on the settlement screen defaults to
+  the loan's scheduled EMI but is fully editable. Pay less some months, pay
+  extra to clear it faster, or set it to 0 to skip entirely; the amount is
+  clamped to what's actually still outstanding and distributed across
+  multiple open loans oldest-first (`applyLoanPaymentWaterfall` in
+  `src/lib/salary.ts`) when marked paid.
+- **Kharcha isn't tied to a calendar month**: every *unsettled* advance —
+  regardless of which day it was logged — gets swept into whichever
+  settlement is generated next. There's no date-matching to get confused
+  by; a Kharcha entered today lands in this cycle's payout as soon as you
+  settle, not "next month." Entries can also be deleted (only before
+  they're settled) if added by mistake.
 - **WhatsApp Hisaab**: "Share Hisaab on WhatsApp" on a generated slip opens
   `wa.me` with an itemized, pre-filled message (attendance, loss of pay,
   loan/kharcha deductions, bonuses, final payout) addressed to the
@@ -162,17 +167,19 @@ The helper dashboard supports English, Hindi, Marathi, Telugu, Tamil,
 Kannada, and Bengali (`src/lib/i18n`), switchable from a dropdown that
 persists to the helper's profile. The helper view favors large tap
 targets (a full-width "Mark Present" button), emoji/icon-first labels (₹
-for salary, 🚂 for Gaon mode, 🤝 for loans), and a simple color-coded
-calendar (green/red/yellow/blue) that needs no reading to interpret.
+for salary, 🤝 for loans), and a simple color-coded calendar
+(green/red/yellow/blue) that needs no reading to interpret. Both the
+salary slip (employer) and salary card (helper) put attendance and
+deduction line items behind expandable "breakdown" sections, so the
+headline number stays uncluttered but the detail is one tap away.
 
 ## Database schema
 
 See `prisma/schema.prisma`. Core models: `User` (role + phone + language),
 `HelperProfile` (employer-owned, one optional linked login), `AttendanceLog`
-(day + status + badli), `GaonPeriod` (village-leave spans), `LoanEntry` +
-`LoanEmiEvent` (loan ledger + a per-month paid/skipped audit trail),
-`KharchaEntry` (mid-month advances), and `MonthlySettlement` (the locked-in
-digital salary slip).
+(day + status + badli), `LoanEntry` + `LoanEmiEvent` (loan ledger + a
+per-month paid/skipped audit trail), `KharchaEntry` (mid-month advances),
+and `MonthlySettlement` (the locked-in digital salary slip).
 
 ## Testing
 

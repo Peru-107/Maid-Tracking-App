@@ -20,15 +20,10 @@ export function buildHisaabMessage(helperName: string, settlement: MonthlySettle
   if (settlement.lossOfPay > 0) {
     lines.push(`Loss of Pay: -${formatRupees(settlement.lossOfPay)}`);
   }
-  if (settlement.gaonModeActive) {
-    lines.push(
-      `Village Leave (${settlement.gaonDays} days, unpaid): -${formatRupees(settlement.gaonFreezeDeduction)}`,
-    );
-  }
-  if (settlement.loanEmiSkipped && settlement.loanEmiDue > 0) {
-    lines.push(`Loan EMI: Skipped this month (${formatRupees(settlement.loanEmiDue)} carried forward)`);
+  if (settlement.loanEmiDue > 0 && settlement.loanEmiDeducted === 0) {
+    lines.push(`Loan Repayment: Skipped this month (${formatRupees(settlement.loanEmiDue)} carried forward)`);
   } else if (settlement.loanEmiDeducted > 0) {
-    lines.push(`Loan EMI Deducted: -${formatRupees(settlement.loanEmiDeducted)}`);
+    lines.push(`Loan Repayment Deducted: -${formatRupees(settlement.loanEmiDeducted)}`);
   }
   if (settlement.kharchaDeducted > 0) {
     lines.push(`Advance (Kharcha) Deducted: -${formatRupees(settlement.kharchaDeducted)}`);

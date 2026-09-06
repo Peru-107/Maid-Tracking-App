@@ -23,7 +23,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     const overrides = existing
       ? {
-          loanEmiSkipRequested: existing.loanEmiSkipped,
+          loanEmiAmount: existing.loanEmiDeducted,
           overtimeBonus: existing.overtimeBonus,
           festivalBonus: existing.festivalBonus,
         }
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 const postSchema = z.object({
   year: z.number().int(),
   month: z.number().int().min(1).max(12),
-  loanEmiSkipRequested: z.boolean().optional(),
+  loanEmiAmount: z.number().min(0).optional(),
   overtimeBonus: z.number().min(0).optional(),
   festivalBonus: z.number().min(0).optional(),
 });
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     const settlement = await saveSettlementDraft(id, parsed.data.year, parsed.data.month, {
-      loanEmiSkipRequested: parsed.data.loanEmiSkipRequested,
+      loanEmiAmount: parsed.data.loanEmiAmount,
       overtimeBonus: parsed.data.overtimeBonus,
       festivalBonus: parsed.data.festivalBonus,
     });
