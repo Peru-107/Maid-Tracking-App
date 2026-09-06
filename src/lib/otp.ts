@@ -8,10 +8,12 @@ function hashCode(code: string, phone: string) {
   return createHash("sha256").update(`${phone}:${code}`).digest("hex");
 }
 
-// In production this would call an SMS gateway (e.g. MSG91, Twilio Verify).
-// No such provider is wired up here, so the code is returned to the caller
-// so the UI can display it in a "Dev Mode OTP" banner instead of sending a
-// real SMS. Swap sendSms() below for a real integration to go live.
+// No SMS gateway (e.g. MSG91, Twilio Verify) is wired up yet -- this is not
+// specific to local development, so gating on NODE_ENV would hide the code
+// on every real deployment too, with no way to log in. Swap sendSms() for a
+// real gateway call, and gate SHOW_OTP_ON_SCREEN off once one exists.
+const SMS_GATEWAY_CONFIGURED = false;
+
 async function sendSms(phone: string, code: string) {
   console.log(`[dev-otp] SMS to ${phone}: your OTP is ${code}`);
 }
@@ -31,8 +33,7 @@ export async function requestOtp(phone: string): Promise<{ devCode?: string }> {
 
   await sendSms(phone, code);
 
-  const isDev = process.env.NODE_ENV !== "production";
-  return isDev ? { devCode: code } : {};
+  return SMS_GATEWAY_CONFIGURED ? {} : { devCode: code };
 }
 
 export async function verifyOtp(phone: string, code: string): Promise<boolean> {
