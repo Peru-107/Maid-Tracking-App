@@ -64,9 +64,14 @@ Seeded demo accounts (after `npm run db:seed`):
 3. Under **Environment Variables**, set:
    - `DATABASE_URL` — the Postgres connection string from step 1
    - `JWT_SECRET` — any long random string
-4. Deploy. The `build` script runs `prisma migrate deploy && next build`,
-   so the schema is applied automatically on every deploy — nothing extra
-   to run by hand.
+4. Deploy. The `build` script runs
+   `prisma generate && prisma migrate deploy && next build`, so both the
+   generated client and the schema stay current on every deploy — nothing
+   extra to run by hand. (`prisma generate` is explicit here rather than
+   left to the `postinstall` hook: Vercel can restore a cached
+   `node_modules` without re-running installs when `package.json` hasn't
+   changed, which left a stale Prisma Client — one still expecting a
+   column the migration had already dropped — silently deployed once.)
 5. Optionally run `npm run db:seed` locally (pointed at the same
    `DATABASE_URL`) to get the demo employer/helper accounts on the live site.
 
