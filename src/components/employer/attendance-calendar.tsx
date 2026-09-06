@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { Button, Card } from "@/components/ui";
+import type { TranslationKey } from "@/lib/i18n";
 
 type AttendanceStatus = "PRESENT" | "ABSENT" | "HALF_DAY" | "PAID_LEAVE";
 
@@ -22,11 +23,11 @@ const STATUS_STYLES: Record<AttendanceStatus, string> = {
   PAID_LEAVE: "bg-blue-500 text-white",
 };
 
-const STATUS_LABELS: Record<AttendanceStatus, string> = {
-  PRESENT: "Present",
-  ABSENT: "Absent",
-  HALF_DAY: "Half-day",
-  PAID_LEAVE: "Paid Leave",
+const STATUS_KEYS: Record<AttendanceStatus, TranslationKey> = {
+  PRESENT: "present",
+  ABSENT: "absent",
+  HALF_DAY: "half_day",
+  PAID_LEAVE: "paid_leave",
 };
 
 function toDateKey(year: number, month: number, day: number) {
@@ -34,9 +35,11 @@ function toDateKey(year: number, month: number, day: number) {
 }
 
 export function AttendanceCalendar({
+  t,
   helperId,
   onChange,
 }: {
+  t: Record<TranslationKey, string>;
   helperId: string;
   onChange?: () => void;
 }) {
@@ -116,16 +119,16 @@ export function AttendanceCalendar({
       </div>
 
       <div className="mb-2 flex flex-wrap gap-3 text-xs text-neutral-500">
-        {(Object.keys(STATUS_LABELS) as AttendanceStatus[]).map((status) => (
+        {(Object.keys(STATUS_KEYS) as AttendanceStatus[]).map((status) => (
           <div key={status} className="flex items-center gap-1">
             <span className={clsx("h-3 w-3 rounded-full", STATUS_STYLES[status])} />
-            {STATUS_LABELS[status]}
+            {t[STATUS_KEYS[status]]}
           </div>
         ))}
       </div>
 
       {loading ? (
-        <p className="py-8 text-center text-sm text-neutral-400">Loading…</p>
+        <p className="py-8 text-center text-sm text-neutral-400">{t.loading}</p>
       ) : (
         <div className="grid grid-cols-7 gap-1.5 text-center text-sm">
           {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
@@ -162,7 +165,7 @@ export function AttendanceCalendar({
                 {isSelected && (
                   <div className="absolute z-20 mt-1 w-48 rounded-xl border border-neutral-200 bg-white p-2 shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
                     <div className="grid grid-cols-2 gap-1">
-                      {(Object.keys(STATUS_LABELS) as AttendanceStatus[]).map((status) => (
+                      {(Object.keys(STATUS_KEYS) as AttendanceStatus[]).map((status) => (
                         <button
                           key={status}
                           onClick={() => setStatus(day, status, pendingBadli)}
@@ -171,7 +174,7 @@ export function AttendanceCalendar({
                             STATUS_STYLES[status],
                           )}
                         >
-                          {STATUS_LABELS[status]}
+                          {t[STATUS_KEYS[status]]}
                         </button>
                       ))}
                     </div>
@@ -181,7 +184,7 @@ export function AttendanceCalendar({
                         checked={pendingBadli}
                         onChange={(e) => setPendingBadli(e.target.checked)}
                       />
-                      Substitute (Badli) came today
+                      {t.substitute_badli}
                     </label>
                   </div>
                 )}
@@ -194,7 +197,7 @@ export function AttendanceCalendar({
       {selectedDay !== null && (
         <div className="mt-2 flex justify-end">
           <Button variant="ghost" onClick={() => setSelectedDay(null)}>
-            Close
+            {t.close}
           </Button>
         </div>
       )}

@@ -3,8 +3,9 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Card } from "@/components/ui";
+import type { TranslationKey } from "@/lib/i18n";
 
-export function AddHelperForm() {
+export function AddHelperForm({ t }: { t: Record<TranslationKey, string> }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -40,7 +41,7 @@ export function AddHelperForm() {
   if (!open) {
     return (
       <Button onClick={() => setOpen(true)} className="w-full sm:w-auto">
-        + Add Helper
+        {t.add_helper}
       </Button>
     );
   }
@@ -50,14 +51,14 @@ export function AddHelperForm() {
       <form onSubmit={handleSubmit} className="grid gap-3 sm:grid-cols-4">
         <input
           required
-          placeholder="Helper's name"
+          placeholder={t.helpers_name_placeholder}
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-transparent"
         />
         <input
           required
-          placeholder="Mobile number"
+          placeholder={t.mobile_number_placeholder}
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           className="rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-transparent"
@@ -66,17 +67,17 @@ export function AddHelperForm() {
           required
           type="number"
           min="1"
-          placeholder="Monthly salary (₹)"
+          placeholder={t.monthly_salary_placeholder}
           value={salary}
           onChange={(e) => setSalary(e.target.value)}
           className="rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-transparent"
         />
         <div className="flex gap-2">
           <Button type="submit" disabled={loading} className="flex-1">
-            {loading ? "Saving…" : "Save"}
+            {loading ? t.saving : t.save}
           </Button>
           <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
-            Cancel
+            {t.cancel}
           </Button>
         </div>
         {error && <p className="text-sm text-red-600 sm:col-span-4">{error}</p>}

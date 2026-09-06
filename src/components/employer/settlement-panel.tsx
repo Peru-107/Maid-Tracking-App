@@ -6,6 +6,7 @@ import { Button, Card, Badge } from "@/components/ui";
 import { calculateMonthlySettlement, SettlementInput } from "@/lib/salary";
 import { buildHisaabMessage, buildWhatsAppShareUrl } from "@/lib/whatsapp";
 import type { MonthlySettlement } from "@prisma/client";
+import type { TranslationKey } from "@/lib/i18n";
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -17,10 +18,12 @@ function rupees(n: number) {
 }
 
 export function SettlementPanel({
+  t,
   helperId,
   helperName,
   helperPhone,
 }: {
+  t: Record<TranslationKey, string>;
   helperId: string;
   helperName: string;
   helperPhone: string;
@@ -129,11 +132,7 @@ export function SettlementPanel({
 
   async function undoMarkPaid() {
     if (!existing) return;
-    if (
-      !window.confirm(
-        "Undo Mark as Paid? This restores the loan balance and un-settles any Kharcha swept into this slip. Only do this if it was tapped by mistake.",
-      )
-    ) {
+    if (!window.confirm(t.undo_confirm)) {
       return;
     }
     setSaving(true);
@@ -166,59 +165,59 @@ export function SettlementPanel({
       <div className="flex items-center justify-between">
         <button onClick={() => changeMonth(-1)} className="rounded-full px-2 py-1 hover:bg-black/5">←</button>
         <h3 className="font-semibold">
-          Salary Slip — {MONTH_NAMES[month - 1]} {year}
+          {t.salary_slip} — {MONTH_NAMES[month - 1]} {year}
         </h3>
         <button onClick={() => changeMonth(1)} className="rounded-full px-2 py-1 hover:bg-black/5">→</button>
       </div>
 
       {existing?.paid && (
         <div className="flex flex-wrap items-center gap-2">
-          <Badge tone="green">Paid on {new Date(existing.paidAt!).toLocaleDateString("en-IN")}</Badge>
+          <Badge tone="green">{t.paid_on} {new Date(existing.paidAt!).toLocaleDateString("en-IN")}</Badge>
           <button
             onClick={undoMarkPaid}
             disabled={saving}
             className="text-xs font-semibold text-neutral-500 underline hover:text-red-600 disabled:opacity-50"
           >
-            Undo (marked by mistake?)
+            {t.undo_mistake}
           </button>
         </div>
       )}
 
       {loading || !liveResult ? (
-        <p className="py-6 text-center text-sm text-neutral-400">Loading…</p>
+        <p className="py-6 text-center text-sm text-neutral-400">{t.loading}</p>
       ) : (
         <>
           <dl className="grid grid-cols-2 gap-y-1.5 text-sm">
-            <dt className="text-neutral-500">Base Salary</dt>
+            <dt className="text-neutral-500">{t.base_salary}</dt>
             <dd className="text-right">{rupees(baseInput!.baseSalary)}</dd>
           </dl>
 
           <details className="rounded-xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
             <summary className="cursor-pointer font-semibold text-neutral-700 dark:text-neutral-200">
-              Attendance Breakdown
+              {t.attendance_breakdown}
             </summary>
             <dl className="mt-2 grid grid-cols-2 gap-y-1.5">
-              <dt className="text-neutral-500">Present</dt>
+              <dt className="text-neutral-500">{t.present}</dt>
               <dd className="text-right">{baseInput!.attendance.presentDays}</dd>
-              <dt className="text-neutral-500">Absent</dt>
+              <dt className="text-neutral-500">{t.absent}</dt>
               <dd className="text-right">{baseInput!.attendance.absentDays}</dd>
-              <dt className="text-neutral-500">Half-day</dt>
+              <dt className="text-neutral-500">{t.half_day}</dt>
               <dd className="text-right">{baseInput!.attendance.halfDays}</dd>
-              <dt className="text-neutral-500">Paid Leave</dt>
+              <dt className="text-neutral-500">{t.paid_leave}</dt>
               <dd className="text-right">{baseInput!.attendance.paidLeaveDays}</dd>
-              <dt className="text-neutral-500">Per-day wage</dt>
+              <dt className="text-neutral-500">{t.per_day_wage}</dt>
               <dd className="text-right">{rupees(liveResult.perDayWage)}</dd>
             </dl>
           </details>
 
           <details className="rounded-xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800" open>
             <summary className="cursor-pointer font-semibold text-neutral-700 dark:text-neutral-200">
-              Deductions &amp; Bonuses
+              {t.deductions_bonuses}
             </summary>
             <dl className="mt-2 grid grid-cols-2 gap-y-1.5">
               {liveResult.lossOfPay > 0 && (
                 <>
-                  <dt className="text-neutral-500">Loss of Pay</dt>
+                  <dt className="text-neutral-500">{t.loss_of_pay}</dt>
                   <dd className="text-right text-red-600">-{rupees(liveResult.lossOfPay)}</dd>
                 </>
               )}
@@ -226,7 +225,7 @@ export function SettlementPanel({
               {liveResult.loanEmiDue > 0 && (
                 <>
                   <dt className="text-neutral-500">
-                    Loan Repayment {liveResult.loanEmiDeducted === 0 && "(Skipped)"}
+                    {t.loan_repayment} {liveResult.loanEmiDeducted === 0 && t.skipped}
                   </dt>
                   <dd
                     className={`text-right ${liveResult.loanEmiDeducted === 0 ? "text-neutral-400" : "text-red-600"}`}
@@ -238,21 +237,21 @@ export function SettlementPanel({
 
               {liveResult.kharchaDeducted > 0 && (
                 <>
-                  <dt className="text-neutral-500">Kharcha (Advance)</dt>
+                  <dt className="text-neutral-500">{t.kharcha_advance}</dt>
                   <dd className="text-right text-red-600">-{rupees(liveResult.kharchaDeducted)}</dd>
                 </>
               )}
 
               {liveResult.overtimeBonus > 0 && (
                 <>
-                  <dt className="text-neutral-500">Overtime / Guest Bonus</dt>
+                  <dt className="text-neutral-500">{t.overtime_bonus}</dt>
                   <dd className="text-right text-green-600">+{rupees(liveResult.overtimeBonus)}</dd>
                 </>
               )}
 
               {liveResult.festivalBonus > 0 && (
                 <>
-                  <dt className="text-neutral-500">Festival Bonus</dt>
+                  <dt className="text-neutral-500">{t.festival_bonus}</dt>
                   <dd className="text-right text-green-600">+{rupees(liveResult.festivalBonus)}</dd>
                 </>
               )}
@@ -262,13 +261,13 @@ export function SettlementPanel({
                 liveResult.kharchaDeducted === 0 &&
                 liveResult.overtimeBonus === 0 &&
                 liveResult.festivalBonus === 0 && (
-                  <dd className="col-span-2 text-neutral-400">Nothing to deduct or add this month.</dd>
+                  <dd className="col-span-2 text-neutral-400">{t.nothing_to_deduct}</dd>
                 )}
             </dl>
           </details>
 
           <div className="flex items-center justify-between border-t border-neutral-200 pt-3 dark:border-neutral-700">
-            <span className="text-lg font-bold">Final Payout</span>
+            <span className="text-lg font-bold">{t.final_payout}</span>
             <span className="text-lg font-bold">{rupees(liveResult.finalPayout)}</span>
           </div>
 
@@ -276,7 +275,7 @@ export function SettlementPanel({
             <div className="flex flex-col gap-3 rounded-xl bg-neutral-50 p-3 dark:bg-neutral-800">
               {baseInput!.loanOutstandingTotal > 0 && (
                 <label className="text-sm">
-                  Loan Repayment This Month (₹)
+                  {t.loan_repayment_this_month}
                   <input
                     type="number"
                     min="0"
@@ -286,14 +285,14 @@ export function SettlementPanel({
                     className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-transparent"
                   />
                   <span className="mt-1 block text-xs text-neutral-500">
-                    Scheduled EMI: {rupees(baseInput!.loanEmiDue)} · Outstanding: {rupees(baseInput!.loanOutstandingTotal)}.
-                    Pay more to clear it faster, less to ease this month, or 0 to skip -- whatever actually changed hands.
+                    {t.loan_hint_prefix} {rupees(baseInput!.loanEmiDue)} · {t.loan_hint_outstanding} {rupees(baseInput!.loanOutstandingTotal)}.{" "}
+                    {t.loan_hint_suffix}
                   </span>
                 </label>
               )}
               <div className="flex gap-3">
                 <label className="flex-1 text-sm">
-                  Overtime / Guest Bonus (₹)
+                  {t.overtime_guest_bonus_label}
                   <input
                     type="number"
                     min="0"
@@ -303,7 +302,7 @@ export function SettlementPanel({
                   />
                 </label>
                 <label className="flex-1 text-sm">
-                  Festival Bonus (₹)
+                  {t.festival_bonus_label}
                   <input
                     type="number"
                     min="0"
@@ -321,17 +320,17 @@ export function SettlementPanel({
           <div className="flex flex-wrap gap-2">
             {!existing?.paid && (
               <Button onClick={saveDraft} disabled={saving} variant="secondary">
-                {saving ? "Saving…" : "Generate / Update Slip"}
+                {saving ? t.saving : t.generate_update_slip}
               </Button>
             )}
             {existing && !existing.paid && (
               <Button onClick={markPaid} disabled={saving}>
-                {saving ? "Processing…" : "Mark as Paid"}
+                {saving ? t.processing : t.mark_as_paid}
               </Button>
             )}
             {existing && (
               <Button onClick={shareOnWhatsApp} variant="ghost" className="text-green-700">
-                Share Hisaab on WhatsApp
+                {t.share_hisaab_whatsapp}
               </Button>
             )}
           </div>
