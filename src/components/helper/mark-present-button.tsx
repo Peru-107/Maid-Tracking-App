@@ -38,7 +38,6 @@ export function MarkPresentButton({
           : "bg-teal-600 text-white hover:bg-teal-700"
       }`}
     >
-      <span className="text-5xl">{marked ? (approved ? "✅" : "⏳") : "👋"}</span>
       {marked ? (approved ? t.present : t.pending_approval) : t.mark_present}
     </button>
   );

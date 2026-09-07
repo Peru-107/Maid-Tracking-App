@@ -53,9 +53,7 @@ export function HelperCalendarView({ t }: { t: Record<TranslationKey, string> })
 
   return (
     <Card className="p-4">
-      <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
-        <span>📅</span> {t.calendar}
-      </h3>
+      <h3 className="mb-3 text-lg font-bold">{t.calendar}</h3>
 
       <div className="mb-2 flex flex-wrap gap-3 text-xs text-neutral-500">
         {(Object.keys(STATUS_KEYS) as AttendanceStatus[]).map((status) => (
@@ -91,7 +89,7 @@ export function HelperCalendarView({ t }: { t: Record<TranslationKey, string> })
               >
                 {day}
                 {log && !log.approvedByEmployer && log.markedByHelper && (
-                  <span className="text-[9px] leading-none">⏳</span>
+                  <span className="text-[9px] leading-none">•</span>
                 )}
               </div>
             );

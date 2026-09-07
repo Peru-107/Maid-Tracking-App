@@ -143,6 +143,10 @@ entries are marked settled, and the row is locked as paid.
 - **Badli (substitute)**: marking a day present has a "Substitute came
   today" checkbox, so approved attendance is preserved for payroll while
   the record still shows a substitute worked, for dispute resolution.
+- **One-tap Present**: tapping an unmarked day on the employer's attendance
+  calendar marks it Present immediately, since that's the common case.
+  Tapping an already-marked day opens the picker to set Absent/Half-day/Paid
+  Leave or to correct a mistake.
 - **Loan vs. Kharcha**: a `LoanEntry` (e.g. ₹10,000 for a medical bill) is
   repaid via an editable monthly amount over time. A `KharchaEntry` (e.g.
   ₹500 for ration) is a smaller advance deducted in full the next time a
@@ -154,7 +158,10 @@ entries are marked settled, and the row is locked as paid.
   extra to clear it faster, or set it to 0 to skip entirely; the amount is
   clamped to what's actually still outstanding and distributed across
   multiple open loans oldest-first (`applyLoanPaymentWaterfall` in
-  `src/lib/salary.ts`) when marked paid.
+  `src/lib/salary.ts`) when marked paid. "Mark as Paid" deducts the amount
+  shown (the scheduled EMI by default) in one tap — it doesn't require a
+  separate "Generate / Update Slip" step first unless the employer wants to
+  change the numbers before committing.
 - **Kharcha isn't tied to a calendar month**: every *unsettled* advance —
   regardless of which day it was logged — gets swept into whichever
   settlement is generated next. There's no date-matching to get confused
@@ -187,9 +194,9 @@ on `User`), independent of the other party's choice. Urdu renders
 right-to-left (`dir="rtl"` on the root layout when that locale is active) on
 both dashboards; everything else is left-to-right.
 The helper view favors large tap targets (a full-width "Mark Present"
-button), emoji/icon-first labels (₹ for salary, 🤝 for loans), and a
-simple color-coded calendar (green/red/yellow/blue) that needs no reading
-to interpret. Both the salary slip (employer) and salary card (helper)
+button) and a simple color-coded calendar (green/red/yellow/blue) that
+needs no reading to interpret; the UI avoids emoji/icons in favor of
+plain text labels. Both the salary slip (employer) and salary card (helper)
 put attendance and deduction line items behind expandable "breakdown"
 sections, so the headline number stays uncluttered but the detail is one
 tap away.
@@ -215,5 +222,5 @@ npm run build    # production build
 
 - Real SMS delivery for OTP (see [Auth / OTP](#auth--otp)).
 - Push notifications for the employer approval step (`Present` marked by
-  a helper shows a pending ⏳ badge on the calendar instead).
+  a helper shows a pending marker on the calendar instead).
 - Offline caching/sync of attendance entries.

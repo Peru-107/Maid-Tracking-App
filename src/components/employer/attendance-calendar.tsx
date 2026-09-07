@@ -147,6 +147,10 @@ export function AttendanceCalendar({
               <div key={day} className="relative">
                 <button
                   onClick={() => {
+                    if (!log) {
+                      setStatus(day, "PRESENT", false);
+                      return;
+                    }
                     setSelectedDay(isSelected ? null : day);
                     setPendingBadli(log?.badli ?? false);
                   }}
@@ -159,7 +163,7 @@ export function AttendanceCalendar({
                   {day}
                   {log?.badli && <span className="text-[9px] leading-none">Badli</span>}
                   {log?.markedByHelper && !log?.approvedByEmployer && (
-                    <span className="text-[9px] leading-none">⏳</span>
+                    <span className="text-[9px] leading-none">•</span>
                   )}
                 </button>
                 {isSelected && (
