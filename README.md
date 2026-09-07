@@ -143,25 +143,27 @@ entries are marked settled, and the row is locked as paid.
 - **Badli (substitute)**: marking a day present has a "Substitute came
   today" checkbox, so approved attendance is preserved for payroll while
   the record still shows a substitute worked, for dispute resolution.
-- **One-tap Present**: tapping an unmarked day on the employer's attendance
-  calendar marks it Present immediately, since that's the common case.
-  Tapping an already-marked day opens the picker to set Absent/Half-day/Paid
-  Leave or to correct a mistake.
+- **One-tap Present, with undo**: tapping an unmarked day on the employer's
+  attendance calendar marks it Present immediately, since that's the common
+  case. Tapping it again undoes the mark (back to unmarked). Press-and-hold
+  (long press, ~450ms) opens the picker to set Absent/Half-day/Paid Leave or
+  the Badli checkbox instead.
 - **Loan vs. Kharcha**: a `LoanEntry` (e.g. ₹10,000 for a medical bill) is
   repaid via an editable monthly amount over time. A `KharchaEntry` (e.g.
   ₹500 for ration) is a smaller advance deducted in full the next time a
   slip is generated — the two ledgers are independent, matching how these
   advances actually get repaid.
-- **Flexible loan repayment**: real repayments vary month to month — the
-  "Loan Repayment This Month" field on the settlement screen defaults to
-  the loan's scheduled EMI but is fully editable. Pay less some months, pay
-  extra to clear it faster, or set it to 0 to skip entirely; the amount is
-  clamped to what's actually still outstanding and distributed across
-  multiple open loans oldest-first (`applyLoanPaymentWaterfall` in
-  `src/lib/salary.ts`) when marked paid. "Mark as Paid" deducts the amount
-  shown (the scheduled EMI by default) in one tap — it doesn't require a
-  separate "Generate / Update Slip" step first unless the employer wants to
-  change the numbers before committing.
+- **Flexible loan repayment**: real repayments vary month to month — a
+  "Skip loan repayment this month?" Yes/No toggle on the settlement screen
+  makes the common decision explicit. Picking "No" reveals a "Loan Repayment
+  This Month" field that defaults to the loan's scheduled EMI but is fully
+  editable (pay less some months, pay extra to clear it faster); picking
+  "Yes" deducts nothing. The amount is clamped to what's actually still
+  outstanding and distributed across multiple open loans oldest-first
+  (`applyLoanPaymentWaterfall` in `src/lib/salary.ts`) when marked paid.
+  "Mark as Paid" deducts the amount shown (the scheduled EMI by default) in
+  one tap — it doesn't require a separate "Generate / Update Slip" step
+  first unless the employer wants to change the numbers before committing.
 - **Kharcha isn't tied to a calendar month**: every *unsettled* advance —
   regardless of which day it was logged — gets swept into whichever
   settlement is generated next. There's no date-matching to get confused
@@ -195,11 +197,27 @@ right-to-left (`dir="rtl"` on the root layout when that locale is active) on
 both dashboards; everything else is left-to-right.
 The helper view favors large tap targets (a full-width "Mark Present"
 button) and a simple color-coded calendar (green/red/yellow/blue) that
-needs no reading to interpret; the UI avoids emoji/icons in favor of
-plain text labels. Both the salary slip (employer) and salary card (helper)
+needs no reading to interpret; icons come from
+[lucide-react](https://lucide.dev) rather than emoji, for a consistent look
+across platforms. Both the salary slip (employer) and salary card (helper)
 put attendance and deduction line items behind expandable "breakdown"
-sections, so the headline number stays uncluttered but the detail is one
-tap away.
+sections that show a net total up front (e.g. "Deductions & Bonuses -₹1,250")
+before expanding into the itemized list, so the headline number stays
+uncluttered but the detail is one tap away.
+
+### Design system
+
+- **Numbers**: every amount is formatted with Indian digit grouping (1,000 /
+  10,000 / 1,00,000 / 1,00,00,000) via `formatIndianNumber` in
+  `src/lib/format.ts` (a thin wrapper over the native `en-IN` locale). Every
+  numeric input field (`NumberField` in `src/components/ui-inputs.tsx`)
+  displays the same grouping once you tab or click away, and shows plain
+  digits while you're actively typing so commas don't jump the cursor
+  around.
+- **Look**: cards and buttons use soft layered shadows instead of thin
+  1px borders for separation (`Card`/`Button` in `src/components/ui.tsx`),
+  headings and labels are bolder/higher-contrast for readability, and a
+  custom SVG favicon (`src/app/icon.svg`) replaces the framework default.
 
 ## Database schema
 

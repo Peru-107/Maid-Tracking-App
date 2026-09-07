@@ -50,6 +50,7 @@
   "substitute_badli": "आज बदली आली",
   "close": "बंद करा",
   "loading": "लोड होत आहे…",
+  "attendance_hint": "टॅप = हजर · पुन्हा टॅप = पूर्ववत · दाबून ठेवा = अधिक पर्याय",
 
   "loans_and_advances": "कर्ज आणि आगाऊ रक्कम",
   "new_loan": "+ नवीन कर्ज",
@@ -84,6 +85,9 @@
   "kharcha_advance": "खर्च (आगाऊ रक्कम)",
   "overtime_bonus": "ओव्हरटाईम / पाहुणे बोनस",
   "nothing_to_deduct": "या महिन्यात कापण्यासाठी किंवा जोडण्यासाठी काहीही नाही.",
+  "skip_loan_question": "या महिन्यात कर्ज परतफेड वगळायची?",
+  "yes": "होय",
+  "no": "नाही",
   "loan_repayment_this_month": "या महिन्याची कर्ज परतफेड (₹)",
   "loan_hint_prefix": "ठरलेली EMI:",
   "loan_hint_outstanding": "शिल्लक:",

@@ -50,6 +50,7 @@
   "substitute_badli": "আজি সলনি লোক আহিছিল",
   "close": "বন্ধ কৰক",
   "loading": "লোড হৈ আছে…",
+  "attendance_hint": "টেপ = উপস্থিত · পুনৰ টেপ = বাতিল · টিপি ৰাখক = অধিক বিকল্প",
 
   "loans_and_advances": "ঋণ আৰু অগ্ৰিম",
   "new_loan": "+ নতুন ঋণ",
@@ -84,6 +85,9 @@
   "kharcha_advance": "খৰচ (অগ্ৰিম)",
   "overtime_bonus": "অভাৰটাইম / অতিথি বোনাছ",
   "nothing_to_deduct": "এই মাহত কাটিবলৈ বা যোগ কৰিবলৈ একো নাই।",
+  "skip_loan_question": "এই মাহত ঋণ পৰিশোধ বাদ দিব নে?",
+  "yes": "হয়",
+  "no": "নহয়",
   "loan_repayment_this_month": "এই মাহৰ ঋণ পৰিশোধ (₹)",
   "loan_hint_prefix": "নিৰ্ধাৰিত EMI:",
   "loan_hint_outstanding": "বাকী:",

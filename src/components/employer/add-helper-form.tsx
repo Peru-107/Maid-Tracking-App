@@ -2,7 +2,9 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { UserPlus } from "lucide-react";
 import { Button, Card } from "@/components/ui";
+import { NumberField } from "@/components/ui-inputs";
 import type { TranslationKey } from "@/lib/i18n";
 
 export function AddHelperForm({ t }: { t: Record<TranslationKey, string> }) {
@@ -10,7 +12,7 @@ export function AddHelperForm({ t }: { t: Record<TranslationKey, string> }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [salary, setSalary] = useState("");
+  const [salary, setSalary] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -22,13 +24,13 @@ export function AddHelperForm({ t }: { t: Record<TranslationKey, string> }) {
       const res = await fetch("/api/helpers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, baseMonthlySalary: Number(salary) }),
+        body: JSON.stringify({ name, phone, baseMonthlySalary: salary }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Could not add helper");
       setName("");
       setPhone("");
-      setSalary("");
+      setSalary(0);
       setOpen(false);
       router.refresh();
     } catch (err) {
@@ -41,7 +43,8 @@ export function AddHelperForm({ t }: { t: Record<TranslationKey, string> }) {
   if (!open) {
     return (
       <Button onClick={() => setOpen(true)} className="w-full sm:w-auto">
-        {t.add_helper}
+        <UserPlus size={18} />
+        {t.add_helper.replace("+ ", "")}
       </Button>
     );
   }
@@ -54,24 +57,16 @@ export function AddHelperForm({ t }: { t: Record<TranslationKey, string> }) {
           placeholder={t.helpers_name_placeholder}
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-transparent"
+          className="rounded-2xl border-2 border-neutral-200 px-3 py-2.5 font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
         />
         <input
           required
           placeholder={t.mobile_number_placeholder}
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          className="rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-transparent"
+          className="rounded-2xl border-2 border-neutral-200 px-3 py-2.5 font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
         />
-        <input
-          required
-          type="number"
-          min="1"
-          placeholder={t.monthly_salary_placeholder}
-          value={salary}
-          onChange={(e) => setSalary(e.target.value)}
-          className="rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-transparent"
-        />
+        <NumberField required placeholder={t.monthly_salary_placeholder} value={salary} onChange={setSalary} />
         <div className="flex gap-2">
           <Button type="submit" disabled={loading} className="flex-1">
             {loading ? t.saving : t.save}

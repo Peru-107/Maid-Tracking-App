@@ -50,6 +50,7 @@
   "substitute_badli": "ఈరోజు బదులుగా వచ్చారు",
   "close": "మూసివేయండి",
   "loading": "లోడ్ అవుతోంది…",
+  "attendance_hint": "టాప్ = హాజరు · మళ్ళీ టాప్ = రద్దు · నొక్కి పట్టుకోండి = మరిన్ని ఎంపికలు",
 
   "loans_and_advances": "అప్పులు & అడ్వాన్సులు",
   "new_loan": "+ కొత్త అప్పు",
@@ -84,6 +85,9 @@
   "kharcha_advance": "ఖర్చు (అడ్వాన్స్)",
   "overtime_bonus": "ఓవర్‌టైమ్ / అతిథి బోనస్",
   "nothing_to_deduct": "ఈ నెల తీసివేయడానికి లేదా చేర్చడానికి ఏమీ లేదు.",
+  "skip_loan_question": "ఈ నెల అప్పు తిరిగి చెల్లింపు దాటవేయాలా?",
+  "yes": "అవును",
+  "no": "కాదు",
   "loan_repayment_this_month": "ఈ నెల అప్పు తిరిగి చెల్లింపు (₹)",
   "loan_hint_prefix": "నిర్ణీత EMI:",
   "loan_hint_outstanding": "బాకీ:",

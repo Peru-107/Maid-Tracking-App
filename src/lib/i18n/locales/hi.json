@@ -50,6 +50,7 @@
   "substitute_badli": "आज बदली आई",
   "close": "बंद करें",
   "loading": "लोड हो रहा है…",
+  "attendance_hint": "टैप = उपस्थित · फिर टैप = पूर्ववत · दबाए रखें = अधिक विकल्प",
 
   "loans_and_advances": "उधार और एडवांस",
   "new_loan": "+ नया उधार",
@@ -84,6 +85,9 @@
   "kharcha_advance": "खर्चा (एडवांस)",
   "overtime_bonus": "ओवरटाइम / मेहमान बोनस",
   "nothing_to_deduct": "इस महीने कुछ भी काटने या जोड़ने के लिए नहीं है।",
+  "skip_loan_question": "इस महीने उधार चुकौती छोड़ें?",
+  "yes": "हां",
+  "no": "नहीं",
   "loan_repayment_this_month": "इस महीने उधार चुकौती (₹)",
   "loan_hint_prefix": "तय EMI:",
   "loan_hint_outstanding": "बकाया:",

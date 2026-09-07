@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ChevronLeft } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getDictionary, type Locale } from "@/lib/i18n";
+import { rupees } from "@/lib/format";
 import { HelperWorkspace } from "@/components/employer/helper-workspace";
 import { DeleteHelperButton } from "@/components/employer/delete-helper-button";
 import { EditSalaryButton } from "@/components/employer/edit-salary-button";
@@ -25,14 +27,17 @@ export default async function HelperDetailPage({ params }: { params: Promise<{ i
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <Link href="/employer" className="text-sm text-teal-700 hover:underline dark:text-teal-400">
-          ← {t.all_helpers}
+        <Link
+          href="/employer"
+          className="flex items-center gap-1 text-sm font-bold text-teal-700 hover:underline dark:text-teal-400"
+        >
+          <ChevronLeft size={16} />
+          {t.all_helpers}
         </Link>
         <h1 className="mt-1 text-xl font-bold">{helper.name}</h1>
-        <div className="flex flex-wrap items-center gap-2 text-sm text-neutral-500">
+        <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-neutral-500">
           <span>
-            +91 {helper.phone.replace("+91", "")} · {t.base_salary} ₹
-            {helper.baseMonthlySalary.toLocaleString("en-IN")}/mo
+            +91 {helper.phone.replace("+91", "")} · {t.base_salary} {rupees(helper.baseMonthlySalary)}/mo
           </span>
           <EditSalaryButton t={t} helperId={helper.id} currentSalary={helper.baseMonthlySalary} />
         </div>
@@ -47,7 +52,7 @@ export default async function HelperDetailPage({ params }: { params: Promise<{ i
         kharchas={helper.kharchas}
       />
 
-      <div className="mt-2 border-t border-neutral-200 pt-4 dark:border-neutral-800">
+      <div className="mt-2 pt-2">
         <DeleteHelperButton t={t} helperId={helper.id} helperName={helper.name} />
       </div>
     </div>

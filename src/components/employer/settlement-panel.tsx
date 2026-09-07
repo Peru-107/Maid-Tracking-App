@@ -2,9 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
 import { Button, Card, Badge } from "@/components/ui";
+import { NumberField, YesNoToggle } from "@/components/ui-inputs";
 import { calculateMonthlySettlement, SettlementInput } from "@/lib/salary";
 import { buildHisaabMessage, buildWhatsAppShareUrl } from "@/lib/whatsapp";
+import { rupees } from "@/lib/format";
 import type { MonthlySettlement } from "@prisma/client";
 import type { TranslationKey } from "@/lib/i18n";
 
@@ -13,25 +16,24 @@ const MONTH_NAMES = [
   "July", "August", "September", "October", "November", "December",
 ];
 
-function rupees(n: number) {
-  return `₹${n.toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
-}
-
 export function SettlementPanel({
   t,
   helperId,
   helperName,
   helperPhone,
+  year,
+  month,
+  onChangeMonth,
 }: {
   t: Record<TranslationKey, string>;
   helperId: string;
   helperName: string;
   helperPhone: string;
+  year: number;
+  month: number;
+  onChangeMonth: (delta: number) => void;
 }) {
   const router = useRouter();
-  const now = useMemo(() => new Date(), []);
-  const [year, setYear] = useState(now.getFullYear());
-  const [month, setMonth] = useState(now.getMonth() + 1);
 
   const [baseInput, setBaseInput] = useState<SettlementInput | null>(null);
   const [existing, setExisting] = useState<MonthlySettlement | null>(null);
@@ -39,9 +41,10 @@ export function SettlementPanel({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [loanAmount, setLoanAmount] = useState("0");
-  const [overtimeBonus, setOvertimeBonus] = useState("0");
-  const [festivalBonus, setFestivalBonus] = useState("0");
+  const [loanAmount, setLoanAmount] = useState(0);
+  const [loanSkipped, setLoanSkipped] = useState(false);
+  const [overtimeBonus, setOvertimeBonus] = useState(0);
+  const [festivalBonus, setFestivalBonus] = useState(0);
 
   async function refetch() {
     const res = await fetch(`/api/helpers/${helperId}/settlement?year=${year}&month=${month}`);
@@ -49,9 +52,10 @@ export function SettlementPanel({
       await res.json();
     setBaseInput(data.draft.input);
     setExisting(data.existing);
-    setLoanAmount(String(data.draft.input.loanEmiAmount));
-    setOvertimeBonus(String(data.draft.input.overtimeBonus));
-    setFestivalBonus(String(data.draft.input.festivalBonus));
+    setLoanAmount(data.draft.input.loanEmiAmount);
+    setLoanSkipped(data.draft.input.loanEmiAmount === 0 && data.draft.input.loanEmiDue > 0);
+    setOvertimeBonus(data.draft.input.overtimeBonus);
+    setFestivalBonus(data.draft.input.festivalBonus);
   }
 
   useEffect(() => {
@@ -64,23 +68,23 @@ export function SettlementPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [helperId, year, month]);
 
+  const effectiveLoanAmount = loanSkipped ? 0 : loanAmount;
+
   const liveResult = useMemo(() => {
     if (!baseInput) return null;
     return calculateMonthlySettlement({
       ...baseInput,
-      loanEmiAmount: Number(loanAmount) || 0,
-      overtimeBonus: Number(overtimeBonus) || 0,
-      festivalBonus: Number(festivalBonus) || 0,
+      loanEmiAmount: effectiveLoanAmount,
+      overtimeBonus,
+      festivalBonus,
     });
-  }, [baseInput, loanAmount, overtimeBonus, festivalBonus]);
+  }, [baseInput, effectiveLoanAmount, overtimeBonus, festivalBonus]);
 
-  function changeMonth(delta: number) {
-    let m = month + delta;
-    let y = year;
-    if (m < 1) { m = 12; y -= 1; }
-    else if (m > 12) { m = 1; y += 1; }
-    setMonth(m);
-    setYear(y);
+  function handleSkipToggle(skip: boolean) {
+    setLoanSkipped(skip);
+    if (!skip && loanAmount === 0 && baseInput) {
+      setLoanAmount(baseInput.loanEmiDue);
+    }
   }
 
   async function postDraft(): Promise<MonthlySettlement> {
@@ -90,9 +94,9 @@ export function SettlementPanel({
       body: JSON.stringify({
         year,
         month,
-        loanEmiAmount: Number(loanAmount) || 0,
-        overtimeBonus: Number(overtimeBonus) || 0,
-        festivalBonus: Number(festivalBonus) || 0,
+        loanEmiAmount: effectiveLoanAmount,
+        overtimeBonus,
+        festivalBonus,
       }),
     });
     const data = await res.json();
@@ -169,14 +173,32 @@ export function SettlementPanel({
     window.open(buildWhatsAppShareUrl(helperPhone, message), "_blank");
   }
 
+  const netDeductionsAndBonuses = liveResult
+    ? liveResult.overtimeBonus +
+      liveResult.festivalBonus -
+      liveResult.lossOfPay -
+      liveResult.loanEmiDeducted -
+      liveResult.kharchaDeducted
+    : 0;
+
   return (
     <Card className="flex flex-col gap-4 p-4">
       <div className="flex items-center justify-between">
-        <button onClick={() => changeMonth(-1)} className="rounded-full px-2 py-1 hover:bg-black/5">←</button>
-        <h3 className="font-semibold">
+        <button
+          onClick={() => onChangeMonth(-1)}
+          className="rounded-full p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-white/10"
+        >
+          <ChevronLeft size={20} />
+        </button>
+        <h3 className="text-base font-bold">
           {t.salary_slip} — {MONTH_NAMES[month - 1]} {year}
         </h3>
-        <button onClick={() => changeMonth(1)} className="rounded-full px-2 py-1 hover:bg-black/5">→</button>
+        <button
+          onClick={() => onChangeMonth(1)}
+          className="rounded-full p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-white/10"
+        >
+          <ChevronRight size={20} />
+        </button>
       </div>
 
       {existing?.paid && (
@@ -185,7 +207,7 @@ export function SettlementPanel({
           <button
             onClick={undoMarkPaid}
             disabled={saving}
-            className="text-xs font-semibold text-neutral-500 underline hover:text-red-600 disabled:opacity-50"
+            className="text-xs font-bold text-neutral-500 underline hover:text-red-600 disabled:opacity-50"
           >
             {t.undo_mistake}
           </button>
@@ -197,43 +219,50 @@ export function SettlementPanel({
       ) : (
         <>
           <dl className="grid grid-cols-2 gap-y-1.5 text-sm">
-            <dt className="text-neutral-500">{t.base_salary}</dt>
-            <dd className="text-right">{rupees(baseInput!.baseSalary)}</dd>
+            <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.base_salary}</dt>
+            <dd className="text-right font-semibold">{rupees(baseInput!.baseSalary)}</dd>
           </dl>
 
-          <details className="rounded-xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
-            <summary className="cursor-pointer font-semibold text-neutral-700 dark:text-neutral-200">
-              {t.attendance_breakdown}
+          <details className="rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
+            <summary className="flex cursor-pointer items-center justify-between font-bold text-neutral-700 dark:text-neutral-200">
+              <span>{t.attendance_breakdown}</span>
+              <span className={liveResult.lossOfPay > 0 ? "text-red-600" : "text-neutral-400"}>
+                {liveResult.lossOfPay > 0 ? `-${rupees(liveResult.lossOfPay)}` : rupees(0)}
+              </span>
             </summary>
             <dl className="mt-2 grid grid-cols-2 gap-y-1.5">
-              <dt className="text-neutral-500">{t.present}</dt>
+              <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.present}</dt>
               <dd className="text-right">{baseInput!.attendance.presentDays}</dd>
-              <dt className="text-neutral-500">{t.absent}</dt>
+              <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.absent}</dt>
               <dd className="text-right">{baseInput!.attendance.absentDays}</dd>
-              <dt className="text-neutral-500">{t.half_day}</dt>
+              <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.half_day}</dt>
               <dd className="text-right">{baseInput!.attendance.halfDays}</dd>
-              <dt className="text-neutral-500">{t.paid_leave}</dt>
+              <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.paid_leave}</dt>
               <dd className="text-right">{baseInput!.attendance.paidLeaveDays}</dd>
-              <dt className="text-neutral-500">{t.per_day_wage}</dt>
+              <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.per_day_wage}</dt>
               <dd className="text-right">{rupees(liveResult.perDayWage)}</dd>
             </dl>
           </details>
 
-          <details className="rounded-xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800" open>
-            <summary className="cursor-pointer font-semibold text-neutral-700 dark:text-neutral-200">
-              {t.deductions_bonuses}
+          <details className="rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800" open>
+            <summary className="flex cursor-pointer items-center justify-between font-bold text-neutral-700 dark:text-neutral-200">
+              <span>{t.deductions_bonuses}</span>
+              <span className={netDeductionsAndBonuses < 0 ? "text-red-600" : "text-green-600"}>
+                {netDeductionsAndBonuses < 0 ? "-" : "+"}
+                {rupees(Math.abs(netDeductionsAndBonuses))}
+              </span>
             </summary>
             <dl className="mt-2 grid grid-cols-2 gap-y-1.5">
               {liveResult.lossOfPay > 0 && (
                 <>
-                  <dt className="text-neutral-500">{t.loss_of_pay}</dt>
+                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.loss_of_pay}</dt>
                   <dd className="text-right text-red-600">-{rupees(liveResult.lossOfPay)}</dd>
                 </>
               )}
 
               {liveResult.loanEmiDue > 0 && (
                 <>
-                  <dt className="text-neutral-500">
+                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">
                     {t.loan_repayment} {liveResult.loanEmiDeducted === 0 && t.skipped}
                   </dt>
                   <dd
@@ -246,21 +275,21 @@ export function SettlementPanel({
 
               {liveResult.kharchaDeducted > 0 && (
                 <>
-                  <dt className="text-neutral-500">{t.kharcha_advance}</dt>
+                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.kharcha_advance}</dt>
                   <dd className="text-right text-red-600">-{rupees(liveResult.kharchaDeducted)}</dd>
                 </>
               )}
 
               {liveResult.overtimeBonus > 0 && (
                 <>
-                  <dt className="text-neutral-500">{t.overtime_bonus}</dt>
+                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.overtime_bonus}</dt>
                   <dd className="text-right text-green-600">+{rupees(liveResult.overtimeBonus)}</dd>
                 </>
               )}
 
               {liveResult.festivalBonus > 0 && (
                 <>
-                  <dt className="text-neutral-500">{t.festival_bonus}</dt>
+                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.festival_bonus}</dt>
                   <dd className="text-right text-green-600">+{rupees(liveResult.festivalBonus)}</dd>
                 </>
               )}
@@ -275,50 +304,45 @@ export function SettlementPanel({
             </dl>
           </details>
 
-          <div className="flex items-center justify-between border-t border-neutral-200 pt-3 dark:border-neutral-700">
+          <div className="flex items-center justify-between border-t-2 border-neutral-100 pt-3 dark:border-neutral-800">
             <span className="text-lg font-bold">{t.final_payout}</span>
-            <span className="text-lg font-bold">{rupees(liveResult.finalPayout)}</span>
+            <span className="text-lg font-bold text-teal-700 dark:text-teal-400">{rupees(liveResult.finalPayout)}</span>
           </div>
 
           {!existing?.paid && (
-            <div className="flex flex-col gap-3 rounded-xl bg-neutral-50 p-3 dark:bg-neutral-800">
+            <div className="flex flex-col gap-3 rounded-2xl bg-neutral-50 p-3 dark:bg-neutral-800">
               {baseInput!.loanOutstandingTotal > 0 && (
-                <label className="text-sm">
-                  {t.loan_repayment_this_month}
-                  <input
-                    type="number"
-                    min="0"
-                    max={baseInput!.loanOutstandingTotal}
-                    value={loanAmount}
-                    onChange={(e) => setLoanAmount(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-transparent"
-                  />
-                  <span className="mt-1 block text-xs text-neutral-500">
-                    {t.loan_hint_prefix} {rupees(baseInput!.loanEmiDue)} · {t.loan_hint_outstanding} {rupees(baseInput!.loanOutstandingTotal)}.{" "}
-                    {t.loan_hint_suffix}
-                  </span>
-                </label>
+                <div className="text-sm">
+                  <div className="mb-1.5 flex items-center justify-between gap-2">
+                    <span className="font-medium text-neutral-700 dark:text-neutral-200">{t.skip_loan_question}</span>
+                    <YesNoToggle value={loanSkipped} onChange={handleSkipToggle} yesLabel={t.yes} noLabel={t.no} />
+                  </div>
+                  {!loanSkipped && (
+                    <label className="block">
+                      <span className="font-medium text-neutral-600 dark:text-neutral-400">
+                        {t.loan_repayment_this_month}
+                      </span>
+                      <NumberField
+                        value={loanAmount}
+                        onChange={(n) => setLoanAmount(Math.min(n, baseInput!.loanOutstandingTotal))}
+                        className="mt-1 w-full"
+                      />
+                      <span className="mt-1 block text-xs font-medium text-neutral-500">
+                        {t.loan_hint_prefix} {rupees(baseInput!.loanEmiDue)} · {t.loan_hint_outstanding} {rupees(baseInput!.loanOutstandingTotal)}.{" "}
+                        {t.loan_hint_suffix}
+                      </span>
+                    </label>
+                  )}
+                </div>
               )}
               <div className="flex gap-3">
                 <label className="flex-1 text-sm">
-                  {t.overtime_guest_bonus_label}
-                  <input
-                    type="number"
-                    min="0"
-                    value={overtimeBonus}
-                    onChange={(e) => setOvertimeBonus(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-transparent"
-                  />
+                  <span className="font-medium text-neutral-600 dark:text-neutral-400">{t.overtime_guest_bonus_label}</span>
+                  <NumberField value={overtimeBonus} onChange={setOvertimeBonus} className="mt-1 w-full" />
                 </label>
                 <label className="flex-1 text-sm">
-                  {t.festival_bonus_label}
-                  <input
-                    type="number"
-                    min="0"
-                    value={festivalBonus}
-                    onChange={(e) => setFestivalBonus(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-transparent"
-                  />
+                  <span className="font-medium text-neutral-600 dark:text-neutral-400">{t.festival_bonus_label}</span>
+                  <NumberField value={festivalBonus} onChange={setFestivalBonus} className="mt-1 w-full" />
                 </label>
               </div>
             </div>
@@ -338,7 +362,8 @@ export function SettlementPanel({
               </Button>
             )}
             {existing && (
-              <Button onClick={shareOnWhatsApp} variant="ghost" className="text-green-700">
+              <Button onClick={shareOnWhatsApp} variant="ghost" className="text-green-700 dark:text-green-400">
+                <MessageCircle size={16} />
                 {t.share_hisaab_whatsapp}
               </Button>
             )}

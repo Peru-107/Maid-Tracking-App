@@ -1,15 +1,13 @@
 import { redirect } from "next/navigation";
+import { Wallet, HandCoins } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { buildSettlementDraft } from "@/lib/settlement";
 import { getDictionary, type Locale } from "@/lib/i18n";
+import { rupees } from "@/lib/format";
 import { Card, Badge } from "@/components/ui";
 import { MarkPresentButton } from "@/components/helper/mark-present-button";
 import { HelperCalendarView } from "@/components/helper/calendar-view";
-
-function rupees(n: number) {
-  return `₹${n.toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
-}
 
 export default async function HelperDashboard() {
   const user = await getCurrentUser();
@@ -59,7 +57,7 @@ export default async function HelperDashboard() {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <p className="text-lg text-neutral-500">{t.greeting},</p>
+        <p className="text-lg font-medium text-neutral-500">{t.greeting},</p>
         <h1 className="text-2xl font-bold">{profile.name}</h1>
       </div>
 
@@ -72,44 +70,51 @@ export default async function HelperDashboard() {
       <Card className="p-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-lg font-bold">
-            <span>₹</span> {t.your_salary}
+            <Wallet size={20} className="text-teal-600 dark:text-teal-400" />
+            {t.your_salary}
           </div>
           <Badge tone={paidSettlement?.paid ? "green" : "yellow"}>
             {paidSettlement?.paid ? t.paid : t.not_paid_yet}
           </Badge>
         </div>
-        <p className="text-sm text-neutral-500">{t.this_month}</p>
+        <p className="text-sm font-medium text-neutral-500">{t.this_month}</p>
         <p className="mt-2 text-4xl font-extrabold text-teal-700 dark:text-teal-400">
           {rupees(result.finalPayout)}
         </p>
-        <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-300">
-          {t.base_salary}: <span className="font-semibold">{rupees(profile.baseMonthlySalary)}</span>
+        <p className="mt-3 text-sm font-medium text-neutral-600 dark:text-neutral-300">
+          {t.base_salary}: <span className="font-bold">{rupees(profile.baseMonthlySalary)}</span>
         </p>
 
-        <details className="mt-3 rounded-xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
-          <summary className="cursor-pointer font-semibold text-neutral-700 dark:text-neutral-200">
-            {t.calendar} {t.attendance}
+        <details className="mt-3 rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
+          <summary className="flex cursor-pointer items-center justify-between font-bold text-neutral-700 dark:text-neutral-200">
+            <span>
+              {t.calendar} {t.attendance}
+            </span>
+            <span className="font-medium text-neutral-500">{input.attendance.presentDays} {t.present}</span>
           </summary>
-          <div className="mt-2 grid grid-cols-2 gap-y-1.5 text-neutral-600 dark:text-neutral-300">
+          <div className="mt-2 grid grid-cols-2 gap-y-1.5 font-medium text-neutral-600 dark:text-neutral-300">
             <span>{t.present}</span>
-            <span className="text-right font-semibold">{input.attendance.presentDays}</span>
+            <span className="text-right font-bold">{input.attendance.presentDays}</span>
             <span>{t.absent}</span>
-            <span className="text-right font-semibold">{input.attendance.absentDays}</span>
+            <span className="text-right font-bold">{input.attendance.absentDays}</span>
             <span>{t.half_day}</span>
-            <span className="text-right font-semibold">{input.attendance.halfDays}</span>
+            <span className="text-right font-bold">{input.attendance.halfDays}</span>
             <span>{t.paid_leave}</span>
-            <span className="text-right font-semibold">{input.attendance.paidLeaveDays}</span>
+            <span className="text-right font-bold">{input.attendance.paidLeaveDays}</span>
           </div>
         </details>
       </Card>
 
       {totalTaken > 0 && (
         <Card className="p-5">
-          <div className="text-lg font-bold">{t.loan}</div>
+          <div className="flex items-center gap-2 text-lg font-bold">
+            <HandCoins size={20} className="text-amber-600 dark:text-amber-400" />
+            {t.loan}
+          </div>
           <div className="mt-3 h-4 w-full overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-700">
             <div className="h-full bg-teal-600" style={{ width: `${repaidPct}%` }} />
           </div>
-          <div className="mt-2 flex justify-between text-sm text-neutral-600 dark:text-neutral-300">
+          <div className="mt-2 flex justify-between text-sm font-medium text-neutral-600 dark:text-neutral-300">
             <span>
               {t.total_taken}: {rupees(totalTaken)}
             </span>
@@ -117,7 +122,7 @@ export default async function HelperDashboard() {
               {t.total_repaid}: {rupees(totalRepaid)}
             </span>
           </div>
-          <p className="mt-1 text-right text-sm font-semibold text-amber-700 dark:text-amber-400">
+          <p className="mt-1 text-right text-sm font-bold text-amber-700 dark:text-amber-400">
             {t.loan_balance}: {rupees(totalOutstanding)}
           </p>
         </Card>

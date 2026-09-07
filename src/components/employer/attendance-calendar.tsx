@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button, Card } from "@/components/ui";
 import type { TranslationKey } from "@/lib/i18n";
 
@@ -30,6 +31,8 @@ const STATUS_KEYS: Record<AttendanceStatus, TranslationKey> = {
   PAID_LEAVE: "paid_leave",
 };
 
+const LONG_PRESS_MS = 450;
+
 function toDateKey(year: number, month: number, day: number) {
   return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
@@ -37,19 +40,25 @@ function toDateKey(year: number, month: number, day: number) {
 export function AttendanceCalendar({
   t,
   helperId,
+  year,
+  month,
+  onChangeMonth,
   onChange,
 }: {
   t: Record<TranslationKey, string>;
   helperId: string;
+  year: number;
+  month: number;
+  onChangeMonth: (delta: number) => void;
   onChange?: () => void;
 }) {
-  const today = useMemo(() => new Date(), []);
-  const [year, setYear] = useState(today.getFullYear());
-  const [month, setMonth] = useState(today.getMonth() + 1); // 1-12
   const [logs, setLogs] = useState<Record<string, AttendanceLog>>({});
   const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [pendingBadli, setPendingBadli] = useState(false);
+
+  const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressFired = useRef(false);
 
   useEffect(() => {
     // Resetting local UI state for a new month is intentional here, not an
@@ -72,20 +81,6 @@ export function AttendanceCalendar({
   const daysInMonth = new Date(year, month, 0).getDate();
   const firstWeekday = new Date(year, month - 1, 1).getDay();
 
-  function changeMonth(delta: number) {
-    let newMonth = month + delta;
-    let newYear = year;
-    if (newMonth < 1) {
-      newMonth = 12;
-      newYear -= 1;
-    } else if (newMonth > 12) {
-      newMonth = 1;
-      newYear += 1;
-    }
-    setMonth(newMonth);
-    setYear(newYear);
-  }
-
   async function setStatus(day: number, status: AttendanceStatus, badli: boolean) {
     const dateKey = toDateKey(year, month, day);
     const res = await fetch(`/api/helpers/${helperId}/attendance`, {
@@ -101,6 +96,61 @@ export function AttendanceCalendar({
     }
   }
 
+  async function clearStatus(day: number) {
+    const dateKey = toDateKey(year, month, day);
+    const res = await fetch(`/api/helpers/${helperId}/attendance?date=${dateKey}`, {
+      method: "DELETE",
+    });
+    if (res.ok) {
+      setLogs((prev) => {
+        const next = { ...prev };
+        delete next[dateKey];
+        return next;
+      });
+      setSelectedDay(null);
+      onChange?.();
+    }
+  }
+
+  function clearPressTimer() {
+    if (pressTimer.current) {
+      clearTimeout(pressTimer.current);
+      pressTimer.current = null;
+    }
+  }
+
+  function handlePressStart(day: number, log: AttendanceLog | undefined) {
+    longPressFired.current = false;
+    clearPressTimer();
+    pressTimer.current = setTimeout(() => {
+      longPressFired.current = true;
+      setSelectedDay(day);
+      setPendingBadli(log?.badli ?? false);
+    }, LONG_PRESS_MS);
+  }
+
+  function handlePressEnd(day: number, log: AttendanceLog | undefined, isSelected: boolean) {
+    clearPressTimer();
+    if (longPressFired.current) {
+      longPressFired.current = false;
+      return;
+    }
+    if (isSelected) {
+      setSelectedDay(null);
+      return;
+    }
+    if (!log) {
+      setStatus(day, "PRESENT", false);
+    } else {
+      clearStatus(day);
+    }
+  }
+
+  function handlePressCancel() {
+    clearPressTimer();
+    longPressFired.current = false;
+  }
+
   const monthLabel = new Date(year, month - 1, 1).toLocaleDateString("en-IN", {
     month: "long",
     year: "numeric",
@@ -109,16 +159,24 @@ export function AttendanceCalendar({
   return (
     <Card className="p-4">
       <div className="mb-3 flex items-center justify-between">
-        <button onClick={() => changeMonth(-1)} className="rounded-full px-2 py-1 hover:bg-black/5" aria-label="Previous month">
-          ←
+        <button
+          onClick={() => onChangeMonth(-1)}
+          className="rounded-full p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-white/10"
+          aria-label="Previous month"
+        >
+          <ChevronLeft size={20} />
         </button>
-        <h3 className="font-semibold">{monthLabel}</h3>
-        <button onClick={() => changeMonth(1)} className="rounded-full px-2 py-1 hover:bg-black/5" aria-label="Next month">
-          →
+        <h3 className="text-base font-bold">{monthLabel}</h3>
+        <button
+          onClick={() => onChangeMonth(1)}
+          className="rounded-full p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-white/10"
+          aria-label="Next month"
+        >
+          <ChevronRight size={20} />
         </button>
       </div>
 
-      <div className="mb-2 flex flex-wrap gap-3 text-xs text-neutral-500">
+      <div className="mb-1 flex flex-wrap gap-3 text-xs font-medium text-neutral-600 dark:text-neutral-400">
         {(Object.keys(STATUS_KEYS) as AttendanceStatus[]).map((status) => (
           <div key={status} className="flex items-center gap-1">
             <span className={clsx("h-3 w-3 rounded-full", STATUS_STYLES[status])} />
@@ -126,13 +184,14 @@ export function AttendanceCalendar({
           </div>
         ))}
       </div>
+      <p className="mb-2 text-xs text-neutral-500 dark:text-neutral-500">{t.attendance_hint}</p>
 
       {loading ? (
         <p className="py-8 text-center text-sm text-neutral-400">{t.loading}</p>
       ) : (
         <div className="grid grid-cols-7 gap-1.5 text-center text-sm">
           {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-            <div key={i} className="pb-1 text-xs font-semibold text-neutral-400">
+            <div key={i} className="pb-1 text-xs font-bold text-neutral-500 dark:text-neutral-400">
               {d}
             </div>
           ))}
@@ -146,17 +205,16 @@ export function AttendanceCalendar({
             return (
               <div key={day} className="relative">
                 <button
-                  onClick={() => {
-                    if (!log) {
-                      setStatus(day, "PRESENT", false);
-                      return;
-                    }
-                    setSelectedDay(isSelected ? null : day);
-                    setPendingBadli(log?.badli ?? false);
-                  }}
+                  onPointerDown={() => handlePressStart(day, log)}
+                  onPointerUp={() => handlePressEnd(day, log, isSelected)}
+                  onPointerLeave={handlePressCancel}
+                  onPointerCancel={handlePressCancel}
+                  onContextMenu={(e) => e.preventDefault()}
                   className={clsx(
-                    "flex aspect-square w-full flex-col items-center justify-center rounded-lg text-xs font-semibold transition",
-                    log ? STATUS_STYLES[log.status] : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200 dark:bg-neutral-800",
+                    "flex aspect-square w-full touch-manipulation select-none flex-col items-center justify-center rounded-xl text-xs font-bold transition",
+                    log
+                      ? STATUS_STYLES[log.status]
+                      : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300",
                     isSelected && "ring-2 ring-teal-600 ring-offset-1",
                   )}
                 >
@@ -167,14 +225,14 @@ export function AttendanceCalendar({
                   )}
                 </button>
                 {isSelected && (
-                  <div className="absolute z-20 mt-1 w-48 rounded-xl border border-neutral-200 bg-white p-2 shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
+                  <div className="absolute z-20 mt-1 w-48 rounded-2xl bg-white p-2 shadow-[0_4px_10px_rgba(15,23,42,0.06),0_16px_32px_-8px_rgba(15,23,42,0.24)] dark:bg-neutral-900">
                     <div className="grid grid-cols-2 gap-1">
                       {(Object.keys(STATUS_KEYS) as AttendanceStatus[]).map((status) => (
                         <button
                           key={status}
                           onClick={() => setStatus(day, status, pendingBadli)}
                           className={clsx(
-                            "rounded-md px-2 py-1 text-[11px] font-semibold",
+                            "rounded-lg px-2 py-1.5 text-[11px] font-bold",
                             STATUS_STYLES[status],
                           )}
                         >
@@ -182,7 +240,7 @@ export function AttendanceCalendar({
                         </button>
                       ))}
                     </div>
-                    <label className="mt-2 flex items-center gap-1.5 text-[11px] text-neutral-600 dark:text-neutral-300">
+                    <label className="mt-2 flex items-center gap-1.5 text-[11px] font-medium text-neutral-600 dark:text-neutral-300">
                       <input
                         type="checkbox"
                         checked={pendingBadli}

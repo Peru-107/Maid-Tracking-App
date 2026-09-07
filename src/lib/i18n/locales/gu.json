@@ -50,6 +50,7 @@
   "substitute_badli": "આજે બદલી આવી",
   "close": "બંધ કરો",
   "loading": "લોડ થઈ રહ્યું છે…",
+  "attendance_hint": "ટેપ = હાજર · ફરી ટેપ = પૂર્વવત્ · દબાવી રાખો = વધુ વિકલ્પો",
 
   "loans_and_advances": "ઉધાર અને એડવાન્સ",
   "new_loan": "+ નવું ઉધાર",
@@ -84,6 +85,9 @@
   "kharcha_advance": "ખર્ચો (એડવાન્સ)",
   "overtime_bonus": "ઓવરટાઇમ / મહેમાન બોનસ",
   "nothing_to_deduct": "આ મહિને કાપવા કે ઉમેરવા માટે કંઈ નથી.",
+  "skip_loan_question": "આ મહિને ઉધાર ચુકવણી છોડવી છે?",
+  "yes": "હા",
+  "no": "ના",
   "loan_repayment_this_month": "આ મહિનાની ઉધાર ચુકવણી (₹)",
   "loan_hint_prefix": "નિર્ધારિત EMI:",
   "loan_hint_outstanding": "બાકી:",

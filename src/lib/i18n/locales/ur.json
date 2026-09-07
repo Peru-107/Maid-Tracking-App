@@ -50,6 +50,7 @@
   "substitute_badli": "آج بدلی آئی",
   "close": "بند کریں",
   "loading": "لوڈ ہو رہا ہے…",
+  "attendance_hint": "ٹیپ = حاضر · دوبارہ ٹیپ = واپس · دبائے رکھیں = مزید اختیارات",
 
   "loans_and_advances": "قرض اور ایڈوانس",
   "new_loan": "+ نیا قرض",
@@ -84,6 +85,9 @@
   "kharcha_advance": "خرچہ (ایڈوانس)",
   "overtime_bonus": "اوور ٹائم / مہمان بونس",
   "nothing_to_deduct": "اس مہینے کاٹنے یا شامل کرنے کے لیے کچھ نہیں ہے۔",
+  "skip_loan_question": "کیا اس مہینے قرض کی واپسی چھوڑنی ہے؟",
+  "yes": "ہاں",
+  "no": "نہیں",
   "loan_repayment_this_month": "اس مہینے کی قرض واپسی (₹)",
   "loan_hint_prefix": "طے شدہ EMI:",
   "loan_hint_outstanding": "باقی:",
