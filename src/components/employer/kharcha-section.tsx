@@ -82,7 +82,6 @@ export function KharchaSection({
         <Wallet size={18} className="text-teal-600 dark:text-teal-400" />
         {t.kharcha_heading}
       </h3>
-      <p className="text-sm font-medium text-neutral-500">{t.kharcha_description}</p>
 
       <form onSubmit={handleSubmit} className="flex flex-wrap gap-2">
         <NumberField required placeholder={t.amount_placeholder} value={amount} onChange={setAmount} className="w-32" />
@@ -111,10 +110,11 @@ export function KharchaSection({
             <button
               onClick={() => handleDelete(k.id)}
               disabled={deletingId === k.id}
-              className="flex items-center gap-1 rounded-xl px-2 py-1 text-xs font-bold text-red-600 hover:bg-red-50 disabled:opacity-50 dark:hover:bg-red-900/20"
+              aria-label={deletingId === k.id ? t.removing : t.remove}
+              title={t.remove}
+              className="rounded-xl p-2 text-red-600 hover:bg-red-50 disabled:opacity-50 dark:hover:bg-red-900/20"
             >
-              <X size={14} />
-              {deletingId === k.id ? t.removing : t.remove}
+              <X size={16} />
             </button>
           </div>
         ))}

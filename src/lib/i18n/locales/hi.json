@@ -52,7 +52,7 @@
   "loading": "लोड हो रहा है…",
   "attendance_hint": "टैप = उपस्थित · फिर टैप = पूर्ववत · दबाए रखें = अधिक विकल्प",
 
-  "loans_and_advances": "उधार और एडवांस",
+  "loans_and_advances": "उधार",
   "new_loan": "+ नया उधार",
   "loan_amount_placeholder": "उधार राशि (₹)",
   "monthly_emi_placeholder": "मासिक कटौती / EMI (₹)",
