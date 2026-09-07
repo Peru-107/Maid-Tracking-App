@@ -186,18 +186,20 @@ export function SettlementPanel({
       <div className="flex items-center justify-between">
         <button
           onClick={() => onChangeMonth(-1)}
+          aria-label="Previous month"
           className="rounded-full p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-white/10"
         >
-          <ChevronLeft size={20} />
+          <ChevronLeft size={20} aria-hidden="true" />
         </button>
         <h3 className="text-base font-bold">
           {t.salary_slip} — {MONTH_NAMES[month - 1]} {year}
         </h3>
         <button
           onClick={() => onChangeMonth(1)}
+          aria-label="Next month"
           className="rounded-full p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-white/10"
         >
-          <ChevronRight size={20} />
+          <ChevronRight size={20} aria-hidden="true" />
         </button>
       </div>
 
@@ -230,7 +232,7 @@ export function SettlementPanel({
                 <span className={liveResult.lossOfPay > 0 ? "text-red-600" : "text-neutral-400"}>
                   {liveResult.lossOfPay > 0 ? `-${rupees(liveResult.lossOfPay)}` : rupees(0)}
                 </span>
-                <ChevronDown size={16} className="text-neutral-400 transition-transform group-open:rotate-180" />
+                <ChevronDown size={16} aria-hidden="true" className="text-neutral-400 transition-transform group-open:rotate-180" />
               </span>
             </summary>
             <dl className="mt-2 grid grid-cols-2 gap-y-1.5">
@@ -255,7 +257,7 @@ export function SettlementPanel({
                   {netDeductionsAndBonuses < 0 ? "-" : "+"}
                   {rupees(Math.abs(netDeductionsAndBonuses))}
                 </span>
-                <ChevronDown size={16} className="text-neutral-400 transition-transform group-open:rotate-180" />
+                <ChevronDown size={16} aria-hidden="true" className="text-neutral-400 transition-transform group-open:rotate-180" />
               </span>
             </summary>
             <dl className="mt-2 grid grid-cols-2 gap-y-1.5">
@@ -365,7 +367,7 @@ export function SettlementPanel({
             )}
             {existing && (
               <Button onClick={shareOnWhatsApp} variant="ghost" className="text-green-700 dark:text-green-400">
-                <MessageCircle size={16} />
+                <MessageCircle size={16} aria-hidden="true" />
                 {t.share_hisaab_whatsapp}
               </Button>
             )}

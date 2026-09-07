@@ -30,7 +30,7 @@ export default async function HelperDetailPage({ params }: { params: Promise<{ i
           href="/employer"
           className="flex items-center gap-1 text-sm font-bold text-teal-700 hover:underline dark:text-teal-400"
         >
-          <ChevronLeft size={16} />
+          <ChevronLeft size={16} aria-hidden="true" />
           {t.all_helpers}
         </Link>
         <h1 className="mt-1 text-xl font-bold">{helper.name}</h1>

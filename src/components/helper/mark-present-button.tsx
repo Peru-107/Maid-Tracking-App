@@ -40,9 +40,9 @@ export function MarkPresentButton({
       }`}
     >
       {marked ? (
-        approved ? <CheckCircle2 size={40} /> : <Clock size={40} />
+        approved ? <CheckCircle2 size={40} aria-hidden="true" /> : <Clock size={40} aria-hidden="true" />
       ) : (
-        <Hand size={40} />
+        <Hand size={40} aria-hidden="true" />
       )}
       {marked ? (approved ? t.present : t.pending_approval) : t.mark_present}
     </button>

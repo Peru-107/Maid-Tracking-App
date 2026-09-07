@@ -70,7 +70,7 @@ export default async function HelperDashboard() {
       <Card className="p-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-lg font-bold">
-            <Wallet size={20} className="text-teal-600 dark:text-teal-400" />
+            <Wallet size={20} aria-hidden="true" className="text-teal-600 dark:text-teal-400" />
             {t.your_salary}
           </div>
           <Badge tone={paidSettlement?.paid ? "green" : "yellow"}>
@@ -108,7 +108,7 @@ export default async function HelperDashboard() {
       {totalTaken > 0 && (
         <Card className="p-5">
           <div className="flex items-center gap-2 text-lg font-bold">
-            <HandCoins size={20} className="text-amber-600 dark:text-amber-400" />
+            <HandCoins size={20} aria-hidden="true" className="text-amber-600 dark:text-amber-400" />
             {t.loan}
           </div>
           <div className="mt-3 h-4 w-full overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-700">

@@ -41,7 +41,7 @@ export function DeleteHelperButton({
         onClick={() => setConfirming(true)}
         className="flex items-center gap-1.5 self-start text-sm font-bold text-red-600 underline"
       >
-        <Trash2 size={14} />
+        <Trash2 size={14} aria-hidden="true" />
         {t.delete_helper}
       </button>
     );
