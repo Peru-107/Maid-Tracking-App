@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
 import { Button, Card } from "@/components/ui";
 import type { TranslationKey } from "@/lib/i18n";
 
@@ -38,19 +39,20 @@ export function DeleteHelperButton({
     return (
       <button
         onClick={() => setConfirming(true)}
-        className="self-start text-sm font-semibold text-red-600 underline"
+        className="flex items-center gap-1.5 self-start text-sm font-bold text-red-600 underline"
       >
+        <Trash2 size={14} />
         {t.delete_helper}
       </button>
     );
   }
 
   return (
-    <Card className="flex flex-col gap-2 border-red-200 p-4 dark:border-red-900">
-      <p className="text-sm font-semibold text-red-700 dark:text-red-400">
+    <Card className="flex flex-col gap-2 bg-red-50 p-4 dark:bg-red-950/30">
+      <p className="text-sm font-bold text-red-700 dark:text-red-400">
         {t.confirm_delete_title} {helperName}?
       </p>
-      <p className="text-sm text-neutral-500">{t.confirm_delete_body}</p>
+      <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">{t.confirm_delete_body}</p>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="flex gap-2">
         <Button variant="danger" onClick={handleDelete} disabled={deleting}>

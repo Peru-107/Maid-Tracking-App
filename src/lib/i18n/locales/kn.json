@@ -50,6 +50,7 @@
   "substitute_badli": "ಇಂದು ಬದಲಿ ವ್ಯಕ್ತಿ ಬಂದರು",
   "close": "ಮುಚ್ಚಿ",
   "loading": "ಲೋಡ್ ಆಗುತ್ತಿದೆ…",
+  "attendance_hint": "ಟ್ಯಾಪ್ = ಹಾಜರಿದ್ದಾರೆ · ಮತ್ತೆ ಟ್ಯಾಪ್ = ರದ್ದುಗೊಳಿಸಿ · ಒತ್ತಿ ಹಿಡಿಯಿರಿ = ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು",
 
   "loans_and_advances": "ಸಾಲಗಳು & ಮುಂಗಡಗಳು",
   "new_loan": "+ ಹೊಸ ಸಾಲ",
@@ -84,6 +85,9 @@
   "kharcha_advance": "ಖರ್ಚು (ಮುಂಗಡ)",
   "overtime_bonus": "ಓವರ್‌ಟೈಮ್ / ಅತಿಥಿ ಬೋನಸ್",
   "nothing_to_deduct": "ಈ ತಿಂಗಳು ಕಡಿತಗೊಳಿಸಲು ಅಥವಾ ಸೇರಿಸಲು ಏನೂ ಇಲ್ಲ.",
+  "skip_loan_question": "ಈ ತಿಂಗಳು ಸಾಲ ಮರುಪಾವತಿ ಬಿಟ್ಟುಬಿಡಬೇಕೇ?",
+  "yes": "ಹೌದು",
+  "no": "ಇಲ್ಲ",
   "loan_repayment_this_month": "ಈ ತಿಂಗಳ ಸಾಲ ಮರುಪಾವತಿ (₹)",
   "loan_hint_prefix": "ನಿಗದಿತ EMI:",
   "loan_hint_outstanding": "ಬಾಕಿ:",

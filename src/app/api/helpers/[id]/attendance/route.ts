@@ -79,3 +79,28 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return handleApiError(error);
   }
 }
+
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const session = await requireEmployerSession();
+    const { id } = await params;
+    await requireOwnedHelper(id, session.userId);
+
+    const { searchParams } = new URL(request.url);
+    const dateParam = searchParams.get("date");
+    if (!dateParam) {
+      return NextResponse.json({ error: "date is required" }, { status: 400 });
+    }
+
+    const date = new Date(`${dateParam}T00:00:00.000Z`);
+    if (Number.isNaN(date.getTime())) {
+      return NextResponse.json({ error: "Invalid date" }, { status: 400 });
+    }
+
+    await prisma.attendanceLog.deleteMany({ where: { helperId: id, date } });
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    return handleApiError(error);
+  }
+}

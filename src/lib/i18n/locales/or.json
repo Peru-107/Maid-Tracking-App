@@ -50,6 +50,7 @@
   "substitute_badli": "ଆଜି ବଦଳି ଆସିଥିଲେ",
   "close": "ବନ୍ଦ କରନ୍ତୁ",
   "loading": "ଲୋଡ୍ ହେଉଛି…",
+  "attendance_hint": "ଟାପ୍ = ଉପସ୍ଥିତ · ପୁଣି ଟାପ୍ = ପୂର୍ବବତ୍ · ଦବାଇ ରଖନ୍ତୁ = ଅଧିକ ବିକଳ୍ପ",
 
   "loans_and_advances": "ଋଣ ଏବଂ ଅଗ୍ରୀମ",
   "new_loan": "+ ନୂଆ ଋଣ",
@@ -84,6 +85,9 @@
   "kharcha_advance": "ଖର୍ଚ୍ଚ (ଅଗ୍ରୀମ)",
   "overtime_bonus": "ଓଭରଟାଇମ୍ / ଅତିଥି ବୋନସ୍",
   "nothing_to_deduct": "ଏହି ମାସ କଟାଇବାକୁ କିମ୍ବା ଯୋଡିବାକୁ କିଛି ନାହିଁ।",
+  "skip_loan_question": "ଏହି ମାସ ଋଣ ପରିଶୋଧ ଛାଡିବେ କି?",
+  "yes": "ହଁ",
+  "no": "ନାହିଁ",
   "loan_repayment_this_month": "ଏହି ମାସର ଋଣ ପରିଶୋଧ (₹)",
   "loan_hint_prefix": "ନିର୍ଦ୍ଧାରିତ EMI:",
   "loan_hint_outstanding": "ବାକି:",

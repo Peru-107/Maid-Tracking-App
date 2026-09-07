@@ -55,7 +55,7 @@ export function HelperCalendarView({ t }: { t: Record<TranslationKey, string> })
     <Card className="p-4">
       <h3 className="mb-3 text-lg font-bold">{t.calendar}</h3>
 
-      <div className="mb-2 flex flex-wrap gap-3 text-xs text-neutral-500">
+      <div className="mb-2 flex flex-wrap gap-3 text-xs font-medium text-neutral-600 dark:text-neutral-400">
         {(Object.keys(STATUS_KEYS) as AttendanceStatus[]).map((status) => (
           <div key={status} className="flex items-center gap-1">
             <span className={clsx("h-3 w-3 rounded-full", STATUS_STYLES[status])} />
@@ -69,7 +69,7 @@ export function HelperCalendarView({ t }: { t: Record<TranslationKey, string> })
       ) : (
         <div className="grid grid-cols-7 gap-1.5 text-center text-sm">
           {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-            <div key={i} className="pb-1 text-xs font-semibold text-neutral-400">
+            <div key={i} className="pb-1 text-xs font-bold text-neutral-500 dark:text-neutral-400">
               {d}
             </div>
           ))}
@@ -83,8 +83,8 @@ export function HelperCalendarView({ t }: { t: Record<TranslationKey, string> })
               <div
                 key={day}
                 className={clsx(
-                  "flex aspect-square w-full flex-col items-center justify-center rounded-lg text-sm font-semibold",
-                  log ? STATUS_STYLES[log.status] : "bg-neutral-100 text-neutral-400 dark:bg-neutral-800",
+                  "flex aspect-square w-full flex-col items-center justify-center rounded-xl text-sm font-bold",
+                  log ? STATUS_STYLES[log.status] : "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400",
                 )}
               >
                 {day}

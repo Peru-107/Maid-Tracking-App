@@ -50,6 +50,7 @@
   "substitute_badli": "Substitute (Badli) came today",
   "close": "Close",
   "loading": "Loading…",
+  "attendance_hint": "Tap = Present · tap again = undo · hold = more options",
 
   "loans_and_advances": "Loans & Advances",
   "new_loan": "+ New Loan",
@@ -84,6 +85,9 @@
   "kharcha_advance": "Kharcha (Advance)",
   "overtime_bonus": "Overtime / Guest Bonus",
   "nothing_to_deduct": "Nothing to deduct or add this month.",
+  "skip_loan_question": "Skip loan repayment this month?",
+  "yes": "Yes",
+  "no": "No",
   "loan_repayment_this_month": "Loan Repayment This Month (₹)",
   "loan_hint_prefix": "Scheduled EMI:",
   "loan_hint_outstanding": "Outstanding:",
