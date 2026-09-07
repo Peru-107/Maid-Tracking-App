@@ -17,7 +17,7 @@ export function LanguageSwitcher({ current, label }: { current: Locale; label: s
 
   return (
     <label className="flex items-center gap-2 text-sm">
-      <span className="text-neutral-500">🌐 {label}</span>
+      <span className="text-neutral-500">{label}</span>
       <select
         value={current}
         onChange={(e) => handleChange(e.target.value)}

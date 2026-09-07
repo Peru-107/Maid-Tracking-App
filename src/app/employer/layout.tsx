@@ -20,7 +20,7 @@ export default async function EmployerLayout({ children }: { children: ReactNode
       <header className="sticky top-0 z-10 border-b border-black/5 bg-white/80 backdrop-blur dark:border-white/10 dark:bg-neutral-900/80">
         <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-4 py-3">
           <Link href="/employer" className="flex items-center gap-2 font-bold text-teal-700 dark:text-teal-400">
-            <span className="text-xl">🧹</span> {t.app_name}
+            {t.app_name}
           </Link>
           <div className="flex items-center gap-3">
             <LanguageSwitcher current={locale} label={t.language} />

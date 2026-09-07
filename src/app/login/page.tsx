@@ -61,7 +61,6 @@ export default function LoginPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-teal-50 to-white px-4 dark:from-neutral-950 dark:to-neutral-900">
       <div className="mb-8 text-center">
-        <div className="mb-2 text-5xl">🧹</div>
         <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">Maid Tracker</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Attendance, advances &amp; salary — sorted every month.

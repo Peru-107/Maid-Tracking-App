@@ -105,9 +105,7 @@ export default async function HelperDashboard() {
 
       {totalTaken > 0 && (
         <Card className="p-5">
-          <div className="flex items-center gap-2 text-lg font-bold">
-            <span>🤝</span> {t.loan}
-          </div>
+          <div className="text-lg font-bold">{t.loan}</div>
           <div className="mt-3 h-4 w-full overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-700">
             <div className="h-full bg-teal-600" style={{ width: `${repaidPct}%` }} />
           </div>

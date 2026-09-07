@@ -83,24 +83,29 @@ export function SettlementPanel({
     setYear(y);
   }
 
+  async function postDraft(): Promise<MonthlySettlement> {
+    const res = await fetch(`/api/helpers/${helperId}/settlement`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        year,
+        month,
+        loanEmiAmount: Number(loanAmount) || 0,
+        overtimeBonus: Number(overtimeBonus) || 0,
+        festivalBonus: Number(festivalBonus) || 0,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error ?? "Could not save slip");
+    return data.settlement;
+  }
+
   async function saveDraft() {
     setSaving(true);
     setError(null);
     try {
-      const res = await fetch(`/api/helpers/${helperId}/settlement`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          year,
-          month,
-          loanEmiAmount: Number(loanAmount) || 0,
-          overtimeBonus: Number(overtimeBonus) || 0,
-          festivalBonus: Number(festivalBonus) || 0,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Could not save slip");
-      setExisting(data.settlement);
+      const settlement = await postDraft();
+      setExisting(settlement);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save slip");
@@ -109,15 +114,19 @@ export function SettlementPanel({
     }
   }
 
+  // Marking paid no longer requires a separate "Generate / Update Slip" tap
+  // first -- it saves the current numbers as the draft (if one doesn't
+  // already exist) and finalizes it in one action, since the loan amount
+  // already defaults to the scheduled EMI.
   async function markPaid() {
-    if (!existing) return;
     setSaving(true);
     setError(null);
     try {
+      const settlement = existing ?? (await postDraft());
       const res = await fetch(`/api/helpers/${helperId}/settlement`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ settlementId: existing.id }),
+        body: JSON.stringify({ settlementId: settlement.id }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Could not mark as paid");
@@ -323,7 +332,7 @@ export function SettlementPanel({
                 {saving ? t.saving : t.generate_update_slip}
               </Button>
             )}
-            {existing && !existing.paid && (
+            {!existing?.paid && (
               <Button onClick={markPaid} disabled={saving}>
                 {saving ? t.processing : t.mark_as_paid}
               </Button>
