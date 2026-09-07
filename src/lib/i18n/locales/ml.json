@@ -52,7 +52,7 @@
   "loading": "ലോഡ് ചെയ്യുന്നു…",
   "attendance_hint": "ടാപ്പ് = ഹാജർ · വീണ്ടും ടാപ്പ് = പഴയപടിയാക്കുക · അമർത്തിപ്പിടിക്കുക = കൂടുതൽ ഓപ്ഷനുകൾ",
 
-  "loans_and_advances": "വായ്പകളും അഡ്വാൻസുകളും",
+  "loans_and_advances": "വായ്പകൾ",
   "new_loan": "+ പുതിയ വായ്പ",
   "loan_amount_placeholder": "വായ്പ തുക (₹)",
   "monthly_emi_placeholder": "മാസ കിഴിവ് / EMI (₹)",

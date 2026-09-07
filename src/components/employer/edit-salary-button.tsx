@@ -2,9 +2,10 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Pencil } from "lucide-react";
+import { Pencil, Wallet } from "lucide-react";
 import { Button } from "@/components/ui";
 import { NumberField } from "@/components/ui-inputs";
+import { rupees } from "@/lib/format";
 import type { TranslationKey } from "@/lib/i18n";
 
 export function EditSalaryButton({
@@ -50,10 +51,11 @@ export function EditSalaryButton({
           setSalary(currentSalary);
           setEditing(true);
         }}
-        className="flex items-center gap-1 text-xs font-bold text-teal-700 underline dark:text-teal-400"
+        className="inline-flex items-center gap-2 rounded-full bg-teal-50 px-3.5 py-1.5 text-sm font-bold text-teal-700 transition-colors hover:bg-teal-100 dark:bg-teal-900/30 dark:text-teal-300 dark:hover:bg-teal-900/50"
       >
-        <Pencil size={12} />
-        {t.edit}
+        <Wallet size={14} />
+        {rupees(currentSalary)}/mo
+        <Pencil size={12} className="opacity-60" />
       </button>
     );
   }

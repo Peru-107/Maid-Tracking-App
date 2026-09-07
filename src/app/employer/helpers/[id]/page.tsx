@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Phone } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getDictionary, type Locale } from "@/lib/i18n";
-import { rupees } from "@/lib/format";
 import { HelperWorkspace } from "@/components/employer/helper-workspace";
 import { DeleteHelperButton } from "@/components/employer/delete-helper-button";
 import { EditSalaryButton } from "@/components/employer/edit-salary-button";
@@ -35,9 +34,10 @@ export default async function HelperDetailPage({ params }: { params: Promise<{ i
           {t.all_helpers}
         </Link>
         <h1 className="mt-1 text-xl font-bold">{helper.name}</h1>
-        <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-neutral-500">
-          <span>
-            +91 {helper.phone.replace("+91", "")} · {t.base_salary} {rupees(helper.baseMonthlySalary)}/mo
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-600 dark:text-neutral-400">
+            <Phone size={14} />
+            +91 {helper.phone.replace("+91", "")}
           </span>
           <EditSalaryButton t={t} helperId={helper.id} currentSalary={helper.baseMonthlySalary} />
         </div>

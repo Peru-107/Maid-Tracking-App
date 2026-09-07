@@ -52,7 +52,7 @@
   "loading": "লোড হৈ আছে…",
   "attendance_hint": "টেপ = উপস্থিত · পুনৰ টেপ = বাতিল · টিপি ৰাখক = অধিক বিকল্প",
 
-  "loans_and_advances": "ঋণ আৰু অগ্ৰিম",
+  "loans_and_advances": "ঋণ",
   "new_loan": "+ নতুন ঋণ",
   "loan_amount_placeholder": "ঋণৰ পৰিমাণ (₹)",
   "monthly_emi_placeholder": "মাহেকীয়া কর্তন / EMI (₹)",

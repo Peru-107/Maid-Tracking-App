@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
 import { Button, Card, Badge } from "@/components/ui";
 import { NumberField, YesNoToggle } from "@/components/ui-inputs";
 import { calculateMonthlySettlement, SettlementInput } from "@/lib/salary";
@@ -223,11 +223,14 @@ export function SettlementPanel({
             <dd className="text-right font-semibold">{rupees(baseInput!.baseSalary)}</dd>
           </dl>
 
-          <details className="rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
-            <summary className="flex cursor-pointer items-center justify-between font-bold text-neutral-700 dark:text-neutral-200">
+          <details className="group rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
+            <summary className="flex cursor-pointer list-none items-center justify-between font-bold text-neutral-700 [&::-webkit-details-marker]:hidden dark:text-neutral-200">
               <span>{t.attendance_breakdown}</span>
-              <span className={liveResult.lossOfPay > 0 ? "text-red-600" : "text-neutral-400"}>
-                {liveResult.lossOfPay > 0 ? `-${rupees(liveResult.lossOfPay)}` : rupees(0)}
+              <span className="flex items-center gap-1.5">
+                <span className={liveResult.lossOfPay > 0 ? "text-red-600" : "text-neutral-400"}>
+                  {liveResult.lossOfPay > 0 ? `-${rupees(liveResult.lossOfPay)}` : rupees(0)}
+                </span>
+                <ChevronDown size={16} className="text-neutral-400 transition-transform group-open:rotate-180" />
               </span>
             </summary>
             <dl className="mt-2 grid grid-cols-2 gap-y-1.5">
@@ -244,12 +247,15 @@ export function SettlementPanel({
             </dl>
           </details>
 
-          <details className="rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800" open>
-            <summary className="flex cursor-pointer items-center justify-between font-bold text-neutral-700 dark:text-neutral-200">
+          <details className="group rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800" open>
+            <summary className="flex cursor-pointer list-none items-center justify-between font-bold text-neutral-700 [&::-webkit-details-marker]:hidden dark:text-neutral-200">
               <span>{t.deductions_bonuses}</span>
-              <span className={netDeductionsAndBonuses < 0 ? "text-red-600" : "text-green-600"}>
-                {netDeductionsAndBonuses < 0 ? "-" : "+"}
-                {rupees(Math.abs(netDeductionsAndBonuses))}
+              <span className="flex items-center gap-1.5">
+                <span className={netDeductionsAndBonuses < 0 ? "text-red-600" : "text-green-600"}>
+                  {netDeductionsAndBonuses < 0 ? "-" : "+"}
+                  {rupees(Math.abs(netDeductionsAndBonuses))}
+                </span>
+                <ChevronDown size={16} className="text-neutral-400 transition-transform group-open:rotate-180" />
               </span>
             </summary>
             <dl className="mt-2 grid grid-cols-2 gap-y-1.5">
@@ -327,10 +333,6 @@ export function SettlementPanel({
                         onChange={(n) => setLoanAmount(Math.min(n, baseInput!.loanOutstandingTotal))}
                         className="mt-1 w-full"
                       />
-                      <span className="mt-1 block text-xs font-medium text-neutral-500">
-                        {t.loan_hint_prefix} {rupees(baseInput!.loanEmiDue)} · {t.loan_hint_outstanding} {rupees(baseInput!.loanOutstandingTotal)}.{" "}
-                        {t.loan_hint_suffix}
-                      </span>
                     </label>
                   )}
                 </div>

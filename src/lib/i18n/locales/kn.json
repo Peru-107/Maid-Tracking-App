@@ -52,7 +52,7 @@
   "loading": "ಲೋಡ್ ಆಗುತ್ತಿದೆ…",
   "attendance_hint": "ಟ್ಯಾಪ್ = ಹಾಜರಿದ್ದಾರೆ · ಮತ್ತೆ ಟ್ಯಾಪ್ = ರದ್ದುಗೊಳಿಸಿ · ಒತ್ತಿ ಹಿಡಿಯಿರಿ = ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು",
 
-  "loans_and_advances": "ಸಾಲಗಳು & ಮುಂಗಡಗಳು",
+  "loans_and_advances": "ಸಾಲಗಳು",
   "new_loan": "+ ಹೊಸ ಸಾಲ",
   "loan_amount_placeholder": "ಸಾಲದ ಮೊತ್ತ (₹)",
   "monthly_emi_placeholder": "ಮಾಸಿಕ ಕಡಿತ / EMI (₹)",

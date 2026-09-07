@@ -52,7 +52,7 @@
   "loading": "Loading…",
   "attendance_hint": "Tap = Present · tap again = undo · hold = more options",
 
-  "loans_and_advances": "Loans & Advances",
+  "loans_and_advances": "Loans",
   "new_loan": "+ New Loan",
   "loan_amount_placeholder": "Loan amount (₹)",
   "monthly_emi_placeholder": "Monthly deduction / EMI (₹)",
