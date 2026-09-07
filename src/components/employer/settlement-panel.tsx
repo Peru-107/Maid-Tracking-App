@@ -45,6 +45,8 @@ export function SettlementPanel({
   const [loanSkipped, setLoanSkipped] = useState(false);
   const [overtimeBonus, setOvertimeBonus] = useState(0);
   const [festivalBonus, setFestivalBonus] = useState(0);
+  const [attendanceOpen, setAttendanceOpen] = useState(false);
+  const [deductionsOpen, setDeductionsOpen] = useState(true);
 
   async function refetch() {
     const res = await fetch(`/api/helpers/${helperId}/settlement?year=${year}&month=${month}`);
@@ -225,92 +227,118 @@ export function SettlementPanel({
             <dd className="text-right font-semibold">{rupees(baseInput!.baseSalary)}</dd>
           </dl>
 
-          <details className="group rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
-            <summary className="flex cursor-pointer list-none items-center justify-between font-bold text-neutral-700 [&::-webkit-details-marker]:hidden dark:text-neutral-200">
+          <div className="rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
+            <button
+              type="button"
+              onClick={() => setAttendanceOpen((v) => !v)}
+              aria-expanded={attendanceOpen}
+              className="flex w-full cursor-pointer list-none items-center justify-between font-bold text-neutral-700 dark:text-neutral-200"
+            >
               <span>{t.attendance_breakdown}</span>
               <span className="flex items-center gap-1.5">
                 <span className={liveResult.lossOfPay > 0 ? "text-red-600" : "text-neutral-400"}>
                   {liveResult.lossOfPay > 0 ? `-${rupees(liveResult.lossOfPay)}` : rupees(0)}
                 </span>
-                <ChevronDown size={16} aria-hidden="true" className="text-neutral-400 transition-transform group-open:rotate-180" />
+                <ChevronDown
+                  size={16}
+                  aria-hidden="true"
+                  className={`text-neutral-400 transition-transform ${attendanceOpen ? "rotate-180" : ""}`}
+                />
               </span>
-            </summary>
-            <dl className="mt-2 grid grid-cols-2 gap-y-1.5">
-              <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.present}</dt>
-              <dd className="text-right">{baseInput!.attendance.presentDays}</dd>
-              <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.absent}</dt>
-              <dd className="text-right">{baseInput!.attendance.absentDays}</dd>
-              <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.half_day}</dt>
-              <dd className="text-right">{baseInput!.attendance.halfDays}</dd>
-              <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.paid_leave}</dt>
-              <dd className="text-right">{baseInput!.attendance.paidLeaveDays}</dd>
-              <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.per_day_wage}</dt>
-              <dd className="text-right">{rupees(liveResult.perDayWage)}</dd>
-            </dl>
-          </details>
+            </button>
+            <div className={`accordion-rows ${attendanceOpen ? "is-open" : ""}`}>
+              <div>
+                <dl className="mt-2 grid grid-cols-2 gap-y-1.5">
+                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.present}</dt>
+                  <dd className="text-right">{baseInput!.attendance.presentDays}</dd>
+                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.absent}</dt>
+                  <dd className="text-right">{baseInput!.attendance.absentDays}</dd>
+                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.half_day}</dt>
+                  <dd className="text-right">{baseInput!.attendance.halfDays}</dd>
+                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.paid_leave}</dt>
+                  <dd className="text-right">{baseInput!.attendance.paidLeaveDays}</dd>
+                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.per_day_wage}</dt>
+                  <dd className="text-right">{rupees(liveResult.perDayWage)}</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
 
-          <details className="group rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800" open>
-            <summary className="flex cursor-pointer list-none items-center justify-between font-bold text-neutral-700 [&::-webkit-details-marker]:hidden dark:text-neutral-200">
+          <div className="rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
+            <button
+              type="button"
+              onClick={() => setDeductionsOpen((v) => !v)}
+              aria-expanded={deductionsOpen}
+              className="flex w-full cursor-pointer list-none items-center justify-between font-bold text-neutral-700 dark:text-neutral-200"
+            >
               <span>{t.deductions_bonuses}</span>
               <span className="flex items-center gap-1.5">
                 <span className={netDeductionsAndBonuses < 0 ? "text-red-600" : "text-green-600"}>
                   {netDeductionsAndBonuses < 0 ? "-" : "+"}
                   {rupees(Math.abs(netDeductionsAndBonuses))}
                 </span>
-                <ChevronDown size={16} aria-hidden="true" className="text-neutral-400 transition-transform group-open:rotate-180" />
+                <ChevronDown
+                  size={16}
+                  aria-hidden="true"
+                  className={`text-neutral-400 transition-transform ${deductionsOpen ? "rotate-180" : ""}`}
+                />
               </span>
-            </summary>
-            <dl className="mt-2 grid grid-cols-2 gap-y-1.5">
-              {liveResult.lossOfPay > 0 && (
-                <>
-                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.loss_of_pay}</dt>
-                  <dd className="text-right text-red-600">-{rupees(liveResult.lossOfPay)}</dd>
-                </>
-              )}
+            </button>
+            <div className={`accordion-rows ${deductionsOpen ? "is-open" : ""}`}>
+              <div>
+                <dl className="mt-2 grid grid-cols-2 gap-y-1.5">
+                  {liveResult.lossOfPay > 0 && (
+                    <>
+                      <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.loss_of_pay}</dt>
+                      <dd className="text-right text-red-600">-{rupees(liveResult.lossOfPay)}</dd>
+                    </>
+                  )}
 
-              {liveResult.loanEmiDue > 0 && (
-                <>
-                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">
-                    {t.loan_repayment} {liveResult.loanEmiDeducted === 0 && t.skipped}
-                  </dt>
-                  <dd
-                    className={`text-right ${liveResult.loanEmiDeducted === 0 ? "text-neutral-400" : "text-red-600"}`}
-                  >
-                    -{rupees(liveResult.loanEmiDeducted)}
-                  </dd>
-                </>
-              )}
+                  {liveResult.loanEmiDue > 0 && (
+                    <>
+                      <dt className="font-medium text-neutral-600 dark:text-neutral-400">
+                        {t.loan_repayment} {liveResult.loanEmiDeducted === 0 && t.skipped}
+                      </dt>
+                      <dd
+                        className={`text-right ${liveResult.loanEmiDeducted === 0 ? "text-neutral-400" : "text-red-600"}`}
+                      >
+                        -{rupees(liveResult.loanEmiDeducted)}
+                      </dd>
+                    </>
+                  )}
 
-              {liveResult.kharchaDeducted > 0 && (
-                <>
-                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.kharcha_advance}</dt>
-                  <dd className="text-right text-red-600">-{rupees(liveResult.kharchaDeducted)}</dd>
-                </>
-              )}
+                  {liveResult.kharchaDeducted > 0 && (
+                    <>
+                      <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.kharcha_advance}</dt>
+                      <dd className="text-right text-red-600">-{rupees(liveResult.kharchaDeducted)}</dd>
+                    </>
+                  )}
 
-              {liveResult.overtimeBonus > 0 && (
-                <>
-                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.overtime_bonus}</dt>
-                  <dd className="text-right text-green-600">+{rupees(liveResult.overtimeBonus)}</dd>
-                </>
-              )}
+                  {liveResult.overtimeBonus > 0 && (
+                    <>
+                      <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.overtime_bonus}</dt>
+                      <dd className="text-right text-green-600">+{rupees(liveResult.overtimeBonus)}</dd>
+                    </>
+                  )}
 
-              {liveResult.festivalBonus > 0 && (
-                <>
-                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.festival_bonus}</dt>
-                  <dd className="text-right text-green-600">+{rupees(liveResult.festivalBonus)}</dd>
-                </>
-              )}
+                  {liveResult.festivalBonus > 0 && (
+                    <>
+                      <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.festival_bonus}</dt>
+                      <dd className="text-right text-green-600">+{rupees(liveResult.festivalBonus)}</dd>
+                    </>
+                  )}
 
-              {liveResult.lossOfPay === 0 &&
-                liveResult.loanEmiDue === 0 &&
-                liveResult.kharchaDeducted === 0 &&
-                liveResult.overtimeBonus === 0 &&
-                liveResult.festivalBonus === 0 && (
-                  <dd className="col-span-2 text-neutral-400">{t.nothing_to_deduct}</dd>
-                )}
-            </dl>
-          </details>
+                  {liveResult.lossOfPay === 0 &&
+                    liveResult.loanEmiDue === 0 &&
+                    liveResult.kharchaDeducted === 0 &&
+                    liveResult.overtimeBonus === 0 &&
+                    liveResult.festivalBonus === 0 && (
+                      <dd className="col-span-2 text-neutral-400">{t.nothing_to_deduct}</dd>
+                    )}
+                </dl>
+              </div>
+            </div>
+          </div>
 
           <div className="flex items-center justify-between border-t-2 border-neutral-100 pt-3 dark:border-neutral-800">
             <span className="text-lg font-bold">{t.final_payout}</span>

@@ -117,7 +117,7 @@ export function LoanSection({
         {loans.map((loan) => (
           <div
             key={loan.id}
-            className="flex items-center justify-between rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800"
+            className="entry-row flex items-center justify-between rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800"
           >
             <div>
               <div className="font-semibold">

@@ -99,7 +99,7 @@ export function KharchaSection({
 
       <div className="flex flex-col gap-2">
         {kharchas.map((k) => (
-          <div key={k.id} className="flex items-center justify-between rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
+          <div key={k.id} className="entry-row flex items-center justify-between rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
             <div>
               <div className="font-semibold">
                 {rupees(k.amount)}

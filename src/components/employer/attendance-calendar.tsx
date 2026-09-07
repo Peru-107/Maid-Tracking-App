@@ -225,7 +225,7 @@ export function AttendanceCalendar({
                   )}
                 </button>
                 {isSelected && (
-                  <div className="absolute z-20 mt-1 w-48 rounded-2xl bg-white p-2 shadow-[0_4px_10px_rgba(15,23,42,0.06),0_16px_32px_-8px_rgba(15,23,42,0.24)] dark:bg-neutral-900">
+                  <div className="day-popover absolute z-20 mt-1 w-48 rounded-2xl bg-white p-2 shadow-[0_4px_10px_rgba(15,23,42,0.06),0_16px_32px_-8px_rgba(15,23,42,0.24)] dark:bg-neutral-900">
                     <div className="grid grid-cols-2 gap-1">
                       {(Object.keys(STATUS_KEYS) as AttendanceStatus[]).map((status) => (
                         <button
