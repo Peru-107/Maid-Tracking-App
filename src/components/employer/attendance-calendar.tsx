@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button, Card } from "@/components/ui";
@@ -40,15 +40,18 @@ function toDateKey(year: number, month: number, day: number) {
 export function AttendanceCalendar({
   t,
   helperId,
+  year,
+  month,
+  onChangeMonth,
   onChange,
 }: {
   t: Record<TranslationKey, string>;
   helperId: string;
+  year: number;
+  month: number;
+  onChangeMonth: (delta: number) => void;
   onChange?: () => void;
 }) {
-  const today = useMemo(() => new Date(), []);
-  const [year, setYear] = useState(today.getFullYear());
-  const [month, setMonth] = useState(today.getMonth() + 1); // 1-12
   const [logs, setLogs] = useState<Record<string, AttendanceLog>>({});
   const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
@@ -77,20 +80,6 @@ export function AttendanceCalendar({
 
   const daysInMonth = new Date(year, month, 0).getDate();
   const firstWeekday = new Date(year, month - 1, 1).getDay();
-
-  function changeMonth(delta: number) {
-    let newMonth = month + delta;
-    let newYear = year;
-    if (newMonth < 1) {
-      newMonth = 12;
-      newYear -= 1;
-    } else if (newMonth > 12) {
-      newMonth = 1;
-      newYear += 1;
-    }
-    setMonth(newMonth);
-    setYear(newYear);
-  }
 
   async function setStatus(day: number, status: AttendanceStatus, badli: boolean) {
     const dateKey = toDateKey(year, month, day);
@@ -171,7 +160,7 @@ export function AttendanceCalendar({
     <Card className="p-4">
       <div className="mb-3 flex items-center justify-between">
         <button
-          onClick={() => changeMonth(-1)}
+          onClick={() => onChangeMonth(-1)}
           className="rounded-full p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-white/10"
           aria-label="Previous month"
         >
@@ -179,7 +168,7 @@ export function AttendanceCalendar({
         </button>
         <h3 className="text-base font-bold">{monthLabel}</h3>
         <button
-          onClick={() => changeMonth(1)}
+          onClick={() => onChangeMonth(1)}
           className="rounded-full p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-white/10"
           aria-label="Next month"
         >

@@ -21,16 +21,19 @@ export function SettlementPanel({
   helperId,
   helperName,
   helperPhone,
+  year,
+  month,
+  onChangeMonth,
 }: {
   t: Record<TranslationKey, string>;
   helperId: string;
   helperName: string;
   helperPhone: string;
+  year: number;
+  month: number;
+  onChangeMonth: (delta: number) => void;
 }) {
   const router = useRouter();
-  const now = useMemo(() => new Date(), []);
-  const [year, setYear] = useState(now.getFullYear());
-  const [month, setMonth] = useState(now.getMonth() + 1);
 
   const [baseInput, setBaseInput] = useState<SettlementInput | null>(null);
   const [existing, setExisting] = useState<MonthlySettlement | null>(null);
@@ -76,15 +79,6 @@ export function SettlementPanel({
       festivalBonus,
     });
   }, [baseInput, effectiveLoanAmount, overtimeBonus, festivalBonus]);
-
-  function changeMonth(delta: number) {
-    let m = month + delta;
-    let y = year;
-    if (m < 1) { m = 12; y -= 1; }
-    else if (m > 12) { m = 1; y += 1; }
-    setMonth(m);
-    setYear(y);
-  }
 
   function handleSkipToggle(skip: boolean) {
     setLoanSkipped(skip);
@@ -191,7 +185,7 @@ export function SettlementPanel({
     <Card className="flex flex-col gap-4 p-4">
       <div className="flex items-center justify-between">
         <button
-          onClick={() => changeMonth(-1)}
+          onClick={() => onChangeMonth(-1)}
           className="rounded-full p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-white/10"
         >
           <ChevronLeft size={20} />
@@ -200,7 +194,7 @@ export function SettlementPanel({
           {t.salary_slip} — {MONTH_NAMES[month - 1]} {year}
         </h3>
         <button
-          onClick={() => changeMonth(1)}
+          onClick={() => onChangeMonth(1)}
           className="rounded-full p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-white/10"
         >
           <ChevronRight size={20} />
