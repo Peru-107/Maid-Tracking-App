@@ -19,7 +19,7 @@ export function LanguageSwitcher({ current, label }: { current: Locale; label: s
   return (
     <label className="flex items-center gap-2 text-sm">
       <span className="hidden items-center gap-1 font-medium text-neutral-500 sm:flex">
-        <Languages size={16} />
+        <Languages size={16} aria-hidden="true" />
         {label}
       </span>
       <select

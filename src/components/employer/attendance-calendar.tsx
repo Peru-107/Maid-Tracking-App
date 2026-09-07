@@ -164,7 +164,7 @@ export function AttendanceCalendar({
           className="rounded-full p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-white/10"
           aria-label="Previous month"
         >
-          <ChevronLeft size={20} />
+          <ChevronLeft size={20} aria-hidden="true" />
         </button>
         <h3 className="text-base font-bold">{monthLabel}</h3>
         <button
@@ -172,7 +172,7 @@ export function AttendanceCalendar({
           className="rounded-full p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-white/10"
           aria-label="Next month"
         >
-          <ChevronRight size={20} />
+          <ChevronRight size={20} aria-hidden="true" />
         </button>
       </div>
 

@@ -70,13 +70,13 @@ export function LoanSection({
     <Card className="flex flex-col gap-3 p-4">
       <div className="flex items-center justify-between">
         <h3 className="flex items-center gap-2 font-bold">
-          <HandCoins size={18} className="text-amber-600 dark:text-amber-400" />
+          <HandCoins size={18} aria-hidden="true" className="text-amber-600 dark:text-amber-400" />
           {t.loans_and_advances}
         </h3>
         <Button variant="secondary" onClick={() => setOpen((v) => !v)}>
           {open ? t.cancel : (
             <>
-              <Plus size={16} />
+              <Plus size={16} aria-hidden="true" />
               {t.new_loan.replace("+ ", "")}
             </>
           )}

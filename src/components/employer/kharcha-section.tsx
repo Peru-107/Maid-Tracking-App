@@ -79,7 +79,7 @@ export function KharchaSection({
   return (
     <Card className="flex flex-col gap-3 p-4">
       <h3 className="flex items-center gap-2 font-bold">
-        <Wallet size={18} className="text-teal-600 dark:text-teal-400" />
+        <Wallet size={18} aria-hidden="true" className="text-teal-600 dark:text-teal-400" />
         {t.kharcha_heading}
       </h3>
 
@@ -114,7 +114,7 @@ export function KharchaSection({
               title={t.remove}
               className="rounded-xl p-2 text-red-600 hover:bg-red-50 disabled:opacity-50 dark:hover:bg-red-900/20"
             >
-              <X size={16} />
+              <X size={16} aria-hidden="true" />
             </button>
           </div>
         ))}

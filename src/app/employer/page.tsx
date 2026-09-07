@@ -70,22 +70,22 @@ export default async function EmployerDashboard() {
       {helpers.length > 0 && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <Card className="flex flex-col gap-1 p-3">
-            <Users size={16} className="text-teal-600 dark:text-teal-400" />
+            <Users size={16} aria-hidden="true" className="text-teal-600 dark:text-teal-400" />
             <span className="text-lg font-bold">{helpers.length}</span>
             <span className="text-xs font-medium text-neutral-500">{t.helpers_count_label}</span>
           </Card>
           <Card className="flex flex-col gap-1 p-3">
-            <Wallet size={16} className="text-teal-600 dark:text-teal-400" />
+            <Wallet size={16} aria-hidden="true" className="text-teal-600 dark:text-teal-400" />
             <span className="text-lg font-bold">{rupees(totalPayroll)}</span>
             <span className="text-xs font-medium text-neutral-500">{t.monthly_payroll}</span>
           </Card>
           <Card className="flex flex-col gap-1 p-3">
-            <HandCoins size={16} className="text-amber-600 dark:text-amber-400" />
+            <HandCoins size={16} aria-hidden="true" className="text-amber-600 dark:text-amber-400" />
             <span className="text-lg font-bold">{totalOutstanding > 0 ? rupees(totalOutstanding) : t.none}</span>
             <span className="text-xs font-medium text-neutral-500">{t.outstanding_loans}</span>
           </Card>
           <Card className="flex flex-col gap-1 p-3">
-            <CheckCircle2 size={16} className="text-green-600 dark:text-green-400" />
+            <CheckCircle2 size={16} aria-hidden="true" className="text-green-600 dark:text-green-400" />
             <span className="text-lg font-bold">
               {paidThisMonth}/{helpers.length}
             </span>

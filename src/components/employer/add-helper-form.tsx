@@ -43,7 +43,7 @@ export function AddHelperForm({ t }: { t: Record<TranslationKey, string> }) {
   if (!open) {
     return (
       <Button onClick={() => setOpen(true)} className="w-full sm:w-auto">
-        <UserPlus size={18} />
+        <UserPlus size={18} aria-hidden="true" />
         {t.add_helper.replace("+ ", "")}
       </Button>
     );

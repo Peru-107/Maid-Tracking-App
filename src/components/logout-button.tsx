@@ -15,7 +15,7 @@ export function LogoutButton({ label = "Logout" }: { label?: string }) {
 
   return (
     <Button variant="ghost" onClick={handleLogout}>
-      <LogOut size={16} />
+      <LogOut size={16} aria-hidden="true" />
       {label}
     </Button>
   );
