@@ -38,6 +38,11 @@
   "outstanding": "باقی",
   "none": "کوئی نہیں",
   "all_helpers": "تمام ہیلپرز",
+  "helpers_count_label": "ہیلپرز",
+  "monthly_payroll": "ماہانہ تنخواہ",
+  "outstanding_loans": "باقی قرض",
+  "paid_this_month": "اس مہینے ادا شدہ",
+  "pending_review": "جائزے کے لیے",
 
   "helpers_name_placeholder": "ہیلپر کا نام",
   "mobile_number_placeholder": "موبائل نمبر",

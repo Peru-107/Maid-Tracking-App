@@ -38,6 +38,11 @@
   "outstanding": "બાકી",
   "none": "કંઈ નહીં",
   "all_helpers": "બધા મદદનીશો",
+  "helpers_count_label": "મદદનીશો",
+  "monthly_payroll": "માસિક પગાર",
+  "outstanding_loans": "બાકી ઉધાર",
+  "paid_this_month": "આ મહિને ચૂકવેલ",
+  "pending_review": "સમીક્ષા માટે",
 
   "helpers_name_placeholder": "મદદનીશનું નામ",
   "mobile_number_placeholder": "મોબાઇલ નંબર",

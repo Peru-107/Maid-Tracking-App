@@ -38,6 +38,11 @@
   "outstanding": "ಬಾಕಿ",
   "none": "ಯಾವುದೂ ಇಲ್ಲ",
   "all_helpers": "ಎಲ್ಲಾ ಸಹಾಯಕರು",
+  "helpers_count_label": "ಸಹಾಯಕರು",
+  "monthly_payroll": "ಮಾಸಿಕ ಸಂಬಳ",
+  "outstanding_loans": "ಬಾಕಿ ಸಾಲಗಳು",
+  "paid_this_month": "ಈ ತಿಂಗಳು ಪಾವತಿಸಲಾಗಿದೆ",
+  "pending_review": "ಪರಿಶೀಲನೆಗೆ",
 
   "helpers_name_placeholder": "ಸಹಾಯಕರ ಹೆಸರು",
   "mobile_number_placeholder": "ಮೊಬೈಲ್ ಸಂಖ್ಯೆ",

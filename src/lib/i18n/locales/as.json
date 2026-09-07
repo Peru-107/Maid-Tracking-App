@@ -38,6 +38,11 @@
   "outstanding": "বাকী",
   "none": "একো নাই",
   "all_helpers": "সকলো সহায়ক",
+  "helpers_count_label": "সহায়ক",
+  "monthly_payroll": "মাহেকীয়া দৰমহা",
+  "outstanding_loans": "বাকী ঋণ",
+  "paid_this_month": "এই মাহত পৰিশোধ",
+  "pending_review": "পৰ্যালোচনাৰ বাবে",
 
   "helpers_name_placeholder": "সহায়কৰ নাম",
   "mobile_number_placeholder": "মোবাইল নম্বৰ",

@@ -38,6 +38,11 @@
   "outstanding": "ବାକି",
   "none": "କିଛି ନାହିଁ",
   "all_helpers": "ସମସ୍ତ ସହାୟକ",
+  "helpers_count_label": "ସହାୟକ",
+  "monthly_payroll": "ମାସିକ ଦରମା",
+  "outstanding_loans": "ବାକି ଋଣ",
+  "paid_this_month": "ଏହି ମାସ ପରିଶୋଧ",
+  "pending_review": "ସମୀକ୍ଷା ପାଇଁ",
 
   "helpers_name_placeholder": "ସହାୟକଙ୍କ ନାମ",
   "mobile_number_placeholder": "ମୋବାଇଲ୍ ନମ୍ବର",

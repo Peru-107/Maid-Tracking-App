@@ -38,6 +38,11 @@
   "outstanding": "Outstanding",
   "none": "None",
   "all_helpers": "All Helpers",
+  "helpers_count_label": "Helpers",
+  "monthly_payroll": "Monthly Payroll",
+  "outstanding_loans": "Outstanding Loans",
+  "paid_this_month": "Paid This Month",
+  "pending_review": "to review",
 
   "helpers_name_placeholder": "Helper's name",
   "mobile_number_placeholder": "Mobile number",

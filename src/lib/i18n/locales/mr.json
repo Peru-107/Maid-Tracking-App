@@ -38,6 +38,11 @@
   "outstanding": "शिल्लक",
   "none": "काहीही नाही",
   "all_helpers": "सर्व मदतनीस",
+  "helpers_count_label": "मदतनीस",
+  "monthly_payroll": "मासिक पगार",
+  "outstanding_loans": "बाकी कर्ज",
+  "paid_this_month": "या महिन्यात पैसे दिले",
+  "pending_review": "पुनरावलोकनासाठी",
 
   "helpers_name_placeholder": "मदतनिसाचे नाव",
   "mobile_number_placeholder": "मोबाईल नंबर",
