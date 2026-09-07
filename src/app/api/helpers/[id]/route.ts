@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireEmployerSession, requireOwnedHelper, handleApiError } from "@/lib/guards";
+import { normalizePhone } from "@/lib/phone";
+import {
+  requireEmployerSession,
+  requireOwnedHelper,
+  assertPhoneAvailableForHelper,
+  handleApiError,
+} from "@/lib/guards";
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -25,6 +31,8 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 }
 
 const patchSchema = z.object({
+  name: z.string().trim().min(1).max(100).optional(),
+  phone: z.string().optional(),
   baseMonthlySalary: z.number().positive().optional(),
   active: z.boolean().optional(),
 });
@@ -40,7 +48,25 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       return NextResponse.json({ error: "Invalid update" }, { status: 400 });
     }
 
-    const updated = await prisma.helperProfile.update({ where: { id }, data: parsed.data });
+    const data: { name?: string; phone?: string; baseMonthlySalary?: number; active?: boolean } = {
+      baseMonthlySalary: parsed.data.baseMonthlySalary,
+      active: parsed.data.active,
+      name: parsed.data.name,
+    };
+
+    if (parsed.data.phone !== undefined) {
+      const phone = normalizePhone(parsed.data.phone);
+      if (!phone) {
+        return NextResponse.json(
+          { error: "Enter a valid 10-digit Indian mobile number" },
+          { status: 400 },
+        );
+      }
+      await assertPhoneAvailableForHelper(phone, id);
+      data.phone = phone;
+    }
+
+    const updated = await prisma.helperProfile.update({ where: { id }, data });
     return NextResponse.json({ helper: updated });
   } catch (error) {
     return handleApiError(error);

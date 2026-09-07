@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { normalizePhone } from "@/lib/phone";
-import { requireEmployerSession, handleApiError } from "@/lib/guards";
+import { requireEmployerSession, assertPhoneAvailableForHelper, handleApiError } from "@/lib/guards";
 
 export async function GET() {
   try {
@@ -42,6 +42,8 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
+
+    await assertPhoneAvailableForHelper(phone);
 
     const helper = await prisma.helperProfile.create({
       data: {

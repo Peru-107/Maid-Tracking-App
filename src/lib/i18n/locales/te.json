@@ -38,6 +38,11 @@
   "outstanding": "బాకీ",
   "none": "ఏమీ లేదు",
   "all_helpers": "అందరు సహాయకులు",
+  "helpers_count_label": "సహాయకులు",
+  "monthly_payroll": "నెలవారీ జీతాలు",
+  "outstanding_loans": "బాకీ అప్పులు",
+  "paid_this_month": "ఈ నెల చెల్లించారు",
+  "pending_review": "సమీక్షకు",
 
   "helpers_name_placeholder": "సహాయకుడి పేరు",
   "mobile_number_placeholder": "మొబైల్ నంబర్",

@@ -38,6 +38,11 @@
   "outstanding": "ബാക്കി",
   "none": "ഒന്നുമില്ല",
   "all_helpers": "എല്ലാ സഹായികളും",
+  "helpers_count_label": "സഹായികൾ",
+  "monthly_payroll": "മാസ ശമ്പളം",
+  "outstanding_loans": "ബാക്കി വായ്പകൾ",
+  "paid_this_month": "ഈ മാസം അടച്ചത്",
+  "pending_review": "അവലോകനത്തിന്",
 
   "helpers_name_placeholder": "സഹായിയുടെ പേര്",
   "mobile_number_placeholder": "മൊബൈൽ നമ്പർ",

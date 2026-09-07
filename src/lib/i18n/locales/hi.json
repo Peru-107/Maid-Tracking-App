@@ -38,6 +38,11 @@
   "outstanding": "बकाया",
   "none": "कोई नहीं",
   "all_helpers": "सभी हेल्पर",
+  "helpers_count_label": "हेल्पर",
+  "monthly_payroll": "मासिक वेतन",
+  "outstanding_loans": "बकाया उधार",
+  "paid_this_month": "इस महीने भुगतान",
+  "pending_review": "समीक्षा हेतु",
 
   "helpers_name_placeholder": "हेल्पर का नाम",
   "mobile_number_placeholder": "मोबाइल नंबर",

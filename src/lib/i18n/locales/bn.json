@@ -38,6 +38,11 @@
   "outstanding": "বাকি",
   "none": "কিছু নেই",
   "all_helpers": "সব সাহায্যকারী",
+  "helpers_count_label": "সাহায্যকারী",
+  "monthly_payroll": "মাসিক বেতন",
+  "outstanding_loans": "বাকি ঋণ",
+  "paid_this_month": "এই মাসে পরিশোধিত",
+  "pending_review": "পর্যালোচনার জন্য",
 
   "helpers_name_placeholder": "সাহায্যকারীর নাম",
   "mobile_number_placeholder": "মোবাইল নম্বর",

@@ -38,6 +38,11 @@
   "outstanding": "ਬਾਕੀ",
   "none": "ਕੋਈ ਨਹੀਂ",
   "all_helpers": "ਸਾਰੇ ਮਦਦਗਾਰ",
+  "helpers_count_label": "ਮਦਦਗਾਰ",
+  "monthly_payroll": "ਮਾਸਿਕ ਤਨਖਾਹ",
+  "outstanding_loans": "ਬਾਕੀ ਉਧਾਰ",
+  "paid_this_month": "ਇਸ ਮਹੀਨੇ ਭੁਗਤਾਨ",
+  "pending_review": "ਸਮੀਖਿਆ ਲਈ",
 
   "helpers_name_placeholder": "ਮਦਦਗਾਰ ਦਾ ਨਾਮ",
   "mobile_number_placeholder": "ਮੋਬਾਈਲ ਨੰਬਰ",

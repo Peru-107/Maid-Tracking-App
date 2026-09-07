@@ -38,6 +38,11 @@
   "outstanding": "நிலுவை",
   "none": "இல்லை",
   "all_helpers": "அனைத்து உதவியாளர்கள்",
+  "helpers_count_label": "உதவியாளர்கள்",
+  "monthly_payroll": "மாத சம்பளம்",
+  "outstanding_loans": "நிலுவை கடன்கள்",
+  "paid_this_month": "இந்த மாதம் செலுத்தியது",
+  "pending_review": "மதிப்பாய்வுக்கு",
 
   "helpers_name_placeholder": "உதவியாளரின் பெயர்",
   "mobile_number_placeholder": "மொபைல் எண்",
