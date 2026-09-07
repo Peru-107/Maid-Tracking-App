@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getDictionary, type Locale } from "@/lib/i18n";
 import { HelperWorkspace } from "@/components/employer/helper-workspace";
 import { DeleteHelperButton } from "@/components/employer/delete-helper-button";
+import { EditSalaryButton } from "@/components/employer/edit-salary-button";
 
 export default async function HelperDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -28,10 +29,13 @@ export default async function HelperDetailPage({ params }: { params: Promise<{ i
           ← {t.all_helpers}
         </Link>
         <h1 className="mt-1 text-xl font-bold">{helper.name}</h1>
-        <p className="text-sm text-neutral-500">
-          +91 {helper.phone.replace("+91", "")} · {t.base_salary} ₹
-          {helper.baseMonthlySalary.toLocaleString("en-IN")}/mo
-        </p>
+        <div className="flex flex-wrap items-center gap-2 text-sm text-neutral-500">
+          <span>
+            +91 {helper.phone.replace("+91", "")} · {t.base_salary} ₹
+            {helper.baseMonthlySalary.toLocaleString("en-IN")}/mo
+          </span>
+          <EditSalaryButton t={t} helperId={helper.id} currentSalary={helper.baseMonthlySalary} />
+        </div>
       </div>
 
       <HelperWorkspace
