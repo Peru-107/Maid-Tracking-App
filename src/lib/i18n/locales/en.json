@@ -30,7 +30,6 @@
   "salary_slip": "Salary Slip",
   "share_on_whatsapp": "Share on WhatsApp",
   "no_loan": "No Loan Pending",
-
   "your_helpers": "Your Helpers",
   "add_helper": "+ Add Helper",
   "no_helpers_yet": "No helpers added yet. Add your first helper to start tracking attendance and salary.",
@@ -43,7 +42,6 @@
   "outstanding_loans": "Outstanding Loans",
   "paid_this_month": "Paid This Month",
   "pending_review": "to review",
-
   "helpers_name_placeholder": "Helper's name",
   "mobile_number_placeholder": "Mobile number",
   "monthly_salary_placeholder": "Monthly salary (₹)",
@@ -51,12 +49,10 @@
   "cancel": "Cancel",
   "saving": "Saving…",
   "edit": "Edit",
-
   "substitute_badli": "Substitute (Badli) came today",
   "close": "Close",
   "loading": "Loading…",
   "attendance_hint": "Tap = Present · tap again = undo · hold = more options",
-
   "loans_and_advances": "Loans",
   "new_loan": "+ New Loan",
   "loan_amount_placeholder": "Loan amount (₹)",
@@ -66,7 +62,6 @@
   "active": "Active",
   "cleared": "Cleared",
   "no_loans_recorded": "No loans recorded.",
-
   "kharcha_heading": "Kharcha (Mid-month Advance)",
   "kharcha_description": "Small cash advances get deducted in full the next time you generate a salary slip for this helper — separate from long-term loans, and not tied to a calendar month.",
   "amount_placeholder": "Amount (₹)",
@@ -77,7 +72,6 @@
   "removing": "Removing…",
   "no_pending_advances": "No pending advances.",
   "pending_total": "Pending total",
-
   "paid_on": "Paid on",
   "undo_mistake": "Undo (marked by mistake?)",
   "undo_confirm": "Undo Mark as Paid? This restores the loan balance and un-settles any Kharcha swept into this slip. Only do this if it was tapped by mistake.",
@@ -103,10 +97,12 @@
   "processing": "Processing…",
   "mark_as_paid": "Mark as Paid",
   "share_hisaab_whatsapp": "Share Hisaab on WhatsApp",
-
   "delete_helper": "Delete Helper",
   "confirm_delete_title": "Permanently delete",
   "confirm_delete_body": "This removes their entire attendance history, loans, advances, and salary slips. This can't be undone.",
   "yes_delete_permanently": "Yes, delete permanently",
-  "deleting": "Deleting…"
+  "deleting": "Deleting…",
+  "upi_id_placeholder": "UPI ID (optional)",
+  "pay_via_upi": "Pay via UPI",
+  "add_upi_id_hint": "Add the helper's UPI ID (Edit above) to pay directly from here."
 }

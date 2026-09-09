@@ -40,6 +40,7 @@ export default async function HelperDetailPage({ params }: { params: Promise<{ i
           currentName={helper.name}
           currentPhone={helper.phone}
           currentSalary={helper.baseMonthlySalary}
+          currentUpiId={helper.upiId}
         />
       </div>
 
@@ -48,6 +49,7 @@ export default async function HelperDetailPage({ params }: { params: Promise<{ i
         helperId={helper.id}
         helperName={helper.name}
         helperPhone={helper.phone}
+        helperUpiId={helper.upiId}
         loans={helper.loans}
         kharchas={helper.kharchas}
       />

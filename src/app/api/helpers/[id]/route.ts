@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { normalizePhone } from "@/lib/phone";
+import { isValidVpa, normalizeVpa } from "@/lib/upi";
 import {
   requireEmployerSession,
   requireOwnedHelper,
@@ -35,6 +36,8 @@ const patchSchema = z.object({
   phone: z.string().optional(),
   baseMonthlySalary: z.number().positive().optional(),
   active: z.boolean().optional(),
+  // Empty string clears a previously-set UPI ID.
+  upiId: z.string().trim().max(100).optional(),
 });
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -48,7 +51,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       return NextResponse.json({ error: "Invalid update" }, { status: 400 });
     }
 
-    const data: { name?: string; phone?: string; baseMonthlySalary?: number; active?: boolean } = {
+    const data: {
+      name?: string;
+      phone?: string;
+      baseMonthlySalary?: number;
+      active?: boolean;
+      upiId?: string | null;
+    } = {
       baseMonthlySalary: parsed.data.baseMonthlySalary,
       active: parsed.data.active,
       name: parsed.data.name,
@@ -64,6 +73,19 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       }
       await assertPhoneAvailableForHelper(phone, id);
       data.phone = phone;
+    }
+
+    if (parsed.data.upiId !== undefined) {
+      if (parsed.data.upiId === "") {
+        data.upiId = null;
+      } else if (!isValidVpa(parsed.data.upiId)) {
+        return NextResponse.json(
+          { error: "Enter a valid UPI ID, e.g. name@bank" },
+          { status: 400 },
+        );
+      } else {
+        data.upiId = normalizeVpa(parsed.data.upiId);
+      }
     }
 
     const updated = await prisma.helperProfile.update({ where: { id }, data });

@@ -58,6 +58,10 @@ model HelperProfile {
   name              String
   phone             String
   baseMonthlySalary Float
+  // UPI VPA (e.g. "name@bank") the employer pays salary to. Optional --
+  // helpers who are paid in cash never set one. Validated in the API layer
+  // (src/lib/upi.ts); never trusted as pre-sanitized when read back out.
+  upiId             String?
   active            Boolean   @default(true)
   joinedAt          DateTime  @default(now())
   createdAt         DateTime  @default(now())

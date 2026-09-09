@@ -2,11 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, IndianRupee, MessageCircle } from "lucide-react";
 import { Button, Card, Badge } from "@/components/ui";
 import { NumberField, YesNoToggle } from "@/components/ui-inputs";
 import { calculateMonthlySettlement, SettlementInput } from "@/lib/salary";
 import { buildHisaabMessage, buildWhatsAppShareUrl } from "@/lib/whatsapp";
+import { buildUpiPayUrl } from "@/lib/upi";
 import { rupees } from "@/lib/format";
 import type { MonthlySettlement } from "@prisma/client";
 import type { TranslationKey } from "@/lib/i18n";
@@ -21,6 +22,7 @@ export function SettlementPanel({
   helperId,
   helperName,
   helperPhone,
+  helperUpiId,
   year,
   month,
   onChangeMonth,
@@ -29,6 +31,7 @@ export function SettlementPanel({
   helperId: string;
   helperName: string;
   helperPhone: string;
+  helperUpiId?: string | null;
   year: number;
   month: number;
   onChangeMonth: (delta: number) => void;
@@ -174,6 +177,22 @@ export function SettlementPanel({
     const message = buildHisaabMessage(helperName, existing);
     window.open(buildWhatsAppShareUrl(helperPhone, message), "_blank");
   }
+
+  const upiPayUrl = useMemo(() => {
+    if (!helperUpiId || !liveResult || liveResult.finalPayout <= 0) return null;
+    try {
+      return buildUpiPayUrl({
+        vpa: helperUpiId,
+        payeeName: helperName,
+        amount: liveResult.finalPayout,
+        note: `Salary ${MONTH_NAMES[month - 1]} ${year}`,
+      });
+    } catch {
+      // A malformed upiId shouldn't ever reach here (validated on save),
+      // but never surface a broken deep link if it somehow does.
+      return null;
+    }
+  }, [helperUpiId, helperName, liveResult, month, year]);
 
   const netDeductionsAndBonuses = liveResult
     ? liveResult.overtimeBonus +
@@ -393,6 +412,16 @@ export function SettlementPanel({
                 {saving ? t.processing : t.mark_as_paid}
               </Button>
             )}
+            {!existing?.paid && upiPayUrl && (
+              <a
+                href={upiPayUrl}
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-100 px-4 py-2.5 font-semibold text-amber-900 shadow-[0_3px_0_rgba(180,130,20,0.28)] transition-all hover:bg-amber-200 active:translate-y-[2px] active:shadow-none dark:bg-amber-900/30 dark:text-amber-200 dark:shadow-[0_3px_0_rgba(0,0,0,0.5)]"
+              >
+                <IndianRupee size={16} aria-hidden="true" />
+                {t.pay_via_upi}
+              </a>
+            )}
             {existing && (
               <Button onClick={shareOnWhatsApp} variant="ghost" className="text-green-700 dark:text-green-400">
                 <MessageCircle size={16} aria-hidden="true" />
@@ -400,6 +429,9 @@ export function SettlementPanel({
               </Button>
             )}
           </div>
+          {!existing?.paid && !helperUpiId && (
+            <p className="text-xs font-medium text-neutral-400">{t.add_upi_id_hint}</p>
+          )}
         </>
       )}
     </Card>
