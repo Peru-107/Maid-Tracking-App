@@ -69,6 +69,6 @@ export async function getCurrentUser() {
   if (!session) return null;
   return prisma.user.findUnique({
     where: { id: session.userId },
-    include: { helperProfile: true },
+    include: { helperProfile: true, residentProfile: true },
   });
 }

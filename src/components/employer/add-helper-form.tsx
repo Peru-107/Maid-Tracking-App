@@ -7,12 +7,24 @@ import { Button, Card } from "@/components/ui";
 import { NumberField } from "@/components/ui-inputs";
 import type { TranslationKey } from "@/lib/i18n";
 
+type Category = "MAID" | "COOK" | "GARDENER" | "GARBAGE_COLLECTOR" | "WATCHMAN";
+
+const CATEGORIES: { value: Category; key: TranslationKey }[] = [
+  { value: "MAID", key: "category_maid" },
+  { value: "COOK", key: "category_cook" },
+  { value: "GARDENER", key: "category_gardener" },
+  { value: "GARBAGE_COLLECTOR", key: "category_garbage_collector" },
+  { value: "WATCHMAN", key: "category_watchman" },
+];
+
 export function AddHelperForm({ t }: { t: Record<TranslationKey, string> }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [salary, setSalary] = useState(0);
+  const [category, setCategory] = useState<Category>("MAID");
+  const [shift, setShift] = useState<"DAY" | "NIGHT">("DAY");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -24,13 +36,21 @@ export function AddHelperForm({ t }: { t: Record<TranslationKey, string> }) {
       const res = await fetch("/api/helpers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, baseMonthlySalary: salary }),
+        body: JSON.stringify({
+          name,
+          phone,
+          baseMonthlySalary: salary,
+          category,
+          shift: category === "WATCHMAN" ? shift : undefined,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Could not add helper");
       setName("");
       setPhone("");
       setSalary(0);
+      setCategory("MAID");
+      setShift("DAY");
       setOpen(false);
       router.refresh();
     } catch (err) {
@@ -67,6 +87,29 @@ export function AddHelperForm({ t }: { t: Record<TranslationKey, string> }) {
           className="rounded-2xl border-2 border-neutral-200 px-3 py-2.5 font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
         />
         <NumberField required placeholder={t.monthly_salary_placeholder} value={salary} onChange={setSalary} />
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value as Category)}
+          aria-label={t.category_label}
+          className="rounded-2xl border-2 border-neutral-200 bg-white px-3 py-2.5 font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
+        >
+          {CATEGORIES.map((c) => (
+            <option key={c.value} value={c.value}>
+              {t[c.key]}
+            </option>
+          ))}
+        </select>
+        {category === "WATCHMAN" && (
+          <select
+            value={shift}
+            onChange={(e) => setShift(e.target.value as "DAY" | "NIGHT")}
+            aria-label={t.shift_label}
+            className="rounded-2xl border-2 border-neutral-200 bg-white px-3 py-2.5 font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
+          >
+            <option value="DAY">{t.shift_day}</option>
+            <option value="NIGHT">{t.shift_night}</option>
+          </select>
+        )}
         <div className="flex gap-2">
           <Button type="submit" disabled={loading} className="flex-1">
             {loading ? t.saving : t.save}

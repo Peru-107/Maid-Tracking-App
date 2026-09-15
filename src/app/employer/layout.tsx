@@ -9,7 +9,8 @@ import { LanguageSwitcher } from "@/components/helper/language-switcher";
 export default async function EmployerLayout({ children }: { children: ReactNode }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
-  if (user.role !== "EMPLOYER") redirect("/helper");
+  if (user.role === "HELPER") redirect("/helper");
+  if (user.role === "RESIDENT") redirect("/resident");
 
   const locale = user.languagePref as Locale;
   const t = getDictionary(locale);
@@ -22,6 +23,17 @@ export default async function EmployerLayout({ children }: { children: ReactNode
           <Link href="/employer" className="flex items-center gap-2 text-lg font-bold text-teal-700 dark:text-teal-400">
             {t.app_name}
           </Link>
+          <nav className="flex items-center gap-4 text-sm font-bold text-neutral-500 dark:text-neutral-400">
+            <Link href="/employer" className="hover:text-teal-700 dark:hover:text-teal-400">
+              {t.nav_helpers}
+            </Link>
+            <Link href="/employer/residents" className="hover:text-teal-700 dark:hover:text-teal-400">
+              {t.nav_residents}
+            </Link>
+            <Link href="/employer/gate-log" className="hover:text-teal-700 dark:hover:text-teal-400">
+              {t.nav_gate_log}
+            </Link>
+          </nav>
           <div className="flex items-center gap-3">
             <LanguageSwitcher current={locale} label={t.language} />
             <LogoutButton label={t.logout} />

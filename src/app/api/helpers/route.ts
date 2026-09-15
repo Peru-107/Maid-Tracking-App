@@ -21,10 +21,15 @@ export async function GET() {
   }
 }
 
+const categoryEnum = z.enum(["MAID", "COOK", "GARDENER", "GARBAGE_COLLECTOR", "WATCHMAN"]);
+const shiftEnum = z.enum(["DAY", "NIGHT"]);
+
 const createSchema = z.object({
   name: z.string().trim().min(1).max(100),
   phone: z.string(),
   baseMonthlySalary: z.number().positive(),
+  category: categoryEnum.optional(),
+  shift: shiftEnum.optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -51,6 +56,10 @@ export async function POST(request: NextRequest) {
         name: parsed.data.name,
         phone,
         baseMonthlySalary: parsed.data.baseMonthlySalary,
+        category: parsed.data.category ?? "MAID",
+        // Shift only makes sense for watchmen; drop it silently otherwise
+        // rather than surface a validation error for an ignored field.
+        shift: parsed.data.category === "WATCHMAN" ? parsed.data.shift : undefined,
       },
     });
 

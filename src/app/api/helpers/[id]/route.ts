@@ -31,6 +31,9 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   }
 }
 
+const categoryEnum = z.enum(["MAID", "COOK", "GARDENER", "GARBAGE_COLLECTOR", "WATCHMAN"]);
+const shiftEnum = z.enum(["DAY", "NIGHT"]);
+
 const patchSchema = z.object({
   name: z.string().trim().min(1).max(100).optional(),
   phone: z.string().optional(),
@@ -38,6 +41,10 @@ const patchSchema = z.object({
   active: z.boolean().optional(),
   // Empty string clears a previously-set UPI ID.
   upiId: z.string().trim().max(100).optional(),
+  category: categoryEnum.optional(),
+  // Empty string clears a previously-set shift (e.g. category changed away
+  // from WATCHMAN).
+  shift: z.union([shiftEnum, z.literal("")]).optional(),
 });
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -57,11 +64,22 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       baseMonthlySalary?: number;
       active?: boolean;
       upiId?: string | null;
+      category?: "MAID" | "COOK" | "GARDENER" | "GARBAGE_COLLECTOR" | "WATCHMAN";
+      shift?: "DAY" | "NIGHT" | null;
     } = {
       baseMonthlySalary: parsed.data.baseMonthlySalary,
       active: parsed.data.active,
       name: parsed.data.name,
+      category: parsed.data.category,
     };
+
+    if (parsed.data.shift !== undefined) {
+      data.shift = parsed.data.shift === "" ? null : parsed.data.shift;
+    }
+    // A category change away from WATCHMAN clears any leftover shift.
+    if (parsed.data.category && parsed.data.category !== "WATCHMAN") {
+      data.shift = null;
+    }
 
     if (parsed.data.phone !== undefined) {
       const phone = normalizePhone(parsed.data.phone);

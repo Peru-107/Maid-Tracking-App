@@ -50,7 +50,9 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Something went wrong");
-      router.push(data.role === "EMPLOYER" ? "/employer" : "/helper");
+      router.push(
+        data.role === "EMPLOYER" ? "/employer" : data.role === "RESIDENT" ? "/resident" : "/helper",
+      );
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");

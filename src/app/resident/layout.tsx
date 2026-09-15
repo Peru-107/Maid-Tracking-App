@@ -5,11 +5,11 @@ import { getDictionary, type Locale } from "@/lib/i18n";
 import { LogoutButton } from "@/components/logout-button";
 import { LanguageSwitcher } from "@/components/helper/language-switcher";
 
-export default async function HelperLayout({ children }: { children: ReactNode }) {
+export default async function ResidentLayout({ children }: { children: ReactNode }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   if (user.role === "EMPLOYER") redirect("/employer");
-  if (user.role === "RESIDENT") redirect("/resident");
+  if (user.role === "HELPER") redirect("/helper");
 
   const locale = user.languagePref as Locale;
   const t = getDictionary(locale);
