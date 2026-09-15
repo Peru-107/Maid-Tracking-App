@@ -1,5 +1,5 @@
 {
-  "app_name": "Maid Tracker",
+  "app_name": "Sahayak",
   "greeting": "Hello",
   "your_salary": "Your Salary",
   "this_month": "This Month",
@@ -105,7 +105,6 @@
   "upi_id_placeholder": "UPI ID (optional)",
   "pay_via_upi": "Pay via UPI",
   "add_upi_id_hint": "Add the helper's UPI ID (Edit above) to pay directly from here.",
-
   "category_label": "Staff Type",
   "category_maid": "Maid",
   "category_cook": "Cook",
@@ -115,7 +114,6 @@
   "shift_label": "Shift",
   "shift_day": "Day Shift",
   "shift_night": "Night Shift",
-
   "residents": "Residents",
   "add_resident": "+ Add Resident",
   "no_residents_yet": "No residents added yet. Add flats to start logging visitors for them.",
@@ -123,7 +121,6 @@
   "flat_number_placeholder": "Flat / Unit number",
   "delete_resident": "Delete Resident",
   "confirm_delete_resident_body": "This removes their account link. Gate log history for their flat is kept.",
-
   "gate_log": "Gate Log",
   "gate_log_admin_description": "Every visitor entry logged at the gate, across all flats.",
   "filter_by_flat": "All Flats",
@@ -139,7 +136,6 @@
   "purpose_vendor": "Vendor",
   "purpose_staff": "Staff",
   "purpose_other": "Other",
-
   "log_visitor": "Log Visitor",
   "select_flat": "Select flat",
   "visitor_name_placeholder": "Visitor's name",
@@ -147,10 +143,8 @@
   "logging": "Logging…",
   "todays_entries": "Today's Entries",
   "no_entries_today": "No visitors logged yet today.",
-
   "visitors_to_your_flat": "Visitors to Your Flat",
   "resident_gate_log_empty": "No visitors have been logged for your flat yet.",
-
   "nav_helpers": "Staff",
   "nav_residents": "Residents",
   "nav_gate_log": "Gate Log"

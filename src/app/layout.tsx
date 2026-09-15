@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Maid Tracker",
-  description: "Attendance, advances & salary tracking for domestic helpers and their employers.",
+  title: "Sahayak",
+  description: "Attendance, advances & salary tracking for household and society staff, and their employers.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
