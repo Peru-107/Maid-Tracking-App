@@ -7,6 +7,14 @@ import { rupees } from "@/lib/format";
 import { Card, Badge } from "@/components/ui";
 import { AddHelperForm } from "@/components/employer/add-helper-form";
 
+const CATEGORY_KEY = {
+  MAID: "category_maid",
+  COOK: "category_cook",
+  GARDENER: "category_gardener",
+  GARBAGE_COLLECTOR: "category_garbage_collector",
+  WATCHMAN: "category_watchman",
+} as const;
+
 export default async function EmployerDashboard() {
   const user = await getCurrentUser();
   const t = getDictionary(user!.languagePref as Locale);
@@ -107,7 +115,15 @@ export default async function EmployerDashboard() {
                 <Card className="flex h-full flex-col gap-2 p-4 transition-transform hover:-translate-y-0.5">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <h2 className="text-lg font-bold">{helper.name}</h2>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <h2 className="text-lg font-bold">{helper.name}</h2>
+                        {helper.category !== "MAID" && (
+                          <Badge tone="blue">
+                            {t[CATEGORY_KEY[helper.category]]}
+                            {helper.shift && ` · ${helper.shift === "DAY" ? t.shift_day : t.shift_night}`}
+                          </Badge>
+                        )}
+                      </div>
                       <p className="text-sm font-medium text-neutral-500">+91 {helper.phone.replace("+91", "")}</p>
                     </div>
                     {pendingCount > 0 && (

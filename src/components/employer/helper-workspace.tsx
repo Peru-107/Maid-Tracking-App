@@ -15,6 +15,7 @@ export function HelperWorkspace({
   helperId,
   helperName,
   helperPhone,
+  helperUpiId,
   loans,
   kharchas,
 }: {
@@ -22,6 +23,7 @@ export function HelperWorkspace({
   helperId: string;
   helperName: string;
   helperPhone: string;
+  helperUpiId?: string | null;
   loans: Loan[];
   kharchas: Kharcha[];
 }) {
@@ -73,6 +75,7 @@ export function HelperWorkspace({
         helperId={helperId}
         helperName={helperName}
         helperPhone={helperPhone}
+        helperUpiId={helperUpiId}
         year={year}
         month={month}
         onChangeMonth={changeMonth}

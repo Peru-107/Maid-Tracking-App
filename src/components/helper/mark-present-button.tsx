@@ -39,11 +39,23 @@ export function MarkPresentButton({
           : "bg-teal-600 text-white hover:bg-teal-700"
       }`}
     >
-      {marked ? (
-        approved ? <CheckCircle2 size={40} aria-hidden="true" /> : <Clock size={40} aria-hidden="true" />
-      ) : (
-        <Hand size={40} aria-hidden="true" />
-      )}
+      <span className="relative grid h-10 w-10 place-items-center">
+        <Hand
+          size={40}
+          aria-hidden="true"
+          className={`col-start-1 row-start-1 transition-opacity duration-180 ease-out ${marked ? "opacity-0" : "opacity-100"}`}
+        />
+        <Clock
+          size={40}
+          aria-hidden="true"
+          className={`col-start-1 row-start-1 transition-opacity duration-180 ease-out ${marked && !approved ? "opacity-100" : "opacity-0"}`}
+        />
+        <CheckCircle2
+          size={40}
+          aria-hidden="true"
+          className={`col-start-1 row-start-1 transition-opacity duration-180 ease-out ${marked && approved ? "opacity-100" : "opacity-0"}`}
+        />
+      </span>
       {marked ? (approved ? t.present : t.pending_approval) : t.mark_present}
     </button>
   );

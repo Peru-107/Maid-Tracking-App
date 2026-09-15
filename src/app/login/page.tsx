@@ -50,7 +50,9 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Something went wrong");
-      router.push(data.role === "EMPLOYER" ? "/employer" : "/helper");
+      router.push(
+        data.role === "EMPLOYER" ? "/employer" : data.role === "RESIDENT" ? "/resident" : "/helper",
+      );
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -65,7 +67,7 @@ export default function LoginPage() {
         <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-600 text-white shadow-[0_3px_0_rgba(13,90,80,0.55)]">
           <ClipboardCheck size={28} aria-hidden="true" />
         </div>
-        <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">Maid Tracker</h1>
+        <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">Sahayak</h1>
         <p className="mt-1 text-sm font-medium text-neutral-500">
           Attendance, advances &amp; salary — sorted every month.
         </p>

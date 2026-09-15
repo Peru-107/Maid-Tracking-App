@@ -8,6 +8,7 @@ import { rupees } from "@/lib/format";
 import { Card, Badge } from "@/components/ui";
 import { MarkPresentButton } from "@/components/helper/mark-present-button";
 import { HelperCalendarView } from "@/components/helper/calendar-view";
+import { GateLogEntry } from "@/components/helper/gate-log-entry";
 
 export default async function HelperDashboard() {
   const user = await getCurrentUser();
@@ -66,6 +67,8 @@ export default async function HelperDashboard() {
         alreadyMarked={Boolean(todayLog)}
         approved={Boolean(todayLog?.approvedByEmployer)}
       />
+
+      {profile.category === "WATCHMAN" && <GateLogEntry t={t} />}
 
       <Card className="p-5">
         <div className="flex items-center justify-between">

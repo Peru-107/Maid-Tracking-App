@@ -2,11 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, IndianRupee, MessageCircle } from "lucide-react";
 import { Button, Card, Badge } from "@/components/ui";
 import { NumberField, YesNoToggle } from "@/components/ui-inputs";
 import { calculateMonthlySettlement, SettlementInput } from "@/lib/salary";
 import { buildHisaabMessage, buildWhatsAppShareUrl } from "@/lib/whatsapp";
+import { buildUpiPayUrl } from "@/lib/upi";
 import { rupees } from "@/lib/format";
 import type { MonthlySettlement } from "@prisma/client";
 import type { TranslationKey } from "@/lib/i18n";
@@ -21,6 +22,7 @@ export function SettlementPanel({
   helperId,
   helperName,
   helperPhone,
+  helperUpiId,
   year,
   month,
   onChangeMonth,
@@ -29,6 +31,7 @@ export function SettlementPanel({
   helperId: string;
   helperName: string;
   helperPhone: string;
+  helperUpiId?: string | null;
   year: number;
   month: number;
   onChangeMonth: (delta: number) => void;
@@ -45,6 +48,8 @@ export function SettlementPanel({
   const [loanSkipped, setLoanSkipped] = useState(false);
   const [overtimeBonus, setOvertimeBonus] = useState(0);
   const [festivalBonus, setFestivalBonus] = useState(0);
+  const [attendanceOpen, setAttendanceOpen] = useState(false);
+  const [deductionsOpen, setDeductionsOpen] = useState(true);
 
   async function refetch() {
     const res = await fetch(`/api/helpers/${helperId}/settlement?year=${year}&month=${month}`);
@@ -173,6 +178,22 @@ export function SettlementPanel({
     window.open(buildWhatsAppShareUrl(helperPhone, message), "_blank");
   }
 
+  const upiPayUrl = useMemo(() => {
+    if (!helperUpiId || !liveResult || liveResult.finalPayout <= 0) return null;
+    try {
+      return buildUpiPayUrl({
+        vpa: helperUpiId,
+        payeeName: helperName,
+        amount: liveResult.finalPayout,
+        note: `Salary ${MONTH_NAMES[month - 1]} ${year}`,
+      });
+    } catch {
+      // A malformed upiId shouldn't ever reach here (validated on save),
+      // but never surface a broken deep link if it somehow does.
+      return null;
+    }
+  }, [helperUpiId, helperName, liveResult, month, year]);
+
   const netDeductionsAndBonuses = liveResult
     ? liveResult.overtimeBonus +
       liveResult.festivalBonus -
@@ -225,92 +246,118 @@ export function SettlementPanel({
             <dd className="text-right font-semibold">{rupees(baseInput!.baseSalary)}</dd>
           </dl>
 
-          <details className="group rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
-            <summary className="flex cursor-pointer list-none items-center justify-between font-bold text-neutral-700 [&::-webkit-details-marker]:hidden dark:text-neutral-200">
+          <div className="rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
+            <button
+              type="button"
+              onClick={() => setAttendanceOpen((v) => !v)}
+              aria-expanded={attendanceOpen}
+              className="flex w-full cursor-pointer list-none items-center justify-between font-bold text-neutral-700 dark:text-neutral-200"
+            >
               <span>{t.attendance_breakdown}</span>
               <span className="flex items-center gap-1.5">
                 <span className={liveResult.lossOfPay > 0 ? "text-red-600" : "text-neutral-400"}>
                   {liveResult.lossOfPay > 0 ? `-${rupees(liveResult.lossOfPay)}` : rupees(0)}
                 </span>
-                <ChevronDown size={16} aria-hidden="true" className="text-neutral-400 transition-transform group-open:rotate-180" />
+                <ChevronDown
+                  size={16}
+                  aria-hidden="true"
+                  className={`text-neutral-400 transition-transform ${attendanceOpen ? "rotate-180" : ""}`}
+                />
               </span>
-            </summary>
-            <dl className="mt-2 grid grid-cols-2 gap-y-1.5">
-              <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.present}</dt>
-              <dd className="text-right">{baseInput!.attendance.presentDays}</dd>
-              <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.absent}</dt>
-              <dd className="text-right">{baseInput!.attendance.absentDays}</dd>
-              <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.half_day}</dt>
-              <dd className="text-right">{baseInput!.attendance.halfDays}</dd>
-              <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.paid_leave}</dt>
-              <dd className="text-right">{baseInput!.attendance.paidLeaveDays}</dd>
-              <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.per_day_wage}</dt>
-              <dd className="text-right">{rupees(liveResult.perDayWage)}</dd>
-            </dl>
-          </details>
+            </button>
+            <div className={`accordion-rows ${attendanceOpen ? "is-open" : ""}`}>
+              <div>
+                <dl className="mt-2 grid grid-cols-2 gap-y-1.5">
+                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.present}</dt>
+                  <dd className="text-right">{baseInput!.attendance.presentDays}</dd>
+                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.absent}</dt>
+                  <dd className="text-right">{baseInput!.attendance.absentDays}</dd>
+                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.half_day}</dt>
+                  <dd className="text-right">{baseInput!.attendance.halfDays}</dd>
+                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.paid_leave}</dt>
+                  <dd className="text-right">{baseInput!.attendance.paidLeaveDays}</dd>
+                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.per_day_wage}</dt>
+                  <dd className="text-right">{rupees(liveResult.perDayWage)}</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
 
-          <details className="group rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800" open>
-            <summary className="flex cursor-pointer list-none items-center justify-between font-bold text-neutral-700 [&::-webkit-details-marker]:hidden dark:text-neutral-200">
+          <div className="rounded-2xl bg-neutral-50 p-3 text-sm dark:bg-neutral-800">
+            <button
+              type="button"
+              onClick={() => setDeductionsOpen((v) => !v)}
+              aria-expanded={deductionsOpen}
+              className="flex w-full cursor-pointer list-none items-center justify-between font-bold text-neutral-700 dark:text-neutral-200"
+            >
               <span>{t.deductions_bonuses}</span>
               <span className="flex items-center gap-1.5">
                 <span className={netDeductionsAndBonuses < 0 ? "text-red-600" : "text-green-600"}>
                   {netDeductionsAndBonuses < 0 ? "-" : "+"}
                   {rupees(Math.abs(netDeductionsAndBonuses))}
                 </span>
-                <ChevronDown size={16} aria-hidden="true" className="text-neutral-400 transition-transform group-open:rotate-180" />
+                <ChevronDown
+                  size={16}
+                  aria-hidden="true"
+                  className={`text-neutral-400 transition-transform ${deductionsOpen ? "rotate-180" : ""}`}
+                />
               </span>
-            </summary>
-            <dl className="mt-2 grid grid-cols-2 gap-y-1.5">
-              {liveResult.lossOfPay > 0 && (
-                <>
-                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.loss_of_pay}</dt>
-                  <dd className="text-right text-red-600">-{rupees(liveResult.lossOfPay)}</dd>
-                </>
-              )}
+            </button>
+            <div className={`accordion-rows ${deductionsOpen ? "is-open" : ""}`}>
+              <div>
+                <dl className="mt-2 grid grid-cols-2 gap-y-1.5">
+                  {liveResult.lossOfPay > 0 && (
+                    <>
+                      <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.loss_of_pay}</dt>
+                      <dd className="text-right text-red-600">-{rupees(liveResult.lossOfPay)}</dd>
+                    </>
+                  )}
 
-              {liveResult.loanEmiDue > 0 && (
-                <>
-                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">
-                    {t.loan_repayment} {liveResult.loanEmiDeducted === 0 && t.skipped}
-                  </dt>
-                  <dd
-                    className={`text-right ${liveResult.loanEmiDeducted === 0 ? "text-neutral-400" : "text-red-600"}`}
-                  >
-                    -{rupees(liveResult.loanEmiDeducted)}
-                  </dd>
-                </>
-              )}
+                  {liveResult.loanEmiDue > 0 && (
+                    <>
+                      <dt className="font-medium text-neutral-600 dark:text-neutral-400">
+                        {t.loan_repayment} {liveResult.loanEmiDeducted === 0 && t.skipped}
+                      </dt>
+                      <dd
+                        className={`text-right ${liveResult.loanEmiDeducted === 0 ? "text-neutral-400" : "text-red-600"}`}
+                      >
+                        -{rupees(liveResult.loanEmiDeducted)}
+                      </dd>
+                    </>
+                  )}
 
-              {liveResult.kharchaDeducted > 0 && (
-                <>
-                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.kharcha_advance}</dt>
-                  <dd className="text-right text-red-600">-{rupees(liveResult.kharchaDeducted)}</dd>
-                </>
-              )}
+                  {liveResult.kharchaDeducted > 0 && (
+                    <>
+                      <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.kharcha_advance}</dt>
+                      <dd className="text-right text-red-600">-{rupees(liveResult.kharchaDeducted)}</dd>
+                    </>
+                  )}
 
-              {liveResult.overtimeBonus > 0 && (
-                <>
-                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.overtime_bonus}</dt>
-                  <dd className="text-right text-green-600">+{rupees(liveResult.overtimeBonus)}</dd>
-                </>
-              )}
+                  {liveResult.overtimeBonus > 0 && (
+                    <>
+                      <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.overtime_bonus}</dt>
+                      <dd className="text-right text-green-600">+{rupees(liveResult.overtimeBonus)}</dd>
+                    </>
+                  )}
 
-              {liveResult.festivalBonus > 0 && (
-                <>
-                  <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.festival_bonus}</dt>
-                  <dd className="text-right text-green-600">+{rupees(liveResult.festivalBonus)}</dd>
-                </>
-              )}
+                  {liveResult.festivalBonus > 0 && (
+                    <>
+                      <dt className="font-medium text-neutral-600 dark:text-neutral-400">{t.festival_bonus}</dt>
+                      <dd className="text-right text-green-600">+{rupees(liveResult.festivalBonus)}</dd>
+                    </>
+                  )}
 
-              {liveResult.lossOfPay === 0 &&
-                liveResult.loanEmiDue === 0 &&
-                liveResult.kharchaDeducted === 0 &&
-                liveResult.overtimeBonus === 0 &&
-                liveResult.festivalBonus === 0 && (
-                  <dd className="col-span-2 text-neutral-400">{t.nothing_to_deduct}</dd>
-                )}
-            </dl>
-          </details>
+                  {liveResult.lossOfPay === 0 &&
+                    liveResult.loanEmiDue === 0 &&
+                    liveResult.kharchaDeducted === 0 &&
+                    liveResult.overtimeBonus === 0 &&
+                    liveResult.festivalBonus === 0 && (
+                      <dd className="col-span-2 text-neutral-400">{t.nothing_to_deduct}</dd>
+                    )}
+                </dl>
+              </div>
+            </div>
+          </div>
 
           <div className="flex items-center justify-between border-t-2 border-neutral-100 pt-3 dark:border-neutral-800">
             <span className="text-lg font-bold">{t.final_payout}</span>
@@ -365,6 +412,16 @@ export function SettlementPanel({
                 {saving ? t.processing : t.mark_as_paid}
               </Button>
             )}
+            {!existing?.paid && upiPayUrl && (
+              <a
+                href={upiPayUrl}
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-100 px-4 py-2.5 font-semibold text-amber-900 shadow-[0_3px_0_rgba(180,130,20,0.28)] transition-all hover:bg-amber-200 active:translate-y-[2px] active:shadow-none dark:bg-amber-900/30 dark:text-amber-200 dark:shadow-[0_3px_0_rgba(0,0,0,0.5)]"
+              >
+                <IndianRupee size={16} aria-hidden="true" />
+                {t.pay_via_upi}
+              </a>
+            )}
             {existing && (
               <Button onClick={shareOnWhatsApp} variant="ghost" className="text-green-700 dark:text-green-400">
                 <MessageCircle size={16} aria-hidden="true" />
@@ -372,6 +429,9 @@ export function SettlementPanel({
               </Button>
             )}
           </div>
+          {!existing?.paid && !helperUpiId && (
+            <p className="text-xs font-medium text-neutral-400">{t.add_upi_id_hint}</p>
+          )}
         </>
       )}
     </Card>

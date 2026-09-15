@@ -7,6 +7,15 @@ import { getDictionary, type Locale } from "@/lib/i18n";
 import { HelperWorkspace } from "@/components/employer/helper-workspace";
 import { DeleteHelperButton } from "@/components/employer/delete-helper-button";
 import { EditHelperButton } from "@/components/employer/edit-helper-button";
+import { Badge } from "@/components/ui";
+
+const CATEGORY_KEY = {
+  MAID: "category_maid",
+  COOK: "category_cook",
+  GARDENER: "category_gardener",
+  GARBAGE_COLLECTOR: "category_garbage_collector",
+  WATCHMAN: "category_watchman",
+} as const;
 
 export default async function HelperDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -33,13 +42,24 @@ export default async function HelperDetailPage({ params }: { params: Promise<{ i
           <ChevronLeft size={16} aria-hidden="true" />
           {t.all_helpers}
         </Link>
-        <h1 className="mt-1 text-xl font-bold">{helper.name}</h1>
+        <div className="mt-1 flex items-center gap-2">
+          <h1 className="text-xl font-bold">{helper.name}</h1>
+          {helper.category !== "MAID" && (
+            <Badge tone="blue">
+              {t[CATEGORY_KEY[helper.category]]}
+              {helper.shift && ` · ${helper.shift === "DAY" ? t.shift_day : t.shift_night}`}
+            </Badge>
+          )}
+        </div>
         <EditHelperButton
           t={t}
           helperId={helper.id}
           currentName={helper.name}
           currentPhone={helper.phone}
           currentSalary={helper.baseMonthlySalary}
+          currentUpiId={helper.upiId}
+          currentCategory={helper.category}
+          currentShift={helper.shift}
         />
       </div>
 
@@ -48,6 +68,7 @@ export default async function HelperDetailPage({ params }: { params: Promise<{ i
         helperId={helper.id}
         helperName={helper.name}
         helperPhone={helper.phone}
+        helperUpiId={helper.upiId}
         loans={helper.loans}
         kharchas={helper.kharchas}
       />

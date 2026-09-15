@@ -33,3 +33,69 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
 }
+
+/* Shared motion tokens */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* Day-status popover: scales in from the cell that triggered it. */
+.day-popover {
+  transform-origin: top;
+  animation: day-popover-in 160ms var(--ease-out);
+}
+@keyframes day-popover-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .day-popover {
+    animation-duration: 1ms;
+  }
+}
+
+/* Controlled accordion: height animates via grid-template-rows so content
+   never needs a hardcoded/measured height. */
+.accordion-rows {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 200ms var(--ease-in-out);
+}
+.accordion-rows.is-open {
+  grid-template-rows: 1fr;
+}
+.accordion-rows > div {
+  overflow: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  .accordion-rows {
+    transition-duration: 1ms;
+  }
+}
+
+/* New list entries (kharcha/loan rows): settle in instead of teleporting. */
+.entry-row {
+  animation: entry-row-in 180ms var(--ease-out);
+}
+@keyframes entry-row-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .entry-row {
+    animation-duration: 1ms;
+  }
+}

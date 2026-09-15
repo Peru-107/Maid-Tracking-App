@@ -8,7 +8,8 @@ import { LanguageSwitcher } from "@/components/helper/language-switcher";
 export default async function HelperLayout({ children }: { children: ReactNode }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
-  if (user.role !== "HELPER") redirect("/employer");
+  if (user.role === "EMPLOYER") redirect("/employer");
+  if (user.role === "RESIDENT") redirect("/resident");
 
   const locale = user.languagePref as Locale;
   const t = getDictionary(locale);

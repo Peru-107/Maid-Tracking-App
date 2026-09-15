@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { normalizePhone } from "@/lib/phone";
+import { isValidVpa, normalizeVpa } from "@/lib/upi";
 import {
   requireEmployerSession,
   requireOwnedHelper,
@@ -30,11 +31,20 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   }
 }
 
+const categoryEnum = z.enum(["MAID", "COOK", "GARDENER", "GARBAGE_COLLECTOR", "WATCHMAN"]);
+const shiftEnum = z.enum(["DAY", "NIGHT"]);
+
 const patchSchema = z.object({
   name: z.string().trim().min(1).max(100).optional(),
   phone: z.string().optional(),
   baseMonthlySalary: z.number().positive().optional(),
   active: z.boolean().optional(),
+  // Empty string clears a previously-set UPI ID.
+  upiId: z.string().trim().max(100).optional(),
+  category: categoryEnum.optional(),
+  // Empty string clears a previously-set shift (e.g. category changed away
+  // from WATCHMAN).
+  shift: z.union([shiftEnum, z.literal("")]).optional(),
 });
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -48,11 +58,28 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       return NextResponse.json({ error: "Invalid update" }, { status: 400 });
     }
 
-    const data: { name?: string; phone?: string; baseMonthlySalary?: number; active?: boolean } = {
+    const data: {
+      name?: string;
+      phone?: string;
+      baseMonthlySalary?: number;
+      active?: boolean;
+      upiId?: string | null;
+      category?: "MAID" | "COOK" | "GARDENER" | "GARBAGE_COLLECTOR" | "WATCHMAN";
+      shift?: "DAY" | "NIGHT" | null;
+    } = {
       baseMonthlySalary: parsed.data.baseMonthlySalary,
       active: parsed.data.active,
       name: parsed.data.name,
+      category: parsed.data.category,
     };
+
+    if (parsed.data.shift !== undefined) {
+      data.shift = parsed.data.shift === "" ? null : parsed.data.shift;
+    }
+    // A category change away from WATCHMAN clears any leftover shift.
+    if (parsed.data.category && parsed.data.category !== "WATCHMAN") {
+      data.shift = null;
+    }
 
     if (parsed.data.phone !== undefined) {
       const phone = normalizePhone(parsed.data.phone);
@@ -64,6 +91,19 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       }
       await assertPhoneAvailableForHelper(phone, id);
       data.phone = phone;
+    }
+
+    if (parsed.data.upiId !== undefined) {
+      if (parsed.data.upiId === "") {
+        data.upiId = null;
+      } else if (!isValidVpa(parsed.data.upiId)) {
+        return NextResponse.json(
+          { error: "Enter a valid UPI ID, e.g. name@bank" },
+          { status: 400 },
+        );
+      } else {
+        data.upiId = normalizeVpa(parsed.data.upiId);
+      }
     }
 
     const updated = await prisma.helperProfile.update({ where: { id }, data });

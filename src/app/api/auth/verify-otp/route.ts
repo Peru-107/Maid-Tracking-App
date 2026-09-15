@@ -32,11 +32,15 @@ export async function POST(request: NextRequest) {
     let user = await prisma.user.findUnique({ where: { phone } });
 
     if (!user) {
-      // A HelperProfile created by an employer but not yet linked to a login
-      // means this phone belongs to a helper signing in for the first time.
+      // A HelperProfile or ResidentProfile created by an admin but not yet
+      // linked to a login means this phone belongs to that helper/resident
+      // signing in for the first time.
       const pendingHelperProfile = await prisma.helperProfile.findFirst({
         where: { phone, userId: null },
       });
+      const pendingResidentProfile = pendingHelperProfile
+        ? null
+        : await prisma.residentProfile.findFirst({ where: { phone, userId: null } });
 
       if (pendingHelperProfile) {
         user = await prisma.user.create({
@@ -48,6 +52,18 @@ export async function POST(request: NextRequest) {
         });
         await prisma.helperProfile.update({
           where: { id: pendingHelperProfile.id },
+          data: { userId: user.id },
+        });
+      } else if (pendingResidentProfile) {
+        user = await prisma.user.create({
+          data: {
+            phone,
+            name: pendingResidentProfile.name,
+            role: "RESIDENT",
+          },
+        });
+        await prisma.residentProfile.update({
+          where: { id: pendingResidentProfile.id },
           data: { userId: user.id },
         });
       } else {

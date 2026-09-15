@@ -10,6 +10,7 @@ datasource db {
 enum Role {
   EMPLOYER
   HELPER
+  RESIDENT
 }
 
 enum AttendanceStatus {
@@ -17,6 +18,36 @@ enum AttendanceStatus {
   ABSENT
   HALF_DAY
   PAID_LEAVE
+}
+
+// What kind of staff a HelperProfile represents. MAID is the default so
+// existing rows need no backfill. Salary/attendance calculation currently
+// treats every category the same as MAID (monthly base + attendance) --
+// GARDENER is expected to need a different pay model later, but that's a
+// deliberate follow-up, not designed yet.
+enum HelperCategory {
+  MAID
+  COOK
+  GARDENER
+  GARBAGE_COLLECTOR
+  WATCHMAN
+}
+
+// Only meaningful when category == WATCHMAN. Day/night coverage is modeled
+// as two separate HelperProfile rows (one per shift), each self-marking
+// their own attendance -- not a shared roster.
+enum Shift {
+  DAY
+  NIGHT
+}
+
+enum VisitorPurpose {
+  GUEST
+  DELIVERY
+  CAB
+  VENDOR
+  STAFF
+  OTHER
 }
 
 // Phone + OTP login. In production, codeHash would be sent via an SMS
@@ -41,12 +72,26 @@ model User {
   languagePref String   @default("en")
   createdAt    DateTime @default(now())
 
-  // Present when role == EMPLOYER: the helpers this employer manages.
+  // Present when role == EMPLOYER: the helpers this employer manages. Also
+  // used when this EMPLOYER account is really a society admin -- the same
+  // ownership model covers watchmen/gardeners/garbage collectors too.
   managedHelpers HelperProfile[] @relation("EmployerHelpers")
 
   // Present when role == HELPER, once the helper has logged in and linked
   // their account to the profile the employer created for them.
   helperProfile HelperProfile? @relation("HelperUser")
+
+  // Present when role == EMPLOYER and this account is a society admin: the
+  // residents (flats) they've registered.
+  managedResidents ResidentProfile[] @relation("EmployerResidents")
+
+  // Present when role == RESIDENT, once the resident has logged in and
+  // linked their account to the profile the admin created for them.
+  residentProfile ResidentProfile? @relation("ResidentUser")
+
+  // Present when role == EMPLOYER and this account is a society admin: the
+  // full gate log across all flats.
+  visitorEntries VisitorEntry[] @relation("EmployerVisitorEntries")
 }
 
 model HelperProfile {
@@ -58,6 +103,12 @@ model HelperProfile {
   name              String
   phone             String
   baseMonthlySalary Float
+  // UPI VPA (e.g. "name@bank") the employer pays salary to. Optional --
+  // helpers who are paid in cash never set one. Validated in the API layer
+  // (src/lib/upi.ts); never trusted as pre-sanitized when read back out.
+  upiId             String?
+  category          HelperCategory @default(MAID)
+  shift             Shift?
   active            Boolean   @default(true)
   joinedAt          DateTime  @default(now())
   createdAt         DateTime  @default(now())
@@ -66,6 +117,8 @@ model HelperProfile {
   loans          LoanEntry[]
   kharchas       KharchaEntry[]
   settlements    MonthlySettlement[]
+  // Gate log entries logged by this profile, when category == WATCHMAN.
+  loggedVisitorEntries VisitorEntry[]
 
   @@index([employerId])
 }
@@ -168,4 +221,46 @@ model MonthlySettlement {
 
   @@unique([helperId, month, year])
   @@index([helperId])
+}
+
+// A flat/unit in a society, registered by the admin. Mirrors HelperProfile's
+// ownership shape: created by the admin, later linked to a User once the
+// resident logs in with the phone number the admin registered for them.
+model ResidentProfile {
+  id         String   @id @default(cuid())
+  employerId String
+  employer   User     @relation("EmployerResidents", fields: [employerId], references: [id], onDelete: Cascade)
+  userId     String?  @unique
+  user       User?    @relation("ResidentUser", fields: [userId], references: [id])
+  name       String
+  phone      String
+  flatNumber String
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  @@index([employerId])
+  @@index([employerId, flatNumber])
+}
+
+// One row per visitor logged at the gate. flatNumber is a plain string
+// (matched against ResidentProfile.flatNumber for resident-side filtering)
+// rather than a hard FK, so a watchman can still log an entry for a flat
+// that hasn't been registered as a resident yet. Never deleted in bulk --
+// this is meant to stay a permanent, searchable ledger. loggedById is
+// nullable with SetNull so removing a watchman's profile later never
+// erases gate log history.
+model VisitorEntry {
+  id          String         @id @default(cuid())
+  employerId  String
+  employer    User           @relation("EmployerVisitorEntries", fields: [employerId], references: [id], onDelete: Cascade)
+  flatNumber  String
+  visitorName String
+  purpose     VisitorPurpose
+  entryTime   DateTime       @default(now())
+  loggedById  String?
+  loggedBy    HelperProfile? @relation(fields: [loggedById], references: [id], onDelete: SetNull)
+  createdAt   DateTime       @default(now())
+
+  @@index([employerId, flatNumber])
+  @@index([employerId, entryTime])
 }
