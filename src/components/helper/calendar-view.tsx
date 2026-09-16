@@ -28,6 +28,8 @@ const STATUS_KEYS: Record<AttendanceStatus, TranslationKey> = {
   PAID_LEAVE: "paid_leave",
 };
 
+const APPROVAL_POLL_MS = 20_000;
+
 export function HelperCalendarView({ t }: { t: Record<TranslationKey, string> }) {
   const now = new Date();
   const [year] = useState(now.getFullYear());
@@ -35,8 +37,8 @@ export function HelperCalendarView({ t }: { t: Record<TranslationKey, string> })
   const [logs, setLogs] = useState<Record<string, AttendanceLog>>({});
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetch(`/api/me/attendance?year=${year}&month=${month}`)
+  function refetch() {
+    return fetch(`/api/me/attendance?year=${year}&month=${month}`)
       .then((res) => res.json())
       .then((data: { logs: AttendanceLog[] }) => {
         const map: Record<string, AttendanceLog> = {};
@@ -44,9 +46,23 @@ export function HelperCalendarView({ t }: { t: Record<TranslationKey, string> })
           map[log.date.slice(0, 10)] = log;
         }
         setLogs(map);
-      })
-      .finally(() => setLoading(false));
+      });
+  }
+
+  useEffect(() => {
+    refetch().finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year, month]);
+
+  // Picks up approvals the employer makes while this page is already open,
+  // same reasoning as the Mark Present button's poll.
+  useEffect(() => {
+    const hasPending = Object.values(logs).some((log) => log.markedByHelper && !log.approvedByEmployer);
+    if (!hasPending) return;
+    const interval = setInterval(refetch, APPROVAL_POLL_MS);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [logs]);
 
   const daysInMonth = new Date(year, month, 0).getDate();
   const firstWeekday = new Date(year, month - 1, 1).getDay();

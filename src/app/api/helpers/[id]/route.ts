@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { normalizePhone } from "@/lib/phone";
 import { isValidVpa, normalizeVpa } from "@/lib/upi";
 import {
-  requireEmployerSession,
+  requireHelperOwnerSession,
   requireOwnedHelper,
   assertPhoneAvailableForHelper,
   handleApiError,
@@ -12,7 +12,7 @@ import {
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const session = await requireEmployerSession();
+    const session = await requireHelperOwnerSession();
     const { id } = await params;
     await requireOwnedHelper(id, session.userId);
 
@@ -49,7 +49,7 @@ const patchSchema = z.object({
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const session = await requireEmployerSession();
+    const session = await requireHelperOwnerSession();
     const { id } = await params;
     await requireOwnedHelper(id, session.userId);
 
@@ -78,6 +78,14 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
     // A category change away from WATCHMAN clears any leftover shift.
     if (parsed.data.category && parsed.data.category !== "WATCHMAN") {
+      data.shift = null;
+    }
+
+    // Residents can only ever have Maid category helpers -- enforced here
+    // too, not just left to the UI, since a resident session could still
+    // send a different category in the request body.
+    if (session.role === "RESIDENT") {
+      data.category = "MAID";
       data.shift = null;
     }
 
@@ -118,7 +126,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const session = await requireEmployerSession();
+    const session = await requireHelperOwnerSession();
     const { id } = await params;
     await requireOwnedHelper(id, session.userId);
 

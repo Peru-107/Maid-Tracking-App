@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import { getDictionary, type Locale } from "@/lib/i18n";
 import { LogoutButton } from "@/components/logout-button";
@@ -21,10 +22,15 @@ export default async function ResidentLayout({ children }: { children: ReactNode
       className="min-h-screen bg-gradient-to-b from-teal-50 to-white dark:from-neutral-950 dark:to-neutral-900"
     >
       <header className="sticky top-0 z-10 bg-white/90 shadow-[0_1px_0_rgba(15,23,42,0.06),0_4px_16px_-8px_rgba(15,23,42,0.15)] backdrop-blur dark:bg-neutral-900/90 dark:shadow-[0_1px_0_rgba(255,255,255,0.06),0_4px_16px_-8px_rgba(0,0,0,0.4)]">
-        <div className="mx-auto flex max-w-lg items-center justify-between px-4 py-3">
-          <span className="flex items-center gap-2 text-lg font-bold text-teal-700 dark:text-teal-400">
+        <div className="mx-auto flex max-w-lg items-center justify-between gap-3 px-4 py-3">
+          <Link href="/resident" className="flex items-center gap-2 text-lg font-bold text-teal-700 dark:text-teal-400">
             {t.app_name}
-          </span>
+          </Link>
+          <nav className="flex items-center gap-4 text-sm font-bold text-neutral-500 dark:text-neutral-400">
+            <Link href="/resident/helpers" className="hover:text-teal-700 dark:hover:text-teal-400">
+              {t.your_helpers}
+            </Link>
+          </nav>
           <div className="flex items-center gap-3">
             <LanguageSwitcher current={locale} label={t.language} />
             <LogoutButton label={t.logout} />

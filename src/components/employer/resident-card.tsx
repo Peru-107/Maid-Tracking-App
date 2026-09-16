@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Pencil, Phone, Trash2 } from "lucide-react";
-import { Button, Card } from "@/components/ui";
+import { Button, Card, Badge } from "@/components/ui";
 import type { TranslationKey } from "@/lib/i18n";
 
 export function ResidentCard({
@@ -16,14 +16,14 @@ export function ResidentCard({
   t: Record<TranslationKey, string>;
   residentId: string;
   currentName: string;
-  currentPhone: string;
+  currentPhone: string | null;
   currentFlatNumber: string;
 }) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [name, setName] = useState(currentName);
-  const [phone, setPhone] = useState(currentPhone.replace("+91", ""));
+  const [phone, setPhone] = useState(currentPhone?.replace("+91", "") ?? "");
   const [flatNumber, setFlatNumber] = useState(currentFlatNumber);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +36,10 @@ export function ResidentCard({
       const res = await fetch(`/api/residents/${residentId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, flatNumber }),
+        // Omit phone entirely when left blank -- a placeholder flat with no
+        // resident onboarded yet shouldn't fail to save just because the
+        // phone field is still empty.
+        body: JSON.stringify({ name, flatNumber, ...(phone.trim() ? { phone } : {}) }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Could not update resident");
@@ -74,9 +77,9 @@ export function ResidentCard({
             className="rounded-2xl border-2 border-neutral-200 px-3 py-2 text-sm font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
           />
           <input
-            required
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
+            placeholder={t.mobile_number_placeholder}
             className="rounded-2xl border-2 border-neutral-200 px-3 py-2 text-sm font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
           />
           <input
@@ -103,13 +106,18 @@ export function ResidentCard({
     <Card className="flex flex-col gap-2 p-4">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <h2 className="text-lg font-bold">{currentName}</h2>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <h2 className="text-lg font-bold">{currentName}</h2>
+            {!currentPhone && <Badge tone="yellow">{t.not_onboarded_yet}</Badge>}
+          </div>
           <p className="text-sm font-medium text-neutral-500">{t.flat_number_placeholder}: {currentFlatNumber}</p>
         </div>
-        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-600 dark:text-neutral-400">
-          <Phone size={14} aria-hidden="true" />
-          +91 {currentPhone.replace("+91", "")}
-        </span>
+        {currentPhone && (
+          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-600 dark:text-neutral-400">
+            <Phone size={14} aria-hidden="true" />
+            +91 {currentPhone.replace("+91", "")}
+          </span>
+        )}
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
       {confirmingDelete ? (

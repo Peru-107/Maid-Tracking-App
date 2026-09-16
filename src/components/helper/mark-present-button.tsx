@@ -1,20 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, Clock, Hand } from "lucide-react";
 import type { TranslationKey } from "@/lib/i18n";
+
+const APPROVAL_POLL_MS = 20_000;
 
 export function MarkPresentButton({
   t,
   alreadyMarked,
-  approved,
+  approved: initialApproved,
 }: {
   t: Record<TranslationKey, string>;
   alreadyMarked: boolean;
   approved: boolean;
 }) {
   const [marked, setMarked] = useState(alreadyMarked);
+  const [approved, setApproved] = useState(initialApproved);
   const [loading, setLoading] = useState(false);
+  const today = useRef(new Date());
+
+  // The employer can approve today's attendance at any point after this
+  // page loaded -- without this, "Waiting for Employer's OK" would never
+  // change to "Present" until the helper manually reloads the page.
+  useEffect(() => {
+    if (!marked || approved) return;
+    const year = today.current.getFullYear();
+    const month = today.current.getMonth() + 1;
+    const todayKey = today.current.toISOString().slice(0, 10);
+
+    const interval = setInterval(() => {
+      fetch(`/api/me/attendance?year=${year}&month=${month}`)
+        .then((res) => res.json())
+        .then((data: { logs: { date: string; approvedByEmployer: boolean }[] }) => {
+          const todayLog = data.logs?.find((log) => log.date.slice(0, 10) === todayKey);
+          if (todayLog?.approvedByEmployer) setApproved(true);
+        })
+        .catch(() => {});
+    }, APPROVAL_POLL_MS);
+
+    return () => clearInterval(interval);
+  }, [marked, approved]);
 
   async function handleClick() {
     if (marked) return;

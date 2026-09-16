@@ -147,5 +147,17 @@
   "nav_helpers": "স্টাফ",
   "nav_residents": "বাসিন্দারা",
   "nav_gate_log": "গেট লগ",
-  "purpose_label": "উদ্দেশ্য"
+  "purpose_label": "উদ্দেশ্য",
+  "my_flat": "আমার ফ্ল্যাট",
+  "attendance_approve_hint": "• চিহ্নিত দিনগুলো আপনার অনুমোদনের অপেক্ষায় আছে — অনুমোদন করতে একবার ট্যাপ করুন",
+  "not_onboarded_yet": "এখনও যুক্ত হয়নি",
+  "bulk_add_flats": "+ একসাথে ফ্ল্যাট যোগ করুন",
+  "bulk_add_flats_description": "ফ্লোরের সংখ্যা এবং ইউনিট রেঞ্জ দিয়ে একটি উইং-এর সব ফ্ল্যাট একসাথে তৈরি করুন — প্রতিটি বাসিন্দার নাম ও ফোন নম্বর পরে যোগ করতে পারবেন।",
+  "floors_placeholder": "ফ্লোরের সংখ্যা",
+  "unit_start_placeholder": "প্রথম ইউনিট নম্বর (যেমন ১)",
+  "unit_end_placeholder": "শেষ ইউনিট নম্বর (যেমন ৪)",
+  "generate": "তৈরি করুন",
+  "generating": "তৈরি হচ্ছে…",
+  "bulk_add_result_added": "ফ্ল্যাট যোগ হয়েছে",
+  "bulk_add_result_skipped": "আগে থেকেই ছিল"
 }

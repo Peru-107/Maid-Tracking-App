@@ -147,5 +147,17 @@
   "nav_helpers": "ଷ୍ଟାଫ୍",
   "nav_residents": "ବାସିନ୍ଦା",
   "nav_gate_log": "ଗେଟ୍ ଲଗ୍",
-  "purpose_label": "କାରଣ"
+  "purpose_label": "କାରଣ",
+  "my_flat": "ମୋ ଫ୍ଲାଟ୍",
+  "attendance_approve_hint": "• ଚିହ୍ନିତ ଦିନଗୁଡ଼ିକ ଆପଣଙ୍କ ଅନୁମୋଦନ ପାଇଁ ଅପେକ୍ଷା କରୁଛି — ଅନୁମୋଦନ କରିବାକୁ ଥରେ ଟାପ୍ କରନ୍ତୁ",
+  "not_onboarded_yet": "ଏପର୍ଯ୍ୟନ୍ତ ଯୋଡ଼ାହୋଇନାହିଁ",
+  "bulk_add_flats": "+ ଏକାଠି ଫ୍ଲାଟ୍ ଯୋଡ଼ନ୍ତୁ",
+  "bulk_add_flats_description": "ମହଲା ସଂଖ୍ୟା ଏବଂ ୟୁନିଟ୍ ପରିସର ଦେଇ ଏକ ୱିଙ୍ଗର ସମସ୍ତ ଫ୍ଲାଟ୍ ଏକାଥରକେ ତିଆରି କରନ୍ତୁ — ପ୍ରତ୍ୟେକ ବାସିନ୍ଦାଙ୍କ ନାମ ଏବଂ ଫୋନ୍ ପରେ ଭରି ପାରିବେ।",
+  "floors_placeholder": "ମହଲା ସଂଖ୍ୟା",
+  "unit_start_placeholder": "ପ୍ରଥମ ୟୁନିଟ୍ ନମ୍ବର (ଯଥା 1)",
+  "unit_end_placeholder": "ଶେଷ ୟୁନିଟ୍ ନମ୍ବର (ଯଥା 4)",
+  "generate": "ତିଆରି କରନ୍ତୁ",
+  "generating": "ତିଆରି ହେଉଛି…",
+  "bulk_add_result_added": "ଫ୍ଲାଟ୍ ଯୋଡ଼ାଗଲା",
+  "bulk_add_result_skipped": "ପୂର୍ବରୁ ଥିଲା"
 }

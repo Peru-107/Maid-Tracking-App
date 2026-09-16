@@ -147,5 +147,17 @@
   "nav_helpers": "ਸਟਾਫ਼",
   "nav_residents": "ਨਿਵਾਸੀ",
   "nav_gate_log": "ਗੇਟ ਲੌਗ",
-  "purpose_label": "ਮਕਸਦ"
+  "purpose_label": "ਮਕਸਦ",
+  "my_flat": "ਮੇਰਾ ਫਲੈਟ",
+  "attendance_approve_hint": "• ਨਿਸ਼ਾਨਬੱਧ ਦਿਨ ਤੁਹਾਡੀ ਮਨਜ਼ੂਰੀ ਦੀ ਉਡੀਕ ਕਰ ਰਹੇ ਹਨ — ਮਨਜ਼ੂਰ ਕਰਨ ਲਈ ਇੱਕ ਵਾਰ ਟੈਪ ਕਰੋ",
+  "not_onboarded_yet": "ਅਜੇ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ",
+  "bulk_add_flats": "+ ਇਕੱਠੇ ਫਲੈਟ ਸ਼ਾਮਲ ਕਰੋ",
+  "bulk_add_flats_description": "ਮੰਜ਼ਿਲਾਂ ਦੀ ਗਿਣਤੀ ਅਤੇ ਯੂਨਿਟ ਰੇਂਜ ਦੇ ਕੇ ਇੱਕ ਵਿੰਗ ਦੇ ਸਾਰੇ ਫਲੈਟ ਇਕੱਠੇ ਬਣਾਓ — ਹਰ ਨਿਵਾਸੀ ਦਾ ਨਾਮ ਅਤੇ ਫੋਨ ਬਾਅਦ ਵਿੱਚ ਭਰ ਸਕਦੇ ਹੋ।",
+  "floors_placeholder": "ਮੰਜ਼ਿਲਾਂ ਦੀ ਗਿਣਤੀ",
+  "unit_start_placeholder": "ਪਹਿਲਾ ਯੂਨਿਟ ਨੰਬਰ (ਜਿਵੇਂ 1)",
+  "unit_end_placeholder": "ਆਖ਼ਰੀ ਯੂਨਿਟ ਨੰਬਰ (ਜਿਵੇਂ 4)",
+  "generate": "ਬਣਾਓ",
+  "generating": "ਬਣ ਰਿਹਾ ਹੈ…",
+  "bulk_add_result_added": "ਫਲੈਟ ਸ਼ਾਮਲ ਕੀਤੇ ਗਏ",
+  "bulk_add_result_skipped": "ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਸਨ"
 }

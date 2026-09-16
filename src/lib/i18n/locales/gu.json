@@ -147,5 +147,17 @@
   "nav_helpers": "સ્ટાફ",
   "nav_residents": "રહેવાસીઓ",
   "nav_gate_log": "ગેટ લોગ",
-  "purpose_label": "હેતુ"
+  "purpose_label": "હેતુ",
+  "my_flat": "મારો ફ્લેટ",
+  "attendance_approve_hint": "• ચિહ્નિત દિવસો તમારી મંજૂરીની રાહ જોઈ રહ્યા છે — મંજૂર કરવા માટે એકવાર ટેપ કરો",
+  "not_onboarded_yet": "હજુ ઉમેરાયું નથી",
+  "bulk_add_flats": "+ એકસાથે ફ્લેટ ઉમેરો",
+  "bulk_add_flats_description": "માળની સંખ્યા અને યુનિટ રેન્જ આપીને એક વિંગના તમામ ફ્લેટ એકસાથે બનાવો — દરેક રહેવાસીનું નામ અને ફોન પછી ભરી શકો છો.",
+  "floors_placeholder": "માળની સંખ્યા",
+  "unit_start_placeholder": "પ્રથમ યુનિટ નંબર (દા.ત. 1)",
+  "unit_end_placeholder": "છેલ્લો યુનિટ નંબર (દા.ત. 4)",
+  "generate": "બનાવો",
+  "generating": "બની રહ્યું છે…",
+  "bulk_add_result_added": "ફ્લેટ ઉમેરાયા",
+  "bulk_add_result_skipped": "પહેલેથી હતા"
 }

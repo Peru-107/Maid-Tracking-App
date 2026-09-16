@@ -147,5 +147,17 @@
   "nav_helpers": "কৰ্মচাৰী",
   "nav_residents": "বাসিন্দা",
   "nav_gate_log": "গেট লগ",
-  "purpose_label": "উদ্দেশ্য"
+  "purpose_label": "উদ্দেশ্য",
+  "my_flat": "মোৰ ফ্লেট",
+  "attendance_approve_hint": "• চিহ্নিত দিনবোৰ আপোনাৰ অনুমোদনৰ অপেক্ষাত আছে — অনুমোদন কৰিবলৈ এবাৰ টেপ কৰক",
+  "not_onboarded_yet": "এতিয়াও যোগ কৰা হোৱা নাই",
+  "bulk_add_flats": "+ একেলগে ফ্লেট যোগ কৰক",
+  "bulk_add_flats_description": "মহলাৰ সংখ্যা আৰু ইউনিট পৰিসৰ দি এটা ৱিংৰ সকলো ফ্লেট একেলগে সৃষ্টি কৰক — প্ৰতিজন বাসিন্দাৰ নাম আৰু ফোন নম্বৰ পিছত পূৰণ কৰিব পাৰিব।",
+  "floors_placeholder": "মহলাৰ সংখ্যা",
+  "unit_start_placeholder": "প্ৰথম ইউনিট নম্বৰ (যেনে ১)",
+  "unit_end_placeholder": "শেষ ইউনিট নম্বৰ (যেনে ৪)",
+  "generate": "সৃষ্টি কৰক",
+  "generating": "সৃষ্টি হৈ আছে…",
+  "bulk_add_result_added": "ফ্লেট যোগ কৰা হ’ল",
+  "bulk_add_result_skipped": "আগৰেপৰা আছিল"
 }

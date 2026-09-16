@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { sortFlatNumbers } from "@/lib/format";
 
 async function getOwnWatchmanProfile() {
   const session = await getSession();
@@ -27,12 +28,11 @@ export async function GET() {
     }),
     prisma.residentProfile.findMany({
       where: { employerId: profile.employerId },
-      orderBy: { flatNumber: "asc" },
       select: { flatNumber: true },
     }),
   ]);
 
-  const flatNumbers = [...new Set(residents.map((r) => r.flatNumber))];
+  const flatNumbers = sortFlatNumbers([...new Set(residents.map((r) => r.flatNumber))]);
 
   return NextResponse.json({ entries, flatNumbers });
 }

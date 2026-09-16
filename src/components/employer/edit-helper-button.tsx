@@ -27,6 +27,7 @@ export function EditHelperButton({
   currentUpiId,
   currentCategory,
   currentShift,
+  showCategoryFields = true,
 }: {
   t: Record<TranslationKey, string>;
   helperId: string;
@@ -36,6 +37,10 @@ export function EditHelperButton({
   currentUpiId?: string | null;
   currentCategory?: Category;
   currentShift?: "DAY" | "NIGHT" | null;
+  // Residents only ever hire Maid-category personal helpers -- the category
+  // and shift controls are pointless for them, and the API also enforces
+  // this server-side regardless of what a form sends.
+  showCategoryFields?: boolean;
 }) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
@@ -136,21 +141,23 @@ export function EditHelperButton({
         {t.monthly_salary_placeholder}
         <NumberField value={salary} onChange={setSalary} className="mt-1 w-32 py-2 text-sm" />
       </label>
-      <label className="text-xs font-bold text-neutral-500">
-        {t.category_label}
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value as Category)}
-          className="mt-1 w-full rounded-xl border-2 border-neutral-200 bg-white px-3 py-2 text-sm font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
-        >
-          {CATEGORIES.map((c) => (
-            <option key={c.value} value={c.value}>
-              {t[c.key]}
-            </option>
-          ))}
-        </select>
-      </label>
-      {category === "WATCHMAN" && (
+      {showCategoryFields && (
+        <label className="text-xs font-bold text-neutral-500">
+          {t.category_label}
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value as Category)}
+            className="mt-1 w-full rounded-xl border-2 border-neutral-200 bg-white px-3 py-2 text-sm font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
+          >
+            {CATEGORIES.map((c) => (
+              <option key={c.value} value={c.value}>
+                {t[c.key]}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      {showCategoryFields && category === "WATCHMAN" && (
         <label className="text-xs font-bold text-neutral-500">
           {t.shift_label}
           <select
