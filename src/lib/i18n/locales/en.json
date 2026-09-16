@@ -53,6 +53,7 @@
   "close": "Close",
   "loading": "Loading…",
   "attendance_hint": "Tap = Present · tap again = undo · hold = more options",
+  "attendance_approve_hint": "Days marked • are waiting for your OK — tap once to approve",
   "loans_and_advances": "Loans",
   "new_loan": "+ New Loan",
   "loan_amount_placeholder": "Loan amount (₹)",
@@ -148,5 +149,15 @@
   "nav_helpers": "Staff",
   "nav_residents": "Residents",
   "nav_gate_log": "Gate Log",
-  "my_flat": "My Flat"
+  "my_flat": "My Flat",
+  "not_onboarded_yet": "Not onboarded yet",
+  "bulk_add_flats": "+ Bulk Add Flats",
+  "bulk_add_flats_description": "Generate every flat in a wing at once by floor count and unit range — you can fill in each resident's name and phone later.",
+  "floors_placeholder": "Number of floors",
+  "unit_start_placeholder": "First unit number (e.g. 1)",
+  "unit_end_placeholder": "Last unit number (e.g. 4)",
+  "generate": "Generate",
+  "generating": "Generating…",
+  "bulk_add_result_added": "flats added",
+  "bulk_add_result_skipped": "already existed"
 }

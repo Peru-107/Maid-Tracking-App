@@ -148,5 +148,16 @@
   "nav_residents": "رہائشی",
   "nav_gate_log": "گیٹ لاگ",
   "purpose_label": "مقصد",
-  "my_flat": "میرا فلیٹ"
+  "my_flat": "میرا فلیٹ",
+  "attendance_approve_hint": "• نشان زدہ دن آپ کی منظوری کے منتظر ہیں — منظور کرنے کے لیے ایک بار ٹیپ کریں",
+  "not_onboarded_yet": "ابھی تک شامل نہیں کیا گیا",
+  "bulk_add_flats": "+ بیک وقت فلیٹس شامل کریں",
+  "bulk_add_flats_description": "منزلوں کی تعداد اور یونٹ رینج دے کر ایک ونگ کے تمام فلیٹس ایک ساتھ بنائیں — ہر رہائشی کا نام اور فون بعد میں بھر سکتے ہیں۔",
+  "floors_placeholder": "منزلوں کی تعداد",
+  "unit_start_placeholder": "پہلا یونٹ نمبر (مثلاً 1)",
+  "unit_end_placeholder": "آخری یونٹ نمبر (مثلاً 4)",
+  "generate": "بنائیں",
+  "generating": "بن رہا ہے…",
+  "bulk_add_result_added": "فلیٹس شامل کیے گئے",
+  "bulk_add_result_skipped": "پہلے سے موجود تھے"
 }

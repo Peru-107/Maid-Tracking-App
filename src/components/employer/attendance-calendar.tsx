@@ -141,6 +141,12 @@ export function AttendanceCalendar({
     }
     if (!log) {
       setStatus(day, "PRESENT", false);
+    } else if (log.markedByHelper && !log.approvedByEmployer) {
+      // A day the helper self-marked and nobody's approved yet -- a plain
+      // tap approves it as-is (same status, same badli) rather than
+      // clearing it. Hold still opens the popover to pick a different
+      // status instead of approving what they marked.
+      setStatus(day, log.status, log.badli);
     } else {
       clearStatus(day);
     }
@@ -185,6 +191,7 @@ export function AttendanceCalendar({
         ))}
       </div>
       <p className="mb-2 text-xs text-neutral-500 dark:text-neutral-500">{t.attendance_hint}</p>
+      <p className="mb-2 text-xs font-medium text-amber-600 dark:text-amber-400">{t.attendance_approve_hint}</p>
 
       {loading ? (
         <p className="py-8 text-center text-sm text-neutral-400">{t.loading}</p>
@@ -215,13 +222,16 @@ export function AttendanceCalendar({
                     log
                       ? STATUS_STYLES[log.status]
                       : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300",
+                    log?.markedByHelper && !log?.approvedByEmployer && "ring-2 ring-amber-400 ring-offset-1",
                     isSelected && "ring-2 ring-teal-600 ring-offset-1",
                   )}
                 >
                   {day}
                   {log?.badli && <span className="text-[9px] leading-none">Badli</span>}
                   {log?.markedByHelper && !log?.approvedByEmployer && (
-                    <span className="text-[9px] leading-none">•</span>
+                    <span className="text-[9px] leading-none" aria-label={t.pending_review}>
+                      •
+                    </span>
                   )}
                 </button>
                 {isSelected && (

@@ -148,5 +148,16 @@
   "nav_residents": "रहिवासी",
   "nav_gate_log": "गेट लॉग",
   "purpose_label": "कारण",
-  "my_flat": "माझा फ्लॅट"
+  "my_flat": "माझा फ्लॅट",
+  "attendance_approve_hint": "• चिन्हांकित दिवस तुमच्या मंजुरीची वाट पाहत आहेत — मंजूर करण्यासाठी एकदा टॅप करा",
+  "not_onboarded_yet": "अजून जोडलेले नाही",
+  "bulk_add_flats": "+ एकत्र फ्लॅट जोडा",
+  "bulk_add_flats_description": "मजल्यांची संख्या आणि युनिट श्रेणी देऊन एका विंगमधील सर्व फ्लॅट एकाच वेळी तयार करा — प्रत्येक रहिवाशाचे नाव आणि फोन नंतर भरू शकता.",
+  "floors_placeholder": "मजल्यांची संख्या",
+  "unit_start_placeholder": "पहिला युनिट क्रमांक (उदा. 1)",
+  "unit_end_placeholder": "शेवटचा युनिट क्रमांक (उदा. 4)",
+  "generate": "तयार करा",
+  "generating": "तयार होत आहे…",
+  "bulk_add_result_added": "फ्लॅट जोडले",
+  "bulk_add_result_skipped": "आधीच अस्तित्वात होते"
 }

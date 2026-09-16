@@ -148,5 +148,16 @@
   "nav_residents": "निवासी",
   "nav_gate_log": "गेट लॉग",
   "purpose_label": "उद्देश्य",
-  "my_flat": "मेरा फ्लैट"
+  "my_flat": "मेरा फ्लैट",
+  "attendance_approve_hint": "• चिह्नित दिन आपकी मंज़ूरी का इंतज़ार कर रहे हैं — मंज़ूर करने के लिए एक बार टैप करें",
+  "not_onboarded_yet": "अभी तक जोड़ा नहीं गया",
+  "bulk_add_flats": "+ एक साथ फ्लैट जोड़ें",
+  "bulk_add_flats_description": "मंज़िलों की संख्या और यूनिट रेंज देकर एक विंग के सभी फ्लैट एक साथ बनाएं — हर निवासी का नाम और फोन बाद में भर सकते हैं।",
+  "floors_placeholder": "मंज़िलों की संख्या",
+  "unit_start_placeholder": "पहला यूनिट नंबर (जैसे 1)",
+  "unit_end_placeholder": "आख़िरी यूनिट नंबर (जैसे 4)",
+  "generate": "बनाएं",
+  "generating": "बन रहा है…",
+  "bulk_add_result_added": "फ्लैट जोड़े गए",
+  "bulk_add_result_skipped": "पहले से मौजूद थे"
 }
