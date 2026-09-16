@@ -37,6 +37,7 @@ const createSchema = z.object({
   name: z.string().trim().min(1).max(100),
   phone: z.string(),
   flatNumber: z.string().trim().min(1).max(20),
+  wing: z.string().trim().min(1).max(20).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -63,6 +64,7 @@ export async function POST(request: NextRequest) {
         name: parsed.data.name,
         phone,
         flatNumber: parsed.data.flatNumber,
+        wing: parsed.data.wing,
       },
     });
 

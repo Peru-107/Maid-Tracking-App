@@ -159,5 +159,12 @@
   "generate": "സൃഷ്ടിക്കുക",
   "generating": "സൃഷ്ടിക്കുന്നു…",
   "bulk_add_result_added": "ഫ്ലാറ്റുകൾ ചേർത്തു",
-  "bulk_add_result_skipped": "നേരത്തെ ഉണ്ടായിരുന്നു"
+  "bulk_add_result_skipped": "നേരത്തെ ഉണ്ടായിരുന്നു",
+  "wing_placeholder": "വിംഗ് (ഉദാ. A)",
+  "select_wing": "വിംഗ് തിരഞ്ഞെടുക്കുക",
+  "filter_by_wing": "എല്ലാ വിംഗുകളും",
+  "no_wing_label": "വിംഗ് ഇല്ല",
+  "other_purpose_placeholder": "ഇത് എന്താണ്? (ഉദാ. സൊസൈറ്റി പ്ലംബർ)",
+  "account_not_linked": "നിങ്ങളുടെ അക്കൗണ്ട് ഇപ്പോൾ സജീവമായ പ്രൊഫൈലുമായി ലിങ്ക് ചെയ്തിട്ടില്ല. ദയവായി നിങ്ങളുടെ സൊസൈറ്റി അഡ്മിനെ ബന്ധപ്പെടുക.",
+  "onboarded_count_label": "ഫ്ലാറ്റുകൾ ചേർന്നു"
 }

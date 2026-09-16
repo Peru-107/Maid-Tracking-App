@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { sortFlatNumbers } from "@/lib/format";
+import { groupFlatsByWing } from "@/lib/format";
 
 async function getOwnWatchmanProfile() {
   const session = await getSession();
@@ -28,13 +28,13 @@ export async function GET() {
     }),
     prisma.residentProfile.findMany({
       where: { employerId: profile.employerId },
-      select: { flatNumber: true },
+      select: { flatNumber: true, wing: true },
     }),
   ]);
 
-  const flatNumbers = sortFlatNumbers([...new Set(residents.map((r) => r.flatNumber))]);
+  const wings = groupFlatsByWing(residents);
 
-  return NextResponse.json({ entries, flatNumbers });
+  return NextResponse.json({ entries, wings });
 }
 
 const purposeEnum = z.enum(["GUEST", "DELIVERY", "CAB", "VENDOR", "STAFF", "OTHER"]);
@@ -43,6 +43,8 @@ const createSchema = z.object({
   flatNumber: z.string().trim().min(1).max(20),
   visitorName: z.string().trim().min(1).max(100),
   purpose: purposeEnum,
+  // Only meaningful when purpose === OTHER; ignored otherwise.
+  note: z.string().trim().max(200).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -62,6 +64,7 @@ export async function POST(request: NextRequest) {
       flatNumber: parsed.data.flatNumber,
       visitorName: parsed.data.visitorName,
       purpose: parsed.data.purpose,
+      note: parsed.data.purpose === "OTHER" ? parsed.data.note : undefined,
       loggedById: profile.id,
     },
   });

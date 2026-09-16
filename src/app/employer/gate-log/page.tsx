@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getDictionary, type Locale } from "@/lib/i18n";
-import { sortFlatNumbers } from "@/lib/format";
+import { groupFlatsByWing } from "@/lib/format";
 import { GateLogView } from "@/components/employer/gate-log-view";
 
 export default async function GateLogPage() {
@@ -10,9 +10,9 @@ export default async function GateLogPage() {
 
   const residents = await prisma.residentProfile.findMany({
     where: { employerId: user!.id },
-    select: { flatNumber: true },
+    select: { flatNumber: true, wing: true },
   });
-  const flatNumbers = sortFlatNumbers([...new Set(residents.map((r) => r.flatNumber))]);
+  const wings = groupFlatsByWing(residents);
 
   return (
     <div className="flex flex-col gap-4">
@@ -20,7 +20,7 @@ export default async function GateLogPage() {
         <h1 className="text-xl font-bold">{t.gate_log}</h1>
         <p className="text-sm font-medium text-neutral-500">{t.gate_log_admin_description}</p>
       </div>
-      <GateLogView t={t} flatNumbers={flatNumbers} />
+      <GateLogView t={t} wings={wings} />
     </div>
   );
 }

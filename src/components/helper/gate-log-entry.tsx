@@ -8,11 +8,14 @@ import type { TranslationKey } from "@/lib/i18n";
 
 type Purpose = "GUEST" | "DELIVERY" | "CAB" | "VENDOR" | "STAFF" | "OTHER";
 
+type WingGroup = { wing: string; flats: string[] };
+
 type VisitorEntry = {
   id: string;
   flatNumber: string;
   visitorName: string;
   purpose: Purpose;
+  note: string | null;
   entryTime: string;
 };
 
@@ -26,24 +29,34 @@ const PURPOSES: { value: Purpose; key: TranslationKey }[] = [
 ];
 
 export function GateLogEntry({ t }: { t: Record<TranslationKey, string> }) {
-  const [flatNumbers, setFlatNumbers] = useState<string[]>([]);
+  const [wings, setWings] = useState<WingGroup[]>([]);
   const [entries, setEntries] = useState<VisitorEntry[]>([]);
+  const [selectedWing, setSelectedWing] = useState("");
   const [flatNumber, setFlatNumber] = useState("");
   const [visitorName, setVisitorName] = useState("");
   const [purpose, setPurpose] = useState<Purpose>("GUEST");
+  const [otherNote, setOtherNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   function refetch() {
     fetch("/api/me/visitor-entries")
       .then((res) => res.json())
-      .then((data: { entries: VisitorEntry[]; flatNumbers: string[] }) => {
+      .then((data: { entries: VisitorEntry[]; wings: WingGroup[] }) => {
         setEntries(data.entries ?? []);
-        setFlatNumbers(data.flatNumbers ?? []);
+        setWings(data.wings ?? []);
+        setSelectedWing((prev) => prev || data.wings?.[0]?.wing || "");
       });
   }
 
   useEffect(refetch, []);
+
+  const flatsInWing = wings.find((w) => w.wing === selectedWing)?.flats ?? [];
+
+  function handleWingChange(wing: string) {
+    setSelectedWing(wing);
+    setFlatNumber("");
+  }
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -53,13 +66,19 @@ export function GateLogEntry({ t }: { t: Record<TranslationKey, string> }) {
       const res = await fetch("/api/me/visitor-entries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ flatNumber, visitorName, purpose }),
+        body: JSON.stringify({
+          flatNumber,
+          visitorName,
+          purpose,
+          note: purpose === "OTHER" ? otherNote : undefined,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Could not log entry");
       setEntries((prev) => [data.entry, ...prev]);
       setVisitorName("");
-      // Flat number and purpose are left as-is -- a watchman logging several
+      setOtherNote("");
+      // Wing/flat and purpose are left as-is -- a watchman logging several
       // visitors to the same flat back-to-back shouldn't have to reselect.
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not log entry");
@@ -76,19 +95,38 @@ export function GateLogEntry({ t }: { t: Record<TranslationKey, string> }) {
       </div>
 
       <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-2.5">
-        <input
+        {wings.length > 1 && (
+          <select
+            required
+            value={selectedWing}
+            onChange={(e) => handleWingChange(e.target.value)}
+            aria-label={t.select_wing}
+            className="rounded-2xl border-2 border-neutral-200 bg-white px-3 py-2.5 text-base font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
+          >
+            {wings.map((w) => (
+              <option key={w.wing || "ungrouped"} value={w.wing}>
+                {w.wing || t.no_wing_label}
+              </option>
+            ))}
+          </select>
+        )}
+
+        <select
           required
-          list="flat-numbers"
-          placeholder={t.select_flat}
           value={flatNumber}
           onChange={(e) => setFlatNumber(e.target.value)}
-          className="rounded-2xl border-2 border-neutral-200 px-3 py-2.5 text-base font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
-        />
-        <datalist id="flat-numbers">
-          {flatNumbers.map((flat) => (
-            <option key={flat} value={flat} />
+          aria-label={t.select_flat}
+          className="rounded-2xl border-2 border-neutral-200 bg-white px-3 py-2.5 text-base font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
+        >
+          <option value="" disabled>
+            {t.select_flat}
+          </option>
+          {flatsInWing.map((flat) => (
+            <option key={flat} value={flat}>
+              {flat}
+            </option>
           ))}
-        </datalist>
+        </select>
 
         <input
           required
@@ -116,6 +154,16 @@ export function GateLogEntry({ t }: { t: Record<TranslationKey, string> }) {
           ))}
         </div>
 
+        {purpose === "OTHER" && (
+          <input
+            required
+            placeholder={t.other_purpose_placeholder}
+            value={otherNote}
+            onChange={(e) => setOtherNote(e.target.value)}
+            className="rounded-2xl border-2 border-neutral-200 px-3 py-2.5 text-base font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
+          />
+        )}
+
         {error && <p className="text-sm text-red-600">{error}</p>}
         <Button type="submit" disabled={submitting} className="text-base">
           {submitting ? t.logging : t.log_entry}
@@ -134,7 +182,10 @@ export function GateLogEntry({ t }: { t: Record<TranslationKey, string> }) {
                 className="flex items-center justify-between gap-2 rounded-xl bg-neutral-50 px-3 py-2 text-sm dark:bg-neutral-800"
               >
                 <span className="font-bold">{entry.flatNumber}</span>
-                <span className="flex-1 truncate text-neutral-600 dark:text-neutral-300">{entry.visitorName}</span>
+                <span className="flex-1 truncate text-neutral-600 dark:text-neutral-300">
+                  {entry.visitorName}
+                  {entry.purpose === "OTHER" && entry.note && ` — ${entry.note}`}
+                </span>
                 <span className="text-xs font-medium text-neutral-400">
                   {new Date(entry.entryTime).toLocaleTimeString("en-IN", {
                     hour: "numeric",

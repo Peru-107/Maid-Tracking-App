@@ -1,16 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui";
+import { sortFlatNumbers } from "@/lib/format";
 import type { TranslationKey } from "@/lib/i18n";
 
 type Purpose = "GUEST" | "DELIVERY" | "CAB" | "VENDOR" | "STAFF" | "OTHER";
+
+type WingGroup = { wing: string; flats: string[] };
 
 type VisitorEntry = {
   id: string;
   flatNumber: string;
   visitorName: string;
   purpose: Purpose;
+  note: string | null;
   entryTime: string;
   loggedBy: { name: string | null } | null;
 };
@@ -26,15 +30,26 @@ const PURPOSE_KEY: Record<Purpose, TranslationKey> = {
 
 export function GateLogView({
   t,
-  flatNumbers,
+  wings,
 }: {
   t: Record<TranslationKey, string>;
-  flatNumbers: string[];
+  wings: WingGroup[];
 }) {
+  const [wingFilter, setWingFilter] = useState("");
   const [flatFilter, setFlatFilter] = useState("");
   const [purposeFilter, setPurposeFilter] = useState("");
   const [entries, setEntries] = useState<VisitorEntry[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const flatOptions = useMemo(() => {
+    if (wingFilter) return wings.find((w) => w.wing === wingFilter)?.flats ?? [];
+    return sortFlatNumbers(wings.flatMap((w) => w.flats));
+  }, [wings, wingFilter]);
+
+  function handleWingChange(wing: string) {
+    setWingFilter(wing);
+    setFlatFilter("");
+  }
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -51,13 +66,27 @@ export function GateLogView({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap gap-2">
+        {wings.length > 1 && (
+          <select
+            value={wingFilter}
+            onChange={(e) => handleWingChange(e.target.value)}
+            className="rounded-2xl border-2 border-neutral-200 bg-white px-3 py-2 text-sm font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
+          >
+            <option value="">{t.filter_by_wing}</option>
+            {wings.map((w) => (
+              <option key={w.wing || "ungrouped"} value={w.wing}>
+                {w.wing || t.no_wing_label}
+              </option>
+            ))}
+          </select>
+        )}
         <select
           value={flatFilter}
           onChange={(e) => setFlatFilter(e.target.value)}
           className="rounded-2xl border-2 border-neutral-200 bg-white px-3 py-2 text-sm font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
         >
           <option value="">{t.filter_by_flat}</option>
-          {flatNumbers.map((flat) => (
+          {flatOptions.map((flat) => (
             <option key={flat} value={flat}>
               {flat}
             </option>
@@ -97,7 +126,12 @@ export function GateLogView({
                 <tr key={entry.id} className="border-b border-neutral-50 last:border-0 dark:border-neutral-800/60">
                   <td className="px-4 py-2.5 font-bold">{entry.flatNumber}</td>
                   <td className="px-4 py-2.5">{entry.visitorName}</td>
-                  <td className="px-4 py-2.5">{t[PURPOSE_KEY[entry.purpose]]}</td>
+                  <td className="px-4 py-2.5">
+                    {t[PURPOSE_KEY[entry.purpose]]}
+                    {entry.purpose === "OTHER" && entry.note && (
+                      <span className="text-neutral-500"> — {entry.note}</span>
+                    )}
+                  </td>
                   <td className="px-4 py-2.5 text-neutral-500">
                     {new Date(entry.entryTime).toLocaleString("en-IN", {
                       day: "numeric",

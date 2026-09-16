@@ -159,5 +159,12 @@
   "generate": "ତିଆରି କରନ୍ତୁ",
   "generating": "ତିଆରି ହେଉଛି…",
   "bulk_add_result_added": "ଫ୍ଲାଟ୍ ଯୋଡ଼ାଗଲା",
-  "bulk_add_result_skipped": "ପୂର୍ବରୁ ଥିଲା"
+  "bulk_add_result_skipped": "ପୂର୍ବରୁ ଥିଲା",
+  "wing_placeholder": "ୱିଙ୍ଗ (ଯଥା A)",
+  "select_wing": "ୱିଙ୍ଗ ବାଛନ୍ତୁ",
+  "filter_by_wing": "ସମସ୍ତ ୱିଙ୍ଗ",
+  "no_wing_label": "କୌଣସି ୱିଙ୍ଗ ନାହିଁ",
+  "other_purpose_placeholder": "ଏହା କଣ? (ଯଥା ସୋସାଇଟି ପ୍ଲମ୍ବର)",
+  "account_not_linked": "ଆପଣଙ୍କ ଖାତା ବର୍ତ୍ତମାନ କୌଣସି ସକ୍ରିୟ ପ୍ରୋଫାଇଲ୍ ସହିତ ଲିଙ୍କ୍ ହୋଇନାହିଁ। ଦୟାକରି ଆପଣଙ୍କ ସୋସାଇଟି ଆଡମିନଙ୍କ ସହିତ ଯୋଗାଯୋଗ କରନ୍ତୁ।",
+  "onboarded_count_label": "ଫ୍ଲାଟ୍ ଯୋଡ଼ାଗଲା"
 }

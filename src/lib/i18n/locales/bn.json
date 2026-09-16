@@ -159,5 +159,12 @@
   "generate": "তৈরি করুন",
   "generating": "তৈরি হচ্ছে…",
   "bulk_add_result_added": "ফ্ল্যাট যোগ হয়েছে",
-  "bulk_add_result_skipped": "আগে থেকেই ছিল"
+  "bulk_add_result_skipped": "আগে থেকেই ছিল",
+  "wing_placeholder": "উইং (যেমন A)",
+  "select_wing": "উইং নির্বাচন করুন",
+  "filter_by_wing": "সব উইং",
+  "no_wing_label": "কোনো উইং নেই",
+  "other_purpose_placeholder": "এটা কী? (যেমন সোসাইটির প্লাম্বার)",
+  "account_not_linked": "আপনার অ্যাকাউন্ট এখন কোনো সক্রিয় প্রোফাইলের সাথে যুক্ত নেই। অনুগ্রহ করে আপনার সোসাইটি অ্যাডমিনের সাথে যোগাযোগ করুন।",
+  "onboarded_count_label": "ফ্ল্যাট যুক্ত হয়েছে"
 }

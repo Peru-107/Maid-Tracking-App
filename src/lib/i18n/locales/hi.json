@@ -159,5 +159,12 @@
   "generate": "बनाएं",
   "generating": "बन रहा है…",
   "bulk_add_result_added": "फ्लैट जोड़े गए",
-  "bulk_add_result_skipped": "पहले से मौजूद थे"
+  "bulk_add_result_skipped": "पहले से मौजूद थे",
+  "wing_placeholder": "विंग (जैसे A)",
+  "select_wing": "विंग चुनें",
+  "filter_by_wing": "सभी विंग",
+  "no_wing_label": "कोई विंग नहीं",
+  "other_purpose_placeholder": "यह क्या है? (जैसे सोसाइटी प्लंबर)",
+  "account_not_linked": "आपका खाता अभी किसी सक्रिय प्रोफ़ाइल से जुड़ा नहीं है। कृपया अपने सोसाइटी एडमिन से संपर्क करें।",
+  "onboarded_count_label": "फ्लैट जुड़े"
 }

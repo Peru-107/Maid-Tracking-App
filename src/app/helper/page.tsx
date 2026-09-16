@@ -12,7 +12,15 @@ import { GateLogEntry } from "@/components/helper/gate-log-entry";
 
 export default async function HelperDashboard() {
   const user = await getCurrentUser();
-  if (!user?.helperProfile) redirect("/login");
+  if (!user) redirect("/login");
+  // Redirecting to /login here (rather than showing something) would send
+  // them straight back to this exact page on next login -- a silent loop
+  // that looks like their phone number stopped working. If the employer
+  // deleted their profile (a mistake, or they've left), say so instead.
+  if (!user.helperProfile) {
+    const t = getDictionary(user.languagePref as Locale);
+    return <Card className="p-6 text-center font-medium text-neutral-500">{t.account_not_linked}</Card>;
+  }
 
   const t = getDictionary(user.languagePref as Locale);
   const profile = user.helperProfile;

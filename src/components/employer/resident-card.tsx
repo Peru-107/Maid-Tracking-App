@@ -12,12 +12,14 @@ export function ResidentCard({
   currentName,
   currentPhone,
   currentFlatNumber,
+  currentWing,
 }: {
   t: Record<TranslationKey, string>;
   residentId: string;
   currentName: string;
   currentPhone: string | null;
   currentFlatNumber: string;
+  currentWing?: string | null;
 }) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
@@ -25,6 +27,7 @@ export function ResidentCard({
   const [name, setName] = useState(currentName);
   const [phone, setPhone] = useState(currentPhone?.replace("+91", "") ?? "");
   const [flatNumber, setFlatNumber] = useState(currentFlatNumber);
+  const [wing, setWing] = useState(currentWing ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,7 +42,7 @@ export function ResidentCard({
         // Omit phone entirely when left blank -- a placeholder flat with no
         // resident onboarded yet shouldn't fail to save just because the
         // phone field is still empty.
-        body: JSON.stringify({ name, flatNumber, ...(phone.trim() ? { phone } : {}) }),
+        body: JSON.stringify({ name, flatNumber, wing, ...(phone.trim() ? { phone } : {}) }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Could not update resident");
@@ -69,7 +72,7 @@ export function ResidentCard({
   if (editing) {
     return (
       <Card className="p-4">
-        <form onSubmit={handleSubmit} className="grid gap-2 sm:grid-cols-4">
+        <form onSubmit={handleSubmit} className="grid gap-2 sm:grid-cols-5">
           <input
             required
             value={name}
@@ -88,6 +91,12 @@ export function ResidentCard({
             onChange={(e) => setFlatNumber(e.target.value)}
             className="rounded-2xl border-2 border-neutral-200 px-3 py-2 text-sm font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
           />
+          <input
+            value={wing}
+            onChange={(e) => setWing(e.target.value)}
+            placeholder={t.wing_placeholder}
+            className="rounded-2xl border-2 border-neutral-200 px-3 py-2 text-sm font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
+          />
           <div className="flex gap-2">
             <Button type="submit" disabled={saving} className="flex-1 py-2 text-sm">
               {saving ? t.saving : t.save}
@@ -96,7 +105,7 @@ export function ResidentCard({
               {t.cancel}
             </Button>
           </div>
-          {error && <p className="text-sm text-red-600 sm:col-span-4">{error}</p>}
+          {error && <p className="text-sm text-red-600 sm:col-span-5">{error}</p>}
         </form>
       </Card>
     );
@@ -110,7 +119,10 @@ export function ResidentCard({
             <h2 className="text-lg font-bold">{currentName}</h2>
             {!currentPhone && <Badge tone="yellow">{t.not_onboarded_yet}</Badge>}
           </div>
-          <p className="text-sm font-medium text-neutral-500">{t.flat_number_placeholder}: {currentFlatNumber}</p>
+          <p className="text-sm font-medium text-neutral-500">
+            {currentWing && `${currentWing} · `}
+            {t.flat_number_placeholder}: {currentFlatNumber}
+          </p>
         </div>
         {currentPhone && (
           <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-600 dark:text-neutral-400">

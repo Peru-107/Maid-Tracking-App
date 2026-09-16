@@ -159,5 +159,12 @@
   "generate": "بنائیں",
   "generating": "بن رہا ہے…",
   "bulk_add_result_added": "فلیٹس شامل کیے گئے",
-  "bulk_add_result_skipped": "پہلے سے موجود تھے"
+  "bulk_add_result_skipped": "پہلے سے موجود تھے",
+  "wing_placeholder": "ونگ (مثلاً A)",
+  "select_wing": "ونگ منتخب کریں",
+  "filter_by_wing": "تمام ونگز",
+  "no_wing_label": "کوئی ونگ نہیں",
+  "other_purpose_placeholder": "یہ کیا ہے؟ (مثلاً سوسائٹی پلمبر)",
+  "account_not_linked": "آپ کا اکاؤنٹ فی الحال کسی فعال پروفائل سے منسلک نہیں ہے۔ براہ کرم اپنے سوسائٹی ایڈمن سے رابطہ کریں۔",
+  "onboarded_count_label": "فلیٹس شامل ہوئے"
 }

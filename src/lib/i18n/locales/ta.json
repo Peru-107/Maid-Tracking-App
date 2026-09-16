@@ -159,5 +159,12 @@
   "generate": "உருவாக்கு",
   "generating": "உருவாக்கப்படுகிறது…",
   "bulk_add_result_added": "ஃப்ளாட்கள் சேர்க்கப்பட்டன",
-  "bulk_add_result_skipped": "ஏற்கனவே இருந்தன"
+  "bulk_add_result_skipped": "ஏற்கனவே இருந்தன",
+  "wing_placeholder": "விங் (எ.கா. A)",
+  "select_wing": "விங்கைத் தேர்ந்தெடுக்கவும்",
+  "filter_by_wing": "அனைத்து விங்குகள்",
+  "no_wing_label": "விங் இல்லை",
+  "other_purpose_placeholder": "இது என்ன? (எ.கா. சொசைட்டி பிளம்பர்)",
+  "account_not_linked": "உங்கள் கணக்கு தற்போது செயலில் உள்ள சுயவிவரத்துடன் இணைக்கப்படவில்லை. உங்கள் சொசைட்டி நிர்வாகியை தொடர்பு கொள்ளவும்.",
+  "onboarded_count_label": "ஃப்ளாட்கள் இணைந்தன"
 }
