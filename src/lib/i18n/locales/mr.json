@@ -164,5 +164,7 @@
   "select_wing": "विंग निवडा",
   "filter_by_wing": "सर्व विंग",
   "no_wing_label": "विंग नाही",
-  "other_purpose_placeholder": "हे काय आहे? (उदा. सोसायटी प्लंबर)"
+  "other_purpose_placeholder": "हे काय आहे? (उदा. सोसायटी प्लंबर)",
+  "account_not_linked": "तुमचे खाते सध्या कोणत्याही सक्रिय प्रोफाइलशी जोडलेले नाही. कृपया तुमच्या सोसायटी अॅडमिनशी संपर्क साधा.",
+  "onboarded_count_label": "फ्लॅट जोडले गेले"
 }

@@ -48,10 +48,19 @@ export default async function ResidentsPage() {
   });
   for (const group of wingGroups.values()) group.sort(byFlatNumber);
 
+  const onboardedCount = residents.filter((r) => r.phone).length;
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-xl font-bold">{t.residents}</h1>
+        <div>
+          <h1 className="text-xl font-bold">{t.residents}</h1>
+          {residents.length > 0 && (
+            <p className="text-sm font-medium text-neutral-500">
+              {onboardedCount}/{residents.length} {t.onboarded_count_label}
+            </p>
+          )}
+        </div>
         <div className="flex flex-wrap gap-2">
           <BulkAddFlatsForm t={t} />
           <AddResidentForm t={t} />

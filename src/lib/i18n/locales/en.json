@@ -164,5 +164,7 @@
   "wing_placeholder": "Wing (e.g. A)",
   "select_wing": "Select wing",
   "other_purpose_placeholder": "What is it? (e.g. society plumber)",
-  "no_wing_label": "No Wing"
+  "no_wing_label": "No Wing",
+  "account_not_linked": "Your account isn't linked to an active profile right now. Please contact your society admin.",
+  "onboarded_count_label": "flats onboarded"
 }

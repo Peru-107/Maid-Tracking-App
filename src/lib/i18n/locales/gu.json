@@ -164,5 +164,7 @@
   "select_wing": "વિંગ પસંદ કરો",
   "filter_by_wing": "બધા વિંગ",
   "no_wing_label": "કોઈ વિંગ નથી",
-  "other_purpose_placeholder": "આ શું છે? (દા.ત. સોસાયટીનો પ્લમ્બર)"
+  "other_purpose_placeholder": "આ શું છે? (દા.ત. સોસાયટીનો પ્લમ્બર)",
+  "account_not_linked": "તમારું ખાતું હાલમાં કોઈ સક્રિય પ્રોફાઇલ સાથે જોડાયેલું નથી. કૃપા કરી તમારા સોસાયટી એડમિનનો સંપર્ક કરો.",
+  "onboarded_count_label": "ફ્લેટ જોડાયા"
 }

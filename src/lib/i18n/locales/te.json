@@ -164,5 +164,7 @@
   "select_wing": "వింగ్ ఎంచుకోండి",
   "filter_by_wing": "అన్ని వింగ్‌లు",
   "no_wing_label": "వింగ్ లేదు",
-  "other_purpose_placeholder": "ఇది ఏమిటి? (ఉదా. సొసైటీ ప్లంబర్)"
+  "other_purpose_placeholder": "ఇది ఏమిటి? (ఉదా. సొసైటీ ప్లంబర్)",
+  "account_not_linked": "మీ ఖాతా ప్రస్తుతం యాక్టివ్ ప్రొఫైల్‌తో లింక్ కాలేదు. దయచేసి మీ సొసైటీ అడ్మిన్‌ని సంప్రదించండి.",
+  "onboarded_count_label": "ఫ్లాట్‌లు చేరాయి"
 }

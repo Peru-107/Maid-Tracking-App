@@ -164,5 +164,7 @@
   "select_wing": "ਵਿੰਗ ਚੁਣੋ",
   "filter_by_wing": "ਸਾਰੇ ਵਿੰਗ",
   "no_wing_label": "ਕੋਈ ਵਿੰਗ ਨਹੀਂ",
-  "other_purpose_placeholder": "ਇਹ ਕੀ ਹੈ? (ਜਿਵੇਂ ਸੋਸਾਇਟੀ ਪਲੰਬਰ)"
+  "other_purpose_placeholder": "ਇਹ ਕੀ ਹੈ? (ਜਿਵੇਂ ਸੋਸਾਇਟੀ ਪਲੰਬਰ)",
+  "account_not_linked": "ਤੁਹਾਡਾ ਖਾਤਾ ਇਸ ਵੇਲੇ ਕਿਸੇ ਸਰਗਰਮ ਪ੍ਰੋਫਾਈਲ ਨਾਲ ਜੁੜਿਆ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਸੋਸਾਇਟੀ ਐਡਮਿਨ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।",
+  "onboarded_count_label": "ਫਲੈਟ ਜੁੜੇ"
 }
