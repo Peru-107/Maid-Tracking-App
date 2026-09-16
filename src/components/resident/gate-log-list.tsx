@@ -10,6 +10,7 @@ type VisitorEntry = {
   id: string;
   visitorName: string;
   purpose: Purpose;
+  note: string | null;
   entryTime: string;
 };
 
@@ -48,7 +49,10 @@ export function ResidentGateLogList({ t }: { t: Record<TranslationKey, string> }
           <Card className="flex items-center justify-between gap-3 p-3.5">
             <div>
               <p className="font-bold">{entry.visitorName}</p>
-              <p className="text-sm font-medium text-neutral-500">{t[PURPOSE_KEY[entry.purpose]]}</p>
+              <p className="text-sm font-medium text-neutral-500">
+                {t[PURPOSE_KEY[entry.purpose]]}
+                {entry.purpose === "OTHER" && entry.note && ` — ${entry.note}`}
+              </p>
             </div>
             <span className="text-sm font-medium text-neutral-400">
               {new Date(entry.entryTime).toLocaleString("en-IN", {

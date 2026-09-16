@@ -10,6 +10,7 @@ import type { TranslationKey } from "@/lib/i18n";
 export function BulkAddFlatsForm({ t }: { t: Record<TranslationKey, string> }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [wing, setWing] = useState("");
   const [floors, setFloors] = useState(1);
   const [unitStart, setUnitStart] = useState(1);
   const [unitEnd, setUnitEnd] = useState(4);
@@ -40,7 +41,7 @@ export function BulkAddFlatsForm({ t }: { t: Record<TranslationKey, string> }) {
       const res = await fetch("/api/residents/bulk", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ flatNumbers }),
+        body: JSON.stringify({ flatNumbers, wing: wing.trim() || undefined }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Could not add flats");
@@ -66,6 +67,13 @@ export function BulkAddFlatsForm({ t }: { t: Record<TranslationKey, string> }) {
     <Card className="p-4">
       <p className="mb-3 text-sm font-medium text-neutral-500">{t.bulk_add_flats_description}</p>
       <form onSubmit={handleSubmit} className="grid gap-3 sm:grid-cols-4">
+        <input
+          required
+          placeholder={t.wing_placeholder}
+          value={wing}
+          onChange={(e) => setWing(e.target.value)}
+          className="rounded-2xl border-2 border-neutral-200 px-3 py-2.5 font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
+        />
         <NumberField required placeholder={t.floors_placeholder} value={floors} onChange={setFloors} />
         <NumberField required placeholder={t.unit_start_placeholder} value={unitStart} onChange={setUnitStart} />
         <NumberField required placeholder={t.unit_end_placeholder} value={unitEnd} onChange={setUnitEnd} />

@@ -159,5 +159,10 @@
   "generate": "ರಚಿಸಿ",
   "generating": "ರಚಿಸಲಾಗುತ್ತಿದೆ…",
   "bulk_add_result_added": "ಫ್ಲಾಟ್‌ಗಳನ್ನು ಸೇರಿಸಲಾಗಿದೆ",
-  "bulk_add_result_skipped": "ಈಗಾಗಲೇ ಇದ್ದವು"
+  "bulk_add_result_skipped": "ಈಗಾಗಲೇ ಇದ್ದವು",
+  "wing_placeholder": "ವಿಂಗ್ (ಉದಾ. A)",
+  "select_wing": "ವಿಂಗ್ ಆಯ್ಕೆಮಾಡಿ",
+  "filter_by_wing": "ಎಲ್ಲಾ ವಿಂಗ್‌ಗಳು",
+  "no_wing_label": "ವಿಂಗ್ ಇಲ್ಲ",
+  "other_purpose_placeholder": "ಇದು ಏನು? (ಉದಾ. ಸೊಸೈಟಿ ಪ್ಲಂಬರ್)"
 }

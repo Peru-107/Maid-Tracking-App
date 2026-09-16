@@ -159,5 +159,10 @@
   "generate": "तयार करा",
   "generating": "तयार होत आहे…",
   "bulk_add_result_added": "फ्लॅट जोडले",
-  "bulk_add_result_skipped": "आधीच अस्तित्वात होते"
+  "bulk_add_result_skipped": "आधीच अस्तित्वात होते",
+  "wing_placeholder": "विंग (उदा. A)",
+  "select_wing": "विंग निवडा",
+  "filter_by_wing": "सर्व विंग",
+  "no_wing_label": "विंग नाही",
+  "other_purpose_placeholder": "हे काय आहे? (उदा. सोसायटी प्लंबर)"
 }

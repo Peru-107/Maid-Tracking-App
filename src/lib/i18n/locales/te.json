@@ -159,5 +159,10 @@
   "generate": "సృష్టించండి",
   "generating": "సృష్టిస్తోంది…",
   "bulk_add_result_added": "ఫ్లాట్‌లు చేర్చబడ్డాయి",
-  "bulk_add_result_skipped": "ఇప్పటికే ఉన్నాయి"
+  "bulk_add_result_skipped": "ఇప్పటికే ఉన్నాయి",
+  "wing_placeholder": "వింగ్ (ఉదా. A)",
+  "select_wing": "వింగ్ ఎంచుకోండి",
+  "filter_by_wing": "అన్ని వింగ్‌లు",
+  "no_wing_label": "వింగ్ లేదు",
+  "other_purpose_placeholder": "ఇది ఏమిటి? (ఉదా. సొసైటీ ప్లంబర్)"
 }

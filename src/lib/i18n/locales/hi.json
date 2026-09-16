@@ -159,5 +159,10 @@
   "generate": "बनाएं",
   "generating": "बन रहा है…",
   "bulk_add_result_added": "फ्लैट जोड़े गए",
-  "bulk_add_result_skipped": "पहले से मौजूद थे"
+  "bulk_add_result_skipped": "पहले से मौजूद थे",
+  "wing_placeholder": "विंग (जैसे A)",
+  "select_wing": "विंग चुनें",
+  "filter_by_wing": "सभी विंग",
+  "no_wing_label": "कोई विंग नहीं",
+  "other_purpose_placeholder": "यह क्या है? (जैसे सोसाइटी प्लंबर)"
 }

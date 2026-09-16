@@ -12,6 +12,7 @@ export function AddResidentForm({ t }: { t: Record<TranslationKey, string> }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [flatNumber, setFlatNumber] = useState("");
+  const [wing, setWing] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -23,13 +24,14 @@ export function AddResidentForm({ t }: { t: Record<TranslationKey, string> }) {
       const res = await fetch("/api/residents", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, flatNumber }),
+        body: JSON.stringify({ name, phone, flatNumber, wing: wing.trim() || undefined }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Could not add resident");
       setName("");
       setPhone("");
       setFlatNumber("");
+      setWing("");
       setOpen(false);
       router.refresh();
     } catch (err) {
@@ -50,7 +52,7 @@ export function AddResidentForm({ t }: { t: Record<TranslationKey, string> }) {
 
   return (
     <Card className="p-4">
-      <form onSubmit={handleSubmit} className="grid gap-3 sm:grid-cols-4">
+      <form onSubmit={handleSubmit} className="grid gap-3 sm:grid-cols-5">
         <input
           required
           placeholder={t.resident_name_placeholder}
@@ -72,6 +74,12 @@ export function AddResidentForm({ t }: { t: Record<TranslationKey, string> }) {
           onChange={(e) => setFlatNumber(e.target.value)}
           className="rounded-2xl border-2 border-neutral-200 px-3 py-2.5 font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
         />
+        <input
+          placeholder={t.wing_placeholder}
+          value={wing}
+          onChange={(e) => setWing(e.target.value)}
+          className="rounded-2xl border-2 border-neutral-200 px-3 py-2.5 font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
+        />
         <div className="flex gap-2">
           <Button type="submit" disabled={loading} className="flex-1">
             {loading ? t.saving : t.save}
@@ -80,7 +88,7 @@ export function AddResidentForm({ t }: { t: Record<TranslationKey, string> }) {
             {t.cancel}
           </Button>
         </div>
-        {error && <p className="text-sm text-red-600 sm:col-span-4">{error}</p>}
+        {error && <p className="text-sm text-red-600 sm:col-span-5">{error}</p>}
       </form>
     </Card>
   );

@@ -13,6 +13,8 @@ const patchSchema = z.object({
   name: z.string().trim().min(1).max(100).optional(),
   phone: z.string().optional(),
   flatNumber: z.string().trim().min(1).max(20).optional(),
+  // Empty string clears a previously-set wing.
+  wing: z.string().trim().max(20).optional(),
   active: z.boolean().optional(),
 });
 
@@ -27,11 +29,21 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       return NextResponse.json({ error: "Invalid update" }, { status: 400 });
     }
 
-    const data: { name?: string; phone?: string; flatNumber?: string; active?: boolean } = {
+    const data: {
+      name?: string;
+      phone?: string;
+      flatNumber?: string;
+      wing?: string | null;
+      active?: boolean;
+    } = {
       name: parsed.data.name,
       flatNumber: parsed.data.flatNumber,
       active: parsed.data.active,
     };
+
+    if (parsed.data.wing !== undefined) {
+      data.wing = parsed.data.wing === "" ? null : parsed.data.wing;
+    }
 
     if (parsed.data.phone !== undefined) {
       const phone = normalizePhone(parsed.data.phone);

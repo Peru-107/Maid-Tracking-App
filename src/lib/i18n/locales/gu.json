@@ -159,5 +159,10 @@
   "generate": "બનાવો",
   "generating": "બની રહ્યું છે…",
   "bulk_add_result_added": "ફ્લેટ ઉમેરાયા",
-  "bulk_add_result_skipped": "પહેલેથી હતા"
+  "bulk_add_result_skipped": "પહેલેથી હતા",
+  "wing_placeholder": "વિંગ (દા.ત. A)",
+  "select_wing": "વિંગ પસંદ કરો",
+  "filter_by_wing": "બધા વિંગ",
+  "no_wing_label": "કોઈ વિંગ નથી",
+  "other_purpose_placeholder": "આ શું છે? (દા.ત. સોસાયટીનો પ્લમ્બર)"
 }

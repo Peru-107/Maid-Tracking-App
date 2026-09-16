@@ -50,6 +50,7 @@ const createSchema = z.object({
   flatNumber: z.string().trim().min(1).max(20),
   visitorName: z.string().trim().min(1).max(100),
   purpose: purposeEnum,
+  note: z.string().trim().max(200).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -66,6 +67,7 @@ export async function POST(request: NextRequest) {
         flatNumber: parsed.data.flatNumber,
         visitorName: parsed.data.visitorName,
         purpose: parsed.data.purpose,
+        note: parsed.data.purpose === "OTHER" ? parsed.data.note : undefined,
       },
     });
 

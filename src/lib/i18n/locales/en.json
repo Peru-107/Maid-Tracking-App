@@ -124,6 +124,7 @@
   "confirm_delete_resident_body": "This removes their account link. Gate log history for their flat is kept.",
   "gate_log": "Gate Log",
   "gate_log_admin_description": "Every visitor entry logged at the gate, across all flats.",
+  "filter_by_wing": "All Wings",
   "filter_by_flat": "All Flats",
   "filter_by_purpose": "All Purposes",
   "visitor_name": "Visitor Name",
@@ -159,5 +160,9 @@
   "generate": "Generate",
   "generating": "Generating…",
   "bulk_add_result_added": "flats added",
-  "bulk_add_result_skipped": "already existed"
+  "bulk_add_result_skipped": "already existed",
+  "wing_placeholder": "Wing (e.g. A)",
+  "select_wing": "Select wing",
+  "other_purpose_placeholder": "What is it? (e.g. society plumber)",
+  "no_wing_label": "No Wing"
 }

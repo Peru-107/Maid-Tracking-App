@@ -25,12 +25,28 @@ export default async function ResidentsPage() {
   // flatNumber is a plain string, so a DB-level sort would put "1101" before
   // "102" lexicographically -- sort numerically here whenever every flat
   // number actually parses as one (true for the floor*100+unit scheme).
-  residents.sort((a, b) => {
+  function byFlatNumber(a: { flatNumber: string }, b: { flatNumber: string }) {
     const numA = Number(a.flatNumber);
     const numB = Number(b.flatNumber);
     if (!Number.isNaN(numA) && !Number.isNaN(numB)) return numA - numB;
     return a.flatNumber.localeCompare(b.flatNumber);
+  }
+
+  // Grouped by wing so a 100+ flat society is actually browsable -- flats
+  // with no wing set (added before this feature, or manually without one)
+  // land in a trailing ungrouped section instead of disappearing.
+  const wingGroups = new Map<string, typeof residents>();
+  for (const resident of residents) {
+    const key = resident.wing ?? "";
+    if (!wingGroups.has(key)) wingGroups.set(key, []);
+    wingGroups.get(key)!.push(resident);
+  }
+  const sortedWings = [...wingGroups.keys()].sort((a, b) => {
+    if (a === "") return 1;
+    if (b === "") return -1;
+    return a.localeCompare(b);
   });
+  for (const group of wingGroups.values()) group.sort(byFlatNumber);
 
   return (
     <div className="flex flex-col gap-6">
@@ -45,18 +61,26 @@ export default async function ResidentsPage() {
       {residents.length === 0 ? (
         <Card className="p-8 text-center font-medium text-neutral-500">{t.no_residents_yet}</Card>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {residents.map((resident) => (
-            <ResidentCard
-              key={resident.id}
-              t={t}
-              residentId={resident.id}
-              currentName={resident.name}
-              currentPhone={resident.phone}
-              currentFlatNumber={resident.flatNumber}
-            />
-          ))}
-        </div>
+        sortedWings.map((wing) => (
+          <div key={wing || "ungrouped"} className="flex flex-col gap-3">
+            {sortedWings.length > 1 && (
+              <h2 className="text-sm font-bold text-neutral-500">{wing || t.no_wing_label}</h2>
+            )}
+            <div className="grid gap-4 sm:grid-cols-2">
+              {wingGroups.get(wing)!.map((resident) => (
+                <ResidentCard
+                  key={resident.id}
+                  t={t}
+                  residentId={resident.id}
+                  currentName={resident.name}
+                  currentPhone={resident.phone}
+                  currentFlatNumber={resident.flatNumber}
+                  currentWing={resident.wing}
+                />
+              ))}
+            </div>
+          </div>
+        ))
       )}
     </div>
   );

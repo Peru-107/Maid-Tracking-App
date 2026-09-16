@@ -159,5 +159,10 @@
   "generate": "ਬਣਾਓ",
   "generating": "ਬਣ ਰਿਹਾ ਹੈ…",
   "bulk_add_result_added": "ਫਲੈਟ ਸ਼ਾਮਲ ਕੀਤੇ ਗਏ",
-  "bulk_add_result_skipped": "ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਸਨ"
+  "bulk_add_result_skipped": "ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਸਨ",
+  "wing_placeholder": "ਵਿੰਗ (ਜਿਵੇਂ A)",
+  "select_wing": "ਵਿੰਗ ਚੁਣੋ",
+  "filter_by_wing": "ਸਾਰੇ ਵਿੰਗ",
+  "no_wing_label": "ਕੋਈ ਵਿੰਗ ਨਹੀਂ",
+  "other_purpose_placeholder": "ਇਹ ਕੀ ਹੈ? (ਜਿਵੇਂ ਸੋਸਾਇਟੀ ਪਲੰਬਰ)"
 }

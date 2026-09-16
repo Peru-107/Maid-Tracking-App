@@ -159,5 +159,10 @@
   "generate": "তৈরি করুন",
   "generating": "তৈরি হচ্ছে…",
   "bulk_add_result_added": "ফ্ল্যাট যোগ হয়েছে",
-  "bulk_add_result_skipped": "আগে থেকেই ছিল"
+  "bulk_add_result_skipped": "আগে থেকেই ছিল",
+  "wing_placeholder": "উইং (যেমন A)",
+  "select_wing": "উইং নির্বাচন করুন",
+  "filter_by_wing": "সব উইং",
+  "no_wing_label": "কোনো উইং নেই",
+  "other_purpose_placeholder": "এটা কী? (যেমন সোসাইটির প্লাম্বার)"
 }

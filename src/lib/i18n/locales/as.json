@@ -159,5 +159,10 @@
   "generate": "সৃষ্টি কৰক",
   "generating": "সৃষ্টি হৈ আছে…",
   "bulk_add_result_added": "ফ্লেট যোগ কৰা হ’ল",
-  "bulk_add_result_skipped": "আগৰেপৰা আছিল"
+  "bulk_add_result_skipped": "আগৰেপৰা আছিল",
+  "wing_placeholder": "ৱিং (যেনে A)",
+  "select_wing": "ৱিং বাছক",
+  "filter_by_wing": "সকলো ৱিং",
+  "no_wing_label": "কোনো ৱিং নাই",
+  "other_purpose_placeholder": "এইটো কি? (যেনে চহৰৰ প্লাম্বাৰ)"
 }

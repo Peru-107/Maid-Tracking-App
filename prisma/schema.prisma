@@ -238,6 +238,10 @@ model ResidentProfile {
   // auto-link on first login only ever matches a non-null phone anyway.
   phone      String?
   flatNumber String
+  // Nullable -- a wing/block label (e.g. "A") set by the bulk-add form or
+  // the admin manually, used to build a wing-then-flat picker at the gate.
+  // Flats with no wing fall back to an "ungrouped" bucket in that picker.
+  wing       String?
   active     Boolean  @default(true)
   createdAt  DateTime @default(now())
 
@@ -259,6 +263,9 @@ model VisitorEntry {
   flatNumber  String
   visitorName String
   purpose     VisitorPurpose
+  // Only meaningful (and shown) when purpose == OTHER -- the free-text
+  // description the watchman types in for that one purpose.
+  note        String?
   entryTime   DateTime       @default(now())
   loggedById  String?
   loggedBy    HelperProfile? @relation(fields: [loggedById], references: [id], onDelete: SetNull)

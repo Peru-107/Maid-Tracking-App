@@ -9,6 +9,7 @@ import { requireEmployerSession, handleApiError } from "@/lib/guards";
 // via the normal edit form once they're ready to onboard that flat.
 const createSchema = z.object({
   flatNumbers: z.array(z.string().trim().min(1).max(20)).min(1).max(500),
+  wing: z.string().trim().min(1).max(20).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -35,6 +36,7 @@ export async function POST(request: NextRequest) {
           name: flatNumber,
           phone: null,
           flatNumber,
+          wing: parsed.data.wing,
         })),
       });
     }

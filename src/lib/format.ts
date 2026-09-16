@@ -21,3 +21,22 @@ export function sortFlatNumbers(flatNumbers: string[]): string[] {
     return a.localeCompare(b);
   });
 }
+
+// Groups flats by wing for a wing-then-flat picker. Flats with no wing set
+// land in a trailing "" group (the ungrouped bucket) rather than vanishing.
+export function groupFlatsByWing(
+  rows: { wing: string | null; flatNumber: string }[],
+): { wing: string; flats: string[] }[] {
+  const byWing = new Map<string, Set<string>>();
+  for (const row of rows) {
+    const key = row.wing ?? "";
+    if (!byWing.has(key)) byWing.set(key, new Set());
+    byWing.get(key)!.add(row.flatNumber);
+  }
+  const wings = [...byWing.keys()].sort((a, b) => {
+    if (a === "") return 1;
+    if (b === "") return -1;
+    return a.localeCompare(b);
+  });
+  return wings.map((wing) => ({ wing, flats: sortFlatNumbers([...byWing.get(wing)!]) }));
+}
