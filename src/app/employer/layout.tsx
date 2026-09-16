@@ -33,6 +33,9 @@ export default async function EmployerLayout({ children }: { children: ReactNode
             <Link href="/employer/gate-log" className="hover:text-teal-700 dark:hover:text-teal-400">
               {t.nav_gate_log}
             </Link>
+            <Link href="/employer/my-flat" className="hover:text-teal-700 dark:hover:text-teal-400">
+              {t.my_flat}
+            </Link>
           </nav>
           <div className="flex items-center gap-3">
             <LanguageSwitcher current={locale} label={t.language} />

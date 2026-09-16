@@ -147,5 +147,6 @@
   "resident_gate_log_empty": "No visitors have been logged for your flat yet.",
   "nav_helpers": "Staff",
   "nav_residents": "Residents",
-  "nav_gate_log": "Gate Log"
+  "nav_gate_log": "Gate Log",
+  "my_flat": "My Flat"
 }

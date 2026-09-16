@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { normalizePhone } from "@/lib/phone";
-import { requireEmployerSession, assertPhoneAvailableForHelper, handleApiError } from "@/lib/guards";
+import { requireHelperOwnerSession, assertPhoneAvailableForHelper, handleApiError } from "@/lib/guards";
 
 export async function GET() {
   try {
-    const session = await requireEmployerSession();
+    const session = await requireHelperOwnerSession();
     const helpers = await prisma.helperProfile.findMany({
       where: { employerId: session.userId },
       orderBy: { createdAt: "asc" },
@@ -34,7 +34,7 @@ const createSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await requireEmployerSession();
+    const session = await requireHelperOwnerSession();
     const parsed = createSchema.safeParse(await request.json().catch(() => null));
     if (!parsed.success) {
       return NextResponse.json({ error: "Name, phone and salary are required" }, { status: 400 });
@@ -50,16 +50,22 @@ export async function POST(request: NextRequest) {
 
     await assertPhoneAvailableForHelper(phone);
 
+    // Residents hire personal household staff only -- Watchman and the
+    // other categories are society-level roles the admin manages. Enforced
+    // here, not just hidden in the UI, since the category otherwise comes
+    // straight from the request body.
+    const category = session.role === "RESIDENT" ? "MAID" : (parsed.data.category ?? "MAID");
+
     const helper = await prisma.helperProfile.create({
       data: {
         employerId: session.userId,
         name: parsed.data.name,
         phone,
         baseMonthlySalary: parsed.data.baseMonthlySalary,
-        category: parsed.data.category ?? "MAID",
+        category,
         // Shift only makes sense for watchmen; drop it silently otherwise
         // rather than surface a validation error for an ignored field.
-        shift: parsed.data.category === "WATCHMAN" ? parsed.data.shift : undefined,
+        shift: category === "WATCHMAN" ? parsed.data.shift : undefined,
       },
     });
 

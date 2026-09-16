@@ -17,7 +17,16 @@ const CATEGORIES: { value: Category; key: TranslationKey }[] = [
   { value: "WATCHMAN", key: "category_watchman" },
 ];
 
-export function AddHelperForm({ t }: { t: Record<TranslationKey, string> }) {
+export function AddHelperForm({
+  t,
+  showCategoryFields = true,
+}: {
+  t: Record<TranslationKey, string>;
+  // Residents only ever hire Maid-category personal helpers -- the API
+  // enforces this server-side regardless, but there's no point showing the
+  // category/shift controls to them.
+  showCategoryFields?: boolean;
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -87,19 +96,21 @@ export function AddHelperForm({ t }: { t: Record<TranslationKey, string> }) {
           className="rounded-2xl border-2 border-neutral-200 px-3 py-2.5 font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
         />
         <NumberField required placeholder={t.monthly_salary_placeholder} value={salary} onChange={setSalary} />
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value as Category)}
-          aria-label={t.category_label}
-          className="rounded-2xl border-2 border-neutral-200 bg-white px-3 py-2.5 font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
-        >
-          {CATEGORIES.map((c) => (
-            <option key={c.value} value={c.value}>
-              {t[c.key]}
-            </option>
-          ))}
-        </select>
-        {category === "WATCHMAN" && (
+        {showCategoryFields && (
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value as Category)}
+            aria-label={t.category_label}
+            className="rounded-2xl border-2 border-neutral-200 bg-white px-3 py-2.5 font-medium outline-none focus:border-teal-500 dark:border-neutral-700 dark:bg-transparent"
+          >
+            {CATEGORIES.map((c) => (
+              <option key={c.value} value={c.value}>
+                {t[c.key]}
+              </option>
+            ))}
+          </select>
+        )}
+        {showCategoryFields && category === "WATCHMAN" && (
           <select
             value={shift}
             onChange={(e) => setShift(e.target.value as "DAY" | "NIGHT")}

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireEmployerSession, requireOwnedHelper, handleApiError, HttpError } from "@/lib/guards";
+import { requireHelperOwnerSession, requireOwnedHelper, handleApiError, HttpError } from "@/lib/guards";
 import {
   buildSettlementDraft,
   markSettlementPaid,
@@ -11,7 +11,7 @@ import {
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const session = await requireEmployerSession();
+    const session = await requireHelperOwnerSession();
     const { id } = await params;
     await requireOwnedHelper(id, session.userId);
 
@@ -57,7 +57,7 @@ const postSchema = z.object({
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const session = await requireEmployerSession();
+    const session = await requireHelperOwnerSession();
     const { id } = await params;
     await requireOwnedHelper(id, session.userId);
 
@@ -91,7 +91,7 @@ const patchSchema = z.object({ settlementId: z.string(), paid: z.boolean().optio
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const session = await requireEmployerSession();
+    const session = await requireHelperOwnerSession();
     const { id } = await params;
     await requireOwnedHelper(id, session.userId);
 

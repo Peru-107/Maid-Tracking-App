@@ -18,6 +18,22 @@ export async function requireEmployerSession() {
   return session;
 }
 
+/**
+ * HelperProfile.employerId really just means "owner id" -- a Resident
+ * managing their own personal maid is the exact same ownership shape as an
+ * Employer managing society staff, just a different role on the session.
+ * Every route behind this guard already scopes by employerId === userId, so
+ * widening it to RESIDENT never lets one person see another's helpers.
+ */
+export async function requireHelperOwnerSession() {
+  const session = await getSession();
+  if (!session) throw new HttpError(401, "Not signed in");
+  if (session.role !== "EMPLOYER" && session.role !== "RESIDENT") {
+    throw new HttpError(403, "Employer or resident access only");
+  }
+  return session;
+}
+
 export async function requireOwnedHelper(helperId: string, employerId: string) {
   const helper = await prisma.helperProfile.findUnique({ where: { id: helperId } });
   if (!helper || helper.employerId !== employerId) {

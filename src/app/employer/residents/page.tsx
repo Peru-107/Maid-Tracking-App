@@ -10,7 +10,8 @@ export default async function ResidentsPage() {
   const t = getDictionary(user!.languagePref as Locale);
 
   const residents = await prisma.residentProfile.findMany({
-    where: { employerId: user!.id },
+    // Excludes the admin's own self-linked "My Flat" profile.
+    where: { employerId: user!.id, NOT: { userId: user!.id } },
     orderBy: { flatNumber: "asc" },
   });
 

@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { endOfMonth, startOfMonth } from "date-fns";
 import { prisma } from "@/lib/prisma";
-import { requireEmployerSession, requireOwnedHelper, handleApiError } from "@/lib/guards";
+import { requireHelperOwnerSession, requireOwnedHelper, handleApiError } from "@/lib/guards";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const session = await requireEmployerSession();
+    const session = await requireHelperOwnerSession();
     const { id } = await params;
     await requireOwnedHelper(id, session.userId);
 
@@ -42,7 +42,7 @@ const postSchema = z.object({
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const session = await requireEmployerSession();
+    const session = await requireHelperOwnerSession();
     const { id } = await params;
     await requireOwnedHelper(id, session.userId);
 
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const session = await requireEmployerSession();
+    const session = await requireHelperOwnerSession();
     const { id } = await params;
     await requireOwnedHelper(id, session.userId);
 

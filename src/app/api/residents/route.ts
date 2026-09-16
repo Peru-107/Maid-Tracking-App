@@ -8,7 +8,9 @@ export async function GET() {
   try {
     const session = await requireEmployerSession();
     const residents = await prisma.residentProfile.findMany({
-      where: { employerId: session.userId },
+      // Excludes the admin's own self-linked "My Flat" profile (userId ===
+      // their own id) -- that's a personal view, not someone to manage.
+      where: { employerId: session.userId, NOT: { userId: session.userId } },
       orderBy: { flatNumber: "asc" },
     });
     return NextResponse.json({ residents });

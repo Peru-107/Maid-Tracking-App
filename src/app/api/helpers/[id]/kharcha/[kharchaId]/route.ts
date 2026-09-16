@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireEmployerSession, requireOwnedHelper, handleApiError, HttpError } from "@/lib/guards";
+import { requireHelperOwnerSession, requireOwnedHelper, handleApiError, HttpError } from "@/lib/guards";
 
 export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string; kharchaId: string }> },
 ) {
   try {
-    const session = await requireEmployerSession();
+    const session = await requireHelperOwnerSession();
     const { id, kharchaId } = await params;
     await requireOwnedHelper(id, session.userId);
 
